@@ -1,0 +1,35 @@
+{
+  "name": "akiralab-storage-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode development",
+    "build:dev": "vite build --mode development",
+    "build:stage": "vite build --mode staging",
+    "build:prod": "vite build --mode production",
+    "preview": "vite preview --mode production",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "ci:build": "npm run build:prod",
+    "dev:stage": "vite --mode staging",
+    "dev:prod": "vite --mode production",
+    "build": "vite build --mode production"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@typescript-eslint/eslint-plugin": "7.18.0",
+    "@typescript-eslint/parser": "7.18.0",
+    "@vitejs/plugin-react": "4.3.1",
+    "eslint": "8.57.0",
+    "eslint-plugin-react-hooks": "4.6.2",
+    "eslint-plugin-react-refresh": "0.4.10",
+    "typescript": "5.6.3",
+    "vite": "5.4.8"
+  }
+}
