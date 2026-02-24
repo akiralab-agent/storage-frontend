@@ -3,8 +3,10 @@ import { statusRoutes } from "@/features/status/routes";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/Login";
 import DashboardPage from "@/pages/DashboardPage";
+import UsersPage from "@/pages/Users";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import { RequireRole } from "@/shared/auth";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +20,14 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <DashboardPage />
+  },
+  {
+    path: "/users",
+    element: (
+      <RequireRole roles={["admin"]}>
+        <UsersPage />
+      </RequireRole>
+    )
   },
   ...statusRoutes,
   {
