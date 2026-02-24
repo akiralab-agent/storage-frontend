@@ -1,1 +1,1 @@
-export {};
+export type { StatusResponse } from "./status";
