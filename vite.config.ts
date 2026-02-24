@@ -11,5 +11,15 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     __APP_MODE__: JSON.stringify(mode)
+  },
+  test: {
+    environment: "jsdom",
+    setupFiles: "src/test/setupTests.ts",
+    globals: true,
+    css: true,
+    restoreMocks: true,
+    mockReset: true,
+    clearMocks: true,
+    include: ["src/**/*.{test,spec}.{ts,tsx}"]
   }
 }));

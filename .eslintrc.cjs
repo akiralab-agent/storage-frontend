@@ -25,11 +25,20 @@ module.exports = {
       { type: "shared", pattern: "src/shared/**" }
     ]
   },
-  plugins: ["react-hooks", "react-refresh", "@typescript-eslint", "boundaries"],
+  plugins: [
+    "react-hooks",
+    "react-refresh",
+    "@typescript-eslint",
+    "boundaries",
+    "testing-library",
+    "jest-dom",
+    "vitest"
+  ],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "prettier"
   ],
   rules: {
     "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
@@ -49,5 +58,15 @@ module.exports = {
         ]
       }
     ]
-  }
+  },
+  overrides: [
+    {
+      files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
+      extends: [
+        "plugin:testing-library/react",
+        "plugin:jest-dom/recommended",
+        "plugin:vitest/recommended"
+      ]
+    }
+  ]
 };

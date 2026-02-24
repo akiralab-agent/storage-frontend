@@ -15,6 +15,14 @@ This launches the dev server with the `development` env profile.
 4. `npm run build:dev` – build artifact with `development` mode
 5. `npm run build:stage` – build artifact with `staging` mode
 6. `npm run build:prod` – build artifact with `production` mode
+7. `npm run lint` – eslint
+8. `npm run format` – prettier write
+9. `npm run format:check` – prettier check
+10. `npm run test` – vitest watch
+11. `npm run test:ci` – vitest run (CI)
+12. `npm run contract:update` – refresh OpenAPI snapshot (requires `OPENAPI_SPEC_URL` or `OPENAPI_SPEC_PATH`)
+13. `npm run contract:check` – compare OpenAPI snapshot to backend spec
+14. `npm run ci` – lint/format/typecheck/test/contract checks
 
 **Env profiles**
 Vite loads env files based on the selected mode. All public env vars must be prefixed with `VITE_`.
@@ -48,3 +56,7 @@ Layering rules and dependency direction are documented in `ARCHITECTURE.md`.
 2. `npm run build:prod`
 
 This produces `dist/` and is reproducible as long as `package-lock.json` is committed and used.
+
+**OpenAPI contract sync**
+Set `OPENAPI_SPEC_URL` (preferred) or `OPENAPI_SPEC_PATH` to the backend OpenAPI document.
+Run `npm run contract:update` to refresh `openapi/contract.json`, and `npm run contract:check` to verify drift in CI.
