@@ -242,9 +242,7 @@ export default function MarketingLanding() {
   }, []);
 
   useEffect(() => {
-    const elements = Array.from(
-      document.querySelectorAll<HTMLElement>(".lp-scroll-animate")
-    );
+    const elements = Array.from(document.querySelectorAll<HTMLElement>(".lp-scroll-animate"));
 
     if (!elements.length) {
       return;
@@ -286,10 +284,14 @@ export default function MarketingLanding() {
     <div className="lp-root">
       <header className={`lp-navbar${isScrolled ? " lp-navbar--scrolled" : ""}`}>
         <div className="lp-container lp-navbar__inner">
-          <a href="#top" className="lp-brand" onClick={(event) => {
-            event.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}>
+          <a
+            href="#top"
+            className="lp-brand"
+            onClick={(event) => {
+              event.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
             <span className="lp-brand__icon">SP</span>
             <span className="lp-brand__text">StoragePro</span>
           </a>
@@ -364,8 +366,8 @@ export default function MarketingLanding() {
                 The all-in-one platform for <span>self storage</span> management
               </h1>
               <p className="lp-scroll-animate" style={{ transitionDelay: "180ms" }}>
-                Streamline operations across facilities with billing automation, access
-                control, and real-time occupancy insights for US operators.
+                Streamline operations across facilities with billing automation, access control, and
+                real-time occupancy insights for US operators.
               </p>
               <div className="lp-scroll-animate lp-hero__cta" style={{ transitionDelay: "240ms" }}>
                 <a className="lp-btn lp-btn--primary lp-btn--large" href="/status">
@@ -375,10 +377,22 @@ export default function MarketingLanding() {
                   Watch Demo
                 </button>
               </div>
-              <div className="lp-scroll-animate lp-trust-flags" style={{ transitionDelay: "300ms" }}>
-                <span><i className="lp-dot lp-dot--emerald" />SOC 2 Compliant</span>
-                <span><i className="lp-dot lp-dot--blue" />99.9% Uptime</span>
-                <span><i className="lp-dot lp-dot--amber" />24/7 Support</span>
+              <div
+                className="lp-scroll-animate lp-trust-flags"
+                style={{ transitionDelay: "300ms" }}
+              >
+                <span>
+                  <i className="lp-dot lp-dot--emerald" />
+                  SOC 2 Compliant
+                </span>
+                <span>
+                  <i className="lp-dot lp-dot--blue" />
+                  99.9% Uptime
+                </span>
+                <span>
+                  <i className="lp-dot lp-dot--amber" />
+                  24/7 Support
+                </span>
               </div>
             </div>
 
@@ -407,7 +421,9 @@ export default function MarketingLanding() {
 
         <section className="lp-trust">
           <div className="lp-container">
-            <p className="lp-section__eyebrow">Trusted by leading self storage operators across the US</p>
+            <p className="lp-section__eyebrow">
+              Trusted by leading self storage operators across the US
+            </p>
             <div className="lp-trust__list">
               {TRUSTED_BRANDS.map((name, index) => (
                 <span
@@ -426,15 +442,18 @@ export default function MarketingLanding() {
         <section id="features" className="lp-section lp-section--muted">
           <div className="lp-container">
             <div className="lp-section__header">
-              <span className="lp-scroll-animate lp-section__label" style={{ transitionDelay: "20ms" }}>
+              <span
+                className="lp-scroll-animate lp-section__label"
+                style={{ transitionDelay: "20ms" }}
+              >
                 Features
               </span>
               <h2 className="lp-scroll-animate" style={{ transitionDelay: "90ms" }}>
                 Everything you need to run your self storage business
               </h2>
               <p className="lp-scroll-animate" style={{ transitionDelay: "160ms" }}>
-                From billing to access control, the platform gives operators a complete
-                operational toolkit.
+                From billing to access control, the platform gives operators a complete operational
+                toolkit.
               </p>
             </div>
 
@@ -445,7 +464,9 @@ export default function MarketingLanding() {
                   className="lp-scroll-animate lp-card lp-card--feature"
                   style={{ transitionDelay: `${index * 80 + 180}ms` }}
                 >
-                  <span className={`lp-feature-icon lp-feature-icon--${feature.tone}`}>{feature.badge}</span>
+                  <span className={`lp-feature-icon lp-feature-icon--${feature.tone}`}>
+                    {feature.badge}
+                  </span>
                   <h3>{feature.title}</h3>
                   <p>{feature.description}</p>
                   <footer>
@@ -471,7 +492,10 @@ export default function MarketingLanding() {
 
         <section id="dashboard" className="lp-section lp-section--white">
           <div className="lp-container lp-grid lp-grid--dashboard">
-            <div className="lp-scroll-animate lp-dashboard-media" style={{ transitionDelay: "40ms" }}>
+            <div
+              className="lp-scroll-animate lp-dashboard-media"
+              style={{ transitionDelay: "40ms" }}
+            >
               <div className="lp-dashboard-media__glow" aria-hidden="true" />
               <div className="lp-dashboard-media__main">
                 <img src="/dashboard-mockup.jpg" alt="StoragePro dashboard" />
@@ -485,7 +509,10 @@ export default function MarketingLanding() {
             </div>
 
             <div className="lp-dashboard-copy">
-              <span className="lp-scroll-animate lp-section__label" style={{ transitionDelay: "80ms" }}>
+              <span
+                className="lp-scroll-animate lp-section__label"
+                style={{ transitionDelay: "80ms" }}
+              >
                 Dashboard
               </span>
               <h2 className="lp-scroll-animate" style={{ transitionDelay: "140ms" }}>
@@ -516,7 +543,10 @@ export default function MarketingLanding() {
         <section id="how-it-works" className="lp-section lp-section--muted">
           <div className="lp-container">
             <div className="lp-section__header">
-              <span className="lp-scroll-animate lp-section__label" style={{ transitionDelay: "20ms" }}>
+              <span
+                className="lp-scroll-animate lp-section__label"
+                style={{ transitionDelay: "20ms" }}
+              >
                 How It Works
               </span>
               <h2 className="lp-scroll-animate" style={{ transitionDelay: "90ms" }}>
@@ -551,7 +581,10 @@ export default function MarketingLanding() {
         <section className="lp-section lp-section--white">
           <div className="lp-container">
             <div className="lp-section__header">
-              <span className="lp-scroll-animate lp-section__label" style={{ transitionDelay: "20ms" }}>
+              <span
+                className="lp-scroll-animate lp-section__label"
+                style={{ transitionDelay: "20ms" }}
+              >
                 Testimonials
               </span>
               <h2 className="lp-scroll-animate" style={{ transitionDelay: "90ms" }}>
@@ -569,14 +602,18 @@ export default function MarketingLanding() {
                   className="lp-scroll-animate lp-card lp-card--testimonial"
                   style={{ transitionDelay: `${index * 90 + 180}ms` }}
                 >
-                  <div className="lp-stars" aria-hidden="true">*****</div>
+                  <div className="lp-stars" aria-hidden="true">
+                    *****
+                  </div>
                   <p className="lp-quote">"{testimonial.quote}"</p>
                   <span className="lp-metric">{testimonial.metric}</span>
                   <footer>
                     <div className="lp-avatar">{testimonial.author.charAt(0)}</div>
                     <div>
                       <strong>{testimonial.author}</strong>
-                      <small>{testimonial.role}, {testimonial.company}</small>
+                      <small>
+                        {testimonial.role}, {testimonial.company}
+                      </small>
                       <small>{testimonial.location}</small>
                     </div>
                   </footer>
@@ -603,7 +640,10 @@ export default function MarketingLanding() {
         <section id="pricing" className="lp-section lp-section--muted">
           <div className="lp-container">
             <div className="lp-section__header">
-              <span className="lp-scroll-animate lp-section__label" style={{ transitionDelay: "20ms" }}>
+              <span
+                className="lp-scroll-animate lp-section__label"
+                style={{ transitionDelay: "20ms" }}
+              >
                 Pricing
               </span>
               <h2 className="lp-scroll-animate" style={{ transitionDelay: "90ms" }}>
@@ -629,8 +669,14 @@ export default function MarketingLanding() {
                     <small>{plan.period}</small>
                   </div>
                   <div className="lp-limits">
-                    <span><small>Facilities</small>{plan.facilities}</span>
-                    <span><small>Units</small>{plan.units}</span>
+                    <span>
+                      <small>Facilities</small>
+                      {plan.facilities}
+                    </span>
+                    <span>
+                      <small>Units</small>
+                      {plan.units}
+                    </span>
                   </div>
                   <ul className="lp-plan-features">
                     {plan.features.map((feature) => (
@@ -639,7 +685,10 @@ export default function MarketingLanding() {
                       </li>
                     ))}
                   </ul>
-                  <a className={`lp-btn ${plan.popular ? "lp-btn--primary" : "lp-btn--dark"}`} href="/status">
+                  <a
+                    className={`lp-btn ${plan.popular ? "lp-btn--primary" : "lp-btn--dark"}`}
+                    href="/status"
+                  >
                     {plan.cta}
                   </a>
                 </article>
@@ -664,7 +713,10 @@ export default function MarketingLanding() {
             <p className="lp-scroll-animate" style={{ transitionDelay: "180ms" }}>
               Join operators reducing manual work and improving collections with one platform.
             </p>
-            <div className="lp-scroll-animate lp-final-cta__actions" style={{ transitionDelay: "240ms" }}>
+            <div
+              className="lp-scroll-animate lp-final-cta__actions"
+              style={{ transitionDelay: "240ms" }}
+            >
               <a className="lp-btn lp-btn--primary lp-btn--large" href="/status">
                 Start 14-Day Free Trial
               </a>
@@ -673,9 +725,18 @@ export default function MarketingLanding() {
               </button>
             </div>
             <div className="lp-scroll-animate lp-trust-flags" style={{ transitionDelay: "300ms" }}>
-              <span><i className="lp-dot lp-dot--emerald" />No credit card required</span>
-              <span><i className="lp-dot lp-dot--blue" />14-day trial</span>
-              <span><i className="lp-dot lp-dot--amber" />Cancel anytime</span>
+              <span>
+                <i className="lp-dot lp-dot--emerald" />
+                No credit card required
+              </span>
+              <span>
+                <i className="lp-dot lp-dot--blue" />
+                14-day trial
+              </span>
+              <span>
+                <i className="lp-dot lp-dot--amber" />
+                Cancel anytime
+              </span>
             </div>
           </div>
         </section>
@@ -690,10 +751,12 @@ export default function MarketingLanding() {
                 <span className="lp-brand__text">StoragePro</span>
               </a>
               <p className="lp-footer__about">
-                The all-in-one platform for self storage management. Built for US
-                operators and designed for growth.
+                The all-in-one platform for self storage management. Built for US operators and
+                designed for growth.
               </p>
-              <p className="lp-footer__contact">hello@storagepro.com | 1-800-STOR-PRO | Austin, Texas, USA</p>
+              <p className="lp-footer__contact">
+                hello@storagepro.com | 1-800-STOR-PRO | Austin, Texas, USA
+              </p>
             </div>
 
             {Object.entries(FOOTER_LINKS).map(([title, links]) => (

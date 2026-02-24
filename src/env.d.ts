@@ -5,6 +5,7 @@ type AppEnv = "development" | "staging" | "production";
 interface ImportMetaEnv {
   readonly VITE_APP_ENV: AppEnv;
   readonly VITE_API_BASE_URL: string;
+  readonly VITE_API_URL: string;
 }
 
 interface ImportMeta {
