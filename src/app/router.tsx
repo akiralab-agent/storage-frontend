@@ -7,6 +7,7 @@ import UsersPage from "@/pages/Users";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { RequireRole } from "@/shared/auth";
+import AuthenticatedLayout from "@/widgets/layout/AuthenticatedLayout";
 
 export const router = createBrowserRouter([
   {
@@ -18,8 +19,14 @@ export const router = createBrowserRouter([
     element: <LoginPage />
   },
   {
-    path: "/dashboard",
-    element: <DashboardPage />
+    element: <AuthenticatedLayout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <DashboardPage />
+      },
+      ...statusRoutes
+    ]
   },
   {
     path: "/users",
@@ -29,7 +36,6 @@ export const router = createBrowserRouter([
       </RequireRole>
     )
   },
-  ...statusRoutes,
   {
     path: "/unauthorized",
     element: <UnauthorizedPage />

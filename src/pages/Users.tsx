@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { apiClient } from "@/api/client";
@@ -76,6 +76,28 @@ function normalizeUser(profile: UserProfile): UserOption | null {
   return null;
 }
 
+function normalizeAuthUser(payload: unknown): UserOption | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const candidate = payload as {
+    id?: string | null;
+    email?: string | null;
+    user_id?: string | null;
+    user_email?: string | null;
+  };
+
+  const id = candidate.id ?? candidate.user_id ?? "";
+  const email = candidate.email ?? candidate.user_email ?? "";
+
+  if (id && email) {
+    return { id, email };
+  }
+
+  return null;
+}
+
 function normalizeFacilityId(facility: FacilityOption | string): string {
   return typeof facility === "string" ? facility : facility.id;
 }
@@ -124,6 +146,9 @@ export default function UsersPage() {
   const [pageSuccess, setPageSuccess] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<UserProfile | null>(null);
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const modalPanelRef = useRef<HTMLDivElement | null>(null);
+  const modalFirstInteractiveRef = useRef<HTMLSelectElement | null>(null);
 
   const {
     register,
@@ -138,6 +163,7 @@ export default function UsersPage() {
     defaultValues: DEFAULT_FORM_VALUES
   });
 
+  const userIdRegister = register("userId");
   const selectedRole = watch("role");
   const selectedFacilities = watch("facilityIds");
   const facilityMap = useMemo(
@@ -172,8 +198,9 @@ export default function UsersPage() {
       setLoadError(null);
 
       try {
-        const [profilesResponse, facilitiesResponse] = await Promise.all([
+        const [profilesResponse, usersResponse, facilitiesResponse] = await Promise.all([
           apiClient.get("/api/users/"),
+          apiClient.get("/api/auth/users/"),
           apiClient.get("/api/facilities/")
         ]);
 
@@ -182,11 +209,19 @@ export default function UsersPage() {
         }
 
         const profileList = normalizeList<UserProfile>(profilesResponse.data);
+        const userList = normalizeList<unknown>(usersResponse.data);
         const facilityList = normalizeList<FacilityOption>(facilitiesResponse.data);
         setProfiles(profileList);
         setFacilities(facilityList);
 
         const userMap = new Map<string, UserOption>();
+        userList.forEach((entry) => {
+          const user = normalizeAuthUser(entry);
+          if (user) {
+            userMap.set(user.id, user);
+          }
+        });
+
         profileList.forEach((profile) => {
           const user = normalizeUser(profile);
           if (user) {
@@ -242,6 +277,69 @@ export default function UsersPage() {
     reset(DEFAULT_FORM_VALUES);
   };
 
+  useEffect(() => {
+    if (!isModalOpen) {
+      return;
+    }
+
+    const focusableSelector = [
+      "button:not([disabled])",
+      "a[href]",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      "[tabindex]:not([tabindex='-1'])"
+    ].join(",");
+
+    const getFocusable = () =>
+      Array.from(modalPanelRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? []);
+
+    const focusTarget =
+      modalFirstInteractiveRef.current && !modalFirstInteractiveRef.current.disabled
+        ? modalFirstInteractiveRef.current
+        : getFocusable()[0];
+
+    focusTarget?.focus();
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeModal();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusable = getFocusable();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const activeElement = document.activeElement as HTMLElement | null;
+
+      if (event.shiftKey) {
+        if (!activeElement || activeElement === first || !modalPanelRef.current?.contains(activeElement)) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeydown);
+    };
+  }, [closeModal, isModalOpen]);
+
   const refreshProfiles = async () => {
     const response = await apiClient.get("/api/users/");
     const profileList = normalizeList<UserProfile>(response.data);
@@ -287,15 +385,18 @@ export default function UsersPage() {
     setIsSaving(true);
 
     try {
+      const successMessage = editingProfile
+        ? "User updated successfully."
+        : "User created successfully.";
+
       if (editingProfile) {
         await apiClient.put(`/api/users/${editingProfile.id}/`, payload);
-        setPageSuccess("User updated successfully.");
       } else {
         await apiClient.post("/api/users/", payload);
-        setPageSuccess("User created successfully.");
       }
 
       await refreshProfiles();
+      setPageSuccess(successMessage);
       closeModal();
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -309,6 +410,10 @@ export default function UsersPage() {
   };
 
   const handleDelete = async (profile: UserProfile) => {
+    if (deletingIds.has(profile.id)) {
+      return;
+    }
+
     const user = normalizeUser(profile);
     const confirmLabel = user?.email ?? "this user";
 
@@ -317,10 +422,26 @@ export default function UsersPage() {
     }
 
     try {
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.add(profile.id);
+        return next;
+      });
       await apiClient.delete(`/api/users/${profile.id}/`);
       await refreshProfiles();
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        await refreshProfiles();
+        return;
+      }
+
       setLoadError("Unable to delete user. Please try again.");
+    } finally {
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(profile.id);
+        return next;
+      });
     }
   };
 
@@ -380,6 +501,7 @@ export default function UsersPage() {
                           type="button"
                           className="users-button users-button--danger"
                           onClick={() => handleDelete(profile)}
+                          disabled={deletingIds.has(profile.id)}
                         >
                           Delete
                         </button>
@@ -394,12 +516,12 @@ export default function UsersPage() {
       )}
 
       {isModalOpen && (
-        <div className="users-modal" role="dialog" aria-modal="true">
+        <div className="users-modal" role="dialog" aria-modal="true" aria-labelledby="users-modal-title">
           <div className="users-modal__overlay" onClick={closeModal} />
-          <div className="users-modal__panel">
+          <div className="users-modal__panel" ref={modalPanelRef}>
             <div className="users-modal__header">
               <div>
-                <h2>{editingProfile ? "Edit user" : "Add user"}</h2>
+                <h2 id="users-modal-title">{editingProfile ? "Edit user" : "Add user"}</h2>
                 <p className="users-subtitle">Set role and facility access.</p>
               </div>
               <button type="button" className="users-button" onClick={closeModal}>
@@ -411,9 +533,13 @@ export default function UsersPage() {
               <label className="users-field">
                 <span>User</span>
                 <select
-                  {...register("userId")}
-                  disabled={!!editingProfile}
+                  {...userIdRegister}
+                  readOnly={!!editingProfile}
                   className={errors.userId ? "users-input users-input--error" : "users-input"}
+                  ref={(node) => {
+                    userIdRegister.ref(node);
+                    modalFirstInteractiveRef.current = node;
+                  }}
                 >
                   <option value="">Select a user</option>
                   {userOptions.map((user) => (

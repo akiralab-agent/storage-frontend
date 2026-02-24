@@ -29,9 +29,18 @@
   box-shadow: var(--shadow-sm);
 }
 
+.users-primary:focus-visible {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 2px;
+}
+
 .users-primary:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.users-primary:disabled:focus-visible {
+  outline: none;
 }
 
 .users-table-wrapper {
@@ -39,7 +48,8 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .users-table {
@@ -79,6 +89,20 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.users-button:focus-visible {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 2px;
+}
+
+.users-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.users-button:disabled:focus-visible {
+  outline: none;
 }
 
 .users-button--danger {
@@ -165,6 +189,20 @@
   border-radius: 10px;
   border: 1px solid var(--border);
   background: #ffffff;
+}
+
+.users-input:focus-visible {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 2px;
+}
+
+.users-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.users-input:disabled:focus-visible {
+  outline: none;
 }
 
 .users-input--error {
