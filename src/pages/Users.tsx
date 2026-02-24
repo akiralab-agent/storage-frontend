@@ -370,7 +370,11 @@ export default function UsersPage() {
       return;
     }
 
-    if (!values.userId) {
+    const resolvedUserId = editingProfile
+      ? normalizeUser(editingProfile)?.id ?? values.userId
+      : values.userId;
+
+    if (!resolvedUserId) {
       setError("userId", { type: "validate", message: "Please select a user." });
       return;
     }
@@ -381,7 +385,7 @@ export default function UsersPage() {
     }
 
     const payload = {
-      user: values.userId,
+      user: resolvedUserId,
       role: values.role,
       facilities: values.facilityIds
     };
@@ -543,7 +547,7 @@ export default function UsersPage() {
                 <span>User</span>
                 <select
                   {...userIdRegister}
-                  readOnly={!!editingProfile}
+                  disabled={!!editingProfile}
                   className={errors.userId ? "users-input users-input--error" : "users-input"}
                   ref={(node) => {
                     userIdRegister.ref(node);
