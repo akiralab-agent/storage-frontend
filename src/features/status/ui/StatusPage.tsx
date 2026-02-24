@@ -18,12 +18,11 @@ export default function StatusPage() {
           API base URL: <strong>{env.apiBaseUrl}</strong>
         </p>
         <p>
-          API status:{" "}
-          {isLoading && <strong>Loading...</strong>}
+          API status: {isLoading && <strong>Loading...</strong>}
           {!isLoading && !isError && data && (
             <strong>
               {data.status}
-              {showTimestamp && ` (${new Date(data.timestamp).toLocaleString()})`}
+              {showTimestamp && ` (${data.timestamp})`}
             </strong>
           )}
           {isError && <strong>Unavailable</strong>}

@@ -12,8 +12,7 @@ export default function StatusOpsPage() {
         <h1>Operations Status</h1>
         <p>Restricted to ops role at primary facility.</p>
         <p>
-          API status:{" "}
-          {isLoading && <strong>Loading...</strong>}
+          API status: {isLoading && <strong>Loading...</strong>}
           {!isLoading && !isError && data && (
             <strong>
               {data.status}

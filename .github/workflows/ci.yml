@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  frontend-checks:
+    runs-on: ubuntu-latest
+    env:
+      OPENAPI_SPEC_URL: ${{ secrets.OPENAPI_SPEC_URL }}
+      OPENAPI_SPEC_PATH: ${{ secrets.OPENAPI_SPEC_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run ci

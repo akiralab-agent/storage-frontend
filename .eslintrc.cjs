@@ -25,11 +25,19 @@ module.exports = {
       { type: "shared", pattern: "src/shared/**" }
     ]
   },
-  plugins: ["react-hooks", "react-refresh", "@typescript-eslint", "boundaries"],
+  plugins: [
+    "react-hooks",
+    "react-refresh",
+    "@typescript-eslint",
+    "boundaries",
+    "testing-library",
+    "jest-dom"
+  ],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "prettier"
   ],
   rules: {
     "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
@@ -39,7 +47,10 @@ module.exports = {
         default: "disallow",
         rules: [
           { from: "entry", allow: ["app", "shared"] },
-          { from: "app", allow: ["processes", "pages", "widgets", "features", "entities", "shared"] },
+          {
+            from: "app",
+            allow: ["processes", "pages", "widgets", "features", "entities", "shared"]
+          },
           { from: "processes", allow: ["pages", "widgets", "features", "entities", "shared"] },
           { from: "pages", allow: ["widgets", "features", "entities", "shared"] },
           { from: "widgets", allow: ["features", "entities", "shared"] },
@@ -49,5 +60,22 @@ module.exports = {
         ]
       }
     ]
-  }
+  },
+  overrides: [
+    {
+      files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
+      globals: {
+        afterAll: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        beforeEach: "readonly",
+        describe: "readonly",
+        expect: "readonly",
+        it: "readonly",
+        test: "readonly",
+        vi: "readonly"
+      },
+      extends: ["plugin:testing-library/react", "plugin:jest-dom/recommended"]
+    }
+  ]
 };

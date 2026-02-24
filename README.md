@@ -3,24 +3,35 @@
 React + Vite (TypeScript) baseline with env profiles, path aliases, and build scripts.
 
 **Quick start**
+
 1. `npm install`
 2. `npm run dev`
 
 This launches the dev server with the `development` env profile.
 
 **Scripts**
+
 1. `npm run dev` – dev server, `development` mode
 2. `npm run dev:stage` – dev server, `staging` mode
 3. `npm run dev:prod` – dev server, `production` mode
 4. `npm run build:dev` – build artifact with `development` mode
 5. `npm run build:stage` – build artifact with `staging` mode
 6. `npm run build:prod` – build artifact with `production` mode
+7. `npm run lint` – eslint
+8. `npm run format` – prettier write
+9. `npm run format:check` – prettier check
+10. `npm run test` – vitest watch
+11. `npm run test:ci` – vitest run (CI)
+12. `npm run contract:update` – refresh OpenAPI snapshot (requires `OPENAPI_SPEC_URL` or `OPENAPI_SPEC_PATH`)
+13. `npm run contract:check` – compare OpenAPI snapshot to backend spec
+14. `npm run ci` – lint/format/typecheck/test/contract checks
 
 **Env profiles**
 Vite loads env files based on the selected mode. All public env vars must be prefixed with `VITE_`.
 `.env` is kept empty by default to avoid cross-environment leakage.
 
 Profiles:
+
 1. `.env.development` – local dev defaults
 2. `.env.staging` – staging defaults
 3. `.env.production` – production defaults
@@ -28,6 +39,7 @@ Profiles:
 5. `.env.example` – template for new machines
 
 Example usage in code:
+
 ```ts
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 ```
@@ -36,6 +48,7 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 Use `@` as an alias for `src`.
 
 Example:
+
 ```ts
 import App from "@/App";
 ```
@@ -44,7 +57,12 @@ import App from "@/App";
 Layering rules and dependency direction are documented in `ARCHITECTURE.md`.
 
 **Reproducible CI build**
+
 1. `npm ci`
 2. `npm run build:prod`
 
 This produces `dist/` and is reproducible as long as `package-lock.json` is committed and used.
+
+**OpenAPI contract sync**
+Set `OPENAPI_SPEC_URL` (preferred) or `OPENAPI_SPEC_PATH` to the backend OpenAPI document.
+Run `npm run contract:update` to refresh `openapi/contract.json`, and `npm run contract:check` to verify drift in CI.
