@@ -57,8 +57,8 @@ describe("StatusPage", () => {
     const toggleButton = screen.getByRole("button", { name: /show timestamp/i });
     await userEvent.click(toggleButton);
 
-    const updatedStatus = await screen.findByText(/ok/);
-    expect(updatedStatus).toHaveTextContent("(");
+    const updatedStatus = await screen.findByText(/ok\s*\(/);
+    expect(updatedStatus).toHaveTextContent(payload.timestamp);
     expect(screen.getByRole("button", { name: /hide timestamp/i })).toBeInTheDocument();
   });
 
