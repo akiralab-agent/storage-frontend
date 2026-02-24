@@ -8,6 +8,14 @@ export interface User {
   facilities: Facility[];
 }
 
+export interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
 export interface AuthState {
   user: User | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => void;
 }
