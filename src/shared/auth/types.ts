@@ -1,4 +1,4 @@
-export type Role = "admin" | "admin_corporativo" | "gerente" | "ops" | "viewer";
+export type Role = "admin" | "admin_corporativo" | "gerente" | "financeiro" | "ops" | "viewer";
 export type Facility = "primary" | "secondary";
 
 export interface User {
