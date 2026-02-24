@@ -31,8 +31,7 @@ module.exports = {
     "@typescript-eslint",
     "boundaries",
     "testing-library",
-    "jest-dom",
-    "vitest"
+    "jest-dom"
   ],
   extends: [
     "eslint:recommended",
@@ -62,10 +61,20 @@ module.exports = {
   overrides: [
     {
       files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
+      globals: {
+        afterAll: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        beforeEach: "readonly",
+        describe: "readonly",
+        expect: "readonly",
+        it: "readonly",
+        test: "readonly",
+        vi: "readonly"
+      },
       extends: [
         "plugin:testing-library/react",
-        "plugin:jest-dom/recommended",
-        "plugin:vitest/recommended"
+        "plugin:jest-dom/recommended"
       ]
     }
   ]
