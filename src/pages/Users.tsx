@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { apiClient } from "@/api/client";
@@ -271,11 +271,11 @@ export default function UsersPage() {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingProfile(null);
     reset(DEFAULT_FORM_VALUES);
-  };
+  }, [reset]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -323,7 +323,11 @@ export default function UsersPage() {
       const activeElement = document.activeElement as HTMLElement | null;
 
       if (event.shiftKey) {
-        if (!activeElement || activeElement === first || !modalPanelRef.current?.contains(activeElement)) {
+        if (
+          !activeElement ||
+          activeElement === first ||
+          !modalPanelRef.current?.contains(activeElement)
+        ) {
           event.preventDefault();
           last.focus();
         }
@@ -516,7 +520,12 @@ export default function UsersPage() {
       )}
 
       {isModalOpen && (
-        <div className="users-modal" role="dialog" aria-modal="true" aria-labelledby="users-modal-title">
+        <div
+          className="users-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="users-modal-title"
+        >
           <div className="users-modal__overlay" onClick={closeModal} />
           <div className="users-modal__panel" ref={modalPanelRef}>
             <div className="users-modal__header">
