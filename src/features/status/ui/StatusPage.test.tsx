@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -25,6 +25,12 @@ function renderWithClient(ui: ReactElement) {
 
 describe("StatusPage", () => {
   beforeEach(() => {
+    useStatusViewStore.setState({ showTimestamp: false });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
     useStatusViewStore.setState({ showTimestamp: false });
   });
 
