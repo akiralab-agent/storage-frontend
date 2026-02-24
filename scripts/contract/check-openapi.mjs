@@ -18,6 +18,21 @@ try {
 }
 
 try {
+  const hasSourceEnv = Boolean(process.env.OPENAPI_SPEC_URL || process.env.OPENAPI_SPEC_PATH);
+  if (!hasSourceEnv) {
+    const required =
+      process.env.OPENAPI_SPEC_REQUIRED === "1" || process.env.OPENAPI_SPEC_REQUIRED === "true";
+    if (required) {
+      throw new Error(
+        "Missing OPENAPI_SPEC_URL or OPENAPI_SPEC_PATH. Set one to compare against openapi/contract.json."
+      );
+    }
+    console.warn(
+      "Skipping OpenAPI contract check: set OPENAPI_SPEC_URL or OPENAPI_SPEC_PATH to compare."
+    );
+    process.exit(0);
+  }
+
   const [contract, source] = await Promise.all([loadContract(), loadSourceSpec()]);
   const contractString = stableStringify(contract);
   const sourceString = stableStringify(source);
