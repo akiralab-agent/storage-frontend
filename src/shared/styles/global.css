@@ -40,3 +40,18 @@ p {
   margin: 0.5rem 0;
   font-size: 1rem;
 }
+
+.pill-button {
+  border: 1px solid #c7cdd8;
+  background: #f4f6fb;
+  color: #1b2230;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.75rem;
+}
+
+.pill-button:hover {
+  background: #e6ebf5;
+}
