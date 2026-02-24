@@ -6,6 +6,7 @@ import DashboardPage from "@/pages/DashboardPage";
 import UsersPage from "@/pages/Users";
 import OrganizationsPage from "@/pages/Organizations";
 import FacilitiesPage from "@/pages/Facilities";
+import UnitsPage from "@/pages/Units";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { RequireRole } from "@/shared/auth";
@@ -48,6 +49,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole roles={["admin", "admin_corporativo", "gerente"]}>
             <FacilitiesPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/units",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "financeiro"]}>
+            <UnitsPage />
           </RequireRole>
         )
       },
