@@ -56,10 +56,7 @@ export default function UnitsPage() {
 
   const watchedStatus = watch("status");
 
-  const unitTypeMap = useMemo(
-    () => new Map(unitTypes.map((ut) => [ut.id, ut.name])),
-    [unitTypes]
-  );
+  const unitTypeMap = useMemo(() => new Map(unitTypes.map((ut) => [ut.id, ut.name])), [unitTypes]);
 
   useEffect(() => {
     let isMounted = true;
@@ -69,10 +66,7 @@ export default function UnitsPage() {
       setLoadError(null);
 
       try {
-        const [unitList, typeList] = await Promise.all([
-          unitsApi.list(),
-          unitTypesApi.list()
-        ]);
+        const [unitList, typeList] = await Promise.all([unitsApi.list(), unitTypesApi.list()]);
 
         if (isMounted) {
           setUnits(unitList);
@@ -336,9 +330,7 @@ export default function UnitsPage() {
                 <input
                   type="text"
                   {...unitNumberRegister}
-                  className={
-                    errors.unit_number ? "units-input units-input--error" : "units-input"
-                  }
+                  className={errors.unit_number ? "units-input units-input--error" : "units-input"}
                 />
                 {errors.unit_number && (
                   <span className="units-error">{errors.unit_number.message}</span>
