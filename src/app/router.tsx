@@ -25,16 +25,16 @@ export const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardPage />
       },
+      {
+        path: "/users",
+        element: (
+          <RequireRole roles={["admin"]}>
+            <UsersPage />
+          </RequireRole>
+        )
+      },
       ...statusRoutes
     ]
-  },
-  {
-    path: "/users",
-    element: (
-      <RequireRole roles={["admin"]}>
-        <UsersPage />
-      </RequireRole>
-    )
   },
   {
     path: "/unauthorized",
