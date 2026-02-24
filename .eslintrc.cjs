@@ -47,7 +47,10 @@ module.exports = {
         default: "disallow",
         rules: [
           { from: "entry", allow: ["app", "shared"] },
-          { from: "app", allow: ["processes", "pages", "widgets", "features", "entities", "shared"] },
+          {
+            from: "app",
+            allow: ["processes", "pages", "widgets", "features", "entities", "shared"]
+          },
           { from: "processes", allow: ["pages", "widgets", "features", "entities", "shared"] },
           { from: "pages", allow: ["widgets", "features", "entities", "shared"] },
           { from: "widgets", allow: ["features", "entities", "shared"] },
@@ -72,10 +75,7 @@ module.exports = {
         test: "readonly",
         vi: "readonly"
       },
-      extends: [
-        "plugin:testing-library/react",
-        "plugin:jest-dom/recommended"
-      ]
+      extends: ["plugin:testing-library/react", "plugin:jest-dom/recommended"]
     }
   ]
 };

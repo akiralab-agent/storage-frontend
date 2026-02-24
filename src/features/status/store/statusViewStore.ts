@@ -9,6 +9,6 @@ export const useStatusViewStore = create<StatusViewState>((set) => ({
   showTimestamp: true,
   toggleShowTimestamp: () =>
     set((state) => ({
-      showTimestamp: !state.showTimestamp,
-    })),
+      showTimestamp: !state.showTimestamp
+    }))
 }));

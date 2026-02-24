@@ -34,11 +34,12 @@ describe("StatusPage", () => {
       timestamp: "2025-01-10T12:00:00.000Z"
     };
 
-    const fetchMock = vi.fn(async () =>
-      new Response(JSON.stringify(payload), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      })
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(JSON.stringify(payload), {
+          status: 200,
+          headers: { "content-type": "application/json" }
+        })
     );
     vi.stubGlobal("fetch", fetchMock);
 
@@ -57,11 +58,12 @@ describe("StatusPage", () => {
 
   it("renders an error state when the API is unavailable", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    const fetchMock = vi.fn(async () =>
-      new Response(JSON.stringify({ message: "down" }), {
-        status: 503,
-        headers: { "content-type": "application/json" }
-      })
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ message: "down" }), {
+          status: 503,
+          headers: { "content-type": "application/json" }
+        })
     );
     vi.stubGlobal("fetch", fetchMock);
 
