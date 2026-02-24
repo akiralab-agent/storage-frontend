@@ -5,6 +5,7 @@ import LoginPage from "@/pages/Login";
 import DashboardPage from "@/pages/DashboardPage";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import AuthenticatedLayout from "@/widgets/layout/AuthenticatedLayout";
 
 export const router = createBrowserRouter([
   {
@@ -16,10 +17,15 @@ export const router = createBrowserRouter([
     element: <LoginPage />
   },
   {
-    path: "/dashboard",
-    element: <DashboardPage />
+    element: <AuthenticatedLayout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <DashboardPage />
+      },
+      ...statusRoutes
+    ]
   },
-  ...statusRoutes,
   {
     path: "/unauthorized",
     element: <UnauthorizedPage />

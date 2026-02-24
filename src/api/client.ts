@@ -6,6 +6,8 @@ import {
   getRefreshToken,
   setAccessToken
 } from "@/shared/auth/tokenStorage";
+import { getSelectedFacilityId } from "@/shared/facility/store";
+import { readStoredFacilityId } from "@/shared/facility/storage";
 
 const apiBaseUrl =
   import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
@@ -18,6 +20,11 @@ apiClient.interceptors.request.use((config) => {
   const token = getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  const facilityId = getSelectedFacilityId() ?? readStoredFacilityId();
+  if (facilityId) {
+    config.headers["X-Facility-ID"] = facilityId;
   }
   return config;
 });
