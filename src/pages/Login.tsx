@@ -46,57 +46,79 @@ export default function LoginPage() {
   };
 
   return (
-    <main style={{ padding: "48px 16px", maxWidth: 420, margin: "0 auto" }}>
-      <h1 style={{ marginBottom: 8 }}>Sign in</h1>
-      <p style={{ marginBottom: 24, color: "#4b5563" }}>
-        Use your email and password to access the dashboard.
-      </p>
+    <main className="login-page">
+      <div className="login-page__pattern" />
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <label style={{ display: "block", marginBottom: 12 }}>
-          Email
-          <input
-            type="email"
-            autoComplete="email"
-            style={{ display: "block", width: "100%", marginTop: 6, padding: "10px 12px" }}
-            {...register("username", {
-              required: "Email is required.",
-              pattern: {
-                value: /\S+@\S+\.\S+/,
-                message: "Enter a valid email."
-              }
-            })}
-          />
-          {errors.username ? (
-            <span style={{ color: "#b91c1c", fontSize: 12 }}>{errors.username.message}</span>
-          ) : null}
-        </label>
+      <div className="login-card">
+        <div className="login-card__header">
+          <div className="login-card__brand">
+            <span className="login-card__icon">AS</span>
+            <span className="login-card__brand-text">Agent Storage</span>
+          </div>
+          <h1 className="login-card__title">Welcome back</h1>
+          <p className="login-card__subtitle">
+            Sign in with your credentials to access the dashboard.
+          </p>
+        </div>
 
-        <label style={{ display: "block", marginBottom: 16 }}>
-          Password
-          <input
-            type="password"
-            autoComplete="current-password"
-            style={{ display: "block", width: "100%", marginTop: 6, padding: "10px 12px" }}
-            {...register("password", {
-              required: "Password is required.",
-              minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters."
-              }
-            })}
-          />
-          {errors.password ? (
-            <span style={{ color: "#b91c1c", fontSize: 12 }}>{errors.password.message}</span>
-          ) : null}
-        </label>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="login-form">
+          <div className="login-field">
+            <label className="login-field__label" htmlFor="login-email">
+              Email
+            </label>
+            <input
+              id="login-email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@company.com"
+              className={`login-field__input${errors.username ? " login-field__input--error" : ""}`}
+              {...register("username", {
+                required: "Email is required.",
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: "Enter a valid email."
+                }
+              })}
+            />
+            {errors.username ? (
+              <span className="login-field__error">{errors.username.message}</span>
+            ) : null}
+          </div>
 
-        {formError ? <div style={{ marginBottom: 16, color: "#b91c1c" }}>{formError}</div> : null}
+          <div className="login-field">
+            <label className="login-field__label" htmlFor="login-password">
+              Password
+            </label>
+            <input
+              id="login-password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="••••••••"
+              className={`login-field__input${errors.password ? " login-field__input--error" : ""}`}
+              {...register("password", {
+                required: "Password is required.",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters."
+                }
+              })}
+            />
+            {errors.password ? (
+              <span className="login-field__error">{errors.password.message}</span>
+            ) : null}
+          </div>
 
-        <button type="submit" disabled={isSubmitting} style={{ width: "100%", padding: "12px" }}>
-          {isSubmitting ? "Signing in..." : "Sign in"}
-        </button>
-      </form>
+          {formError ? <div className="login-form__error">{formError}</div> : null}
+
+          <button type="submit" disabled={isSubmitting} className="login-form__submit">
+            {isSubmitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+
+        <p className="login-card__footer">
+          Secure access powered by Agent Storage
+        </p>
+      </div>
     </main>
   );
 }
