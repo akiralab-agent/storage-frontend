@@ -30,8 +30,8 @@
 }
 
 .users-primary:focus-visible {
-  outline: 2px solid var(--brand-600);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-600);
 }
 
 .users-primary:disabled {
@@ -40,7 +40,7 @@
 }
 
 .users-primary:disabled:focus-visible {
-  outline: none;
+  box-shadow: none;
 }
 
 .users-table-wrapper {
@@ -92,8 +92,8 @@
 }
 
 .users-button:focus-visible {
-  outline: 2px solid var(--brand-600);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-600);
 }
 
 .users-button:disabled {
@@ -102,7 +102,7 @@
 }
 
 .users-button:disabled:focus-visible {
-  outline: none;
+  box-shadow: none;
 }
 
 .users-button--danger {
@@ -192,8 +192,8 @@
 }
 
 .users-input:focus-visible {
-  outline: 2px solid var(--brand-600);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-600);
 }
 
 .users-input:disabled {
@@ -202,7 +202,7 @@
 }
 
 .users-input:disabled:focus-visible {
-  outline: none;
+  box-shadow: none;
 }
 
 .users-input--error {
