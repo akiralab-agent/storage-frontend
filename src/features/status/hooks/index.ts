@@ -1,1 +1,1 @@
-export {};
+export { useStatusQuery } from "./useStatusQuery";
