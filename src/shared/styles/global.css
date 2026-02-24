@@ -1384,7 +1384,9 @@ p {
   background: var(--surface-muted);
   color: var(--ink);
   font-size: 0.95rem;
-  transition: border-color 180ms ease, box-shadow 180ms ease;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .login-field__input::placeholder {
@@ -1432,7 +1434,10 @@ p {
   font-size: 0.95rem;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-  transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .login-form__submit:hover:not(:disabled) {

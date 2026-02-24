@@ -115,9 +115,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="login-card__footer">
-          Secure access powered by Agent Storage
-        </p>
+        <p className="login-card__footer">Secure access powered by Agent Storage</p>
       </div>
     </main>
   );
