@@ -1,0 +1,258 @@
+.users-page {
+  padding: 3rem 1.75rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.users-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.users-subtitle {
+  color: var(--ink-soft);
+  margin-top: 0.35rem;
+}
+
+.users-primary {
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand-600);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.users-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-600);
+}
+
+.users-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.users-primary:disabled:focus-visible {
+  box-shadow: none;
+}
+
+.users-table-wrapper {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.users-table th {
+  background: var(--surface-muted);
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.users-table tbody tr:hover {
+  background: #f8fbff;
+}
+
+.users-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.users-button {
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--ink);
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.users-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-600);
+}
+
+.users-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.users-button:disabled:focus-visible {
+  box-shadow: none;
+}
+
+.users-button--danger {
+  color: var(--rose);
+  border-color: rgba(244, 63, 94, 0.4);
+  background: #fff5f7;
+}
+
+.users-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--ink-faint);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.users-alert {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+.users-alert--error {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+.users-alert--success {
+  background: #ecfdf3;
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.users-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.users-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.users-modal__panel {
+  position: relative;
+  width: min(720px, calc(100% - 2rem));
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.users-modal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.users-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.users-field {
+  display: grid;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+
+.users-input {
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+}
+
+.users-input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-600);
+}
+
+.users-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.users-input:disabled:focus-visible {
+  box-shadow: none;
+}
+
+.users-input--error {
+  border-color: rgba(244, 63, 94, 0.65);
+  background: #fff5f7;
+}
+
+.users-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem 1rem;
+}
+
+.users-checkbox {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 500;
+}
+
+.users-error {
+  color: #be123c;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.users-help {
+  color: var(--ink-faint);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.users-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .users-header {
+    align-items: stretch;
+  }
+
+  .users-actions {
+    flex-direction: column;
+  }
+
+  .users-form__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
