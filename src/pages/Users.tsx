@@ -371,7 +371,7 @@ export default function UsersPage() {
     }
 
     const resolvedUserId = editingProfile
-      ? normalizeUser(editingProfile)?.id ?? values.userId
+      ? (normalizeUser(editingProfile)?.id ?? values.userId)
       : values.userId;
 
     if (!resolvedUserId) {
