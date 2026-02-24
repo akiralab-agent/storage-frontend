@@ -5,7 +5,7 @@ import { RequireFacility, RequireRole } from "@/shared/auth";
 
 export const statusRoutes: RouteObject[] = [
   {
-    path: "/",
+    path: "/status",
     element: <StatusPage />
   },
   {
