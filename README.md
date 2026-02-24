@@ -40,6 +40,9 @@ Example:
 import App from "@/App";
 ```
 
+**Architecture**
+Layering rules and dependency direction are documented in `ARCHITECTURE.md`.
+
 **Reproducible CI build**
 1. `npm ci`
 2. `npm run build:prod`

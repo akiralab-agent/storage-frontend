@@ -1,4 +1,4 @@
-import { env } from "@/app/shared/config/env";
+import { env } from "@/shared/config/env";
 
 export default function StatusPage() {
   return (
