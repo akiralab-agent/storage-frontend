@@ -51,3 +51,20 @@ Invalidation strategy:
 Global error handling:
 - HTTP errors are normalized in `src/shared/api/httpClient.ts` and reported via `src/shared/api/errorHandling.ts`.
 - React Query uses the same centralized error handler for queries and mutations.
+
+## Client State Ownership
+
+Server state:
+- Use React Query for all server state (queries, mutations, and caching).
+- Feature packages own their query keys and hooks.
+
+Client state:
+- Keep shared global client state minimal and explicit.
+- Use scoped Zustand stores per feature for UI-only or ephemeral client state.
+- Avoid mutable singleton stores in `shared`; do not introduce cross-feature stores unless the state is truly cross-cutting.
+
+Ownership by domain:
+- `status`: `src/features/status/store/statusViewStore.ts` (UI-only view preferences, used by status pages).
+
+Explicit shared/global state (allowed):
+- React Query client configuration: `src/shared/api/queryClient.ts`.
