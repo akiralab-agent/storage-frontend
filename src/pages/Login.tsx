@@ -27,8 +27,7 @@ export default function LoginPage() {
   });
 
   if (isAuthenticated) {
-    const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from
-      ?.pathname;
+    const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
     return <Navigate to={redirectTo ?? "/dashboard"} replace />;
   }
 
@@ -92,9 +91,7 @@ export default function LoginPage() {
           ) : null}
         </label>
 
-        {formError ? (
-          <div style={{ marginBottom: 16, color: "#b91c1c" }}>{formError}</div>
-        ) : null}
+        {formError ? <div style={{ marginBottom: 16, color: "#b91c1c" }}>{formError}</div> : null}
 
         <button type="submit" disabled={isSubmitting} style={{ width: "100%", padding: "12px" }}>
           {isSubmitting ? "Signing in..." : "Sign in"}

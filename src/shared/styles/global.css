@@ -97,7 +97,9 @@ p {
   font-weight: 600;
   cursor: pointer;
   margin-top: 0.75rem;
-  transition: background 180ms ease, color 180ms ease;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
 }
 
 .pill-button:hover {
@@ -120,7 +122,10 @@ p {
   inset: 0 0 auto 0;
   z-index: 30;
   color: #f8fafc;
-  transition: background-color 180ms ease, box-shadow 180ms ease, backdrop-filter 180ms ease;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    backdrop-filter 180ms ease;
 }
 
 .lp-navbar--scrolled {
@@ -250,8 +255,12 @@ p {
   font-size: 0.92rem;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease,
-    color 160ms ease, border-color 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
 }
 
 .lp-btn:hover {
@@ -310,7 +319,11 @@ p {
   position: absolute;
   inset: 0;
   opacity: 0.16;
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.17) 1px, transparent 0);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.17) 1px,
+    transparent 0
+  );
   background-size: 38px 38px;
 }
 
@@ -1025,7 +1038,11 @@ p {
   position: absolute;
   inset: 0;
   opacity: 0.12;
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.14) 1px, transparent 0);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.14) 1px,
+    transparent 0
+  );
   background-size: 38px 38px;
 }
 
@@ -1182,7 +1199,9 @@ p {
 .lp-scroll-animate {
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity 520ms ease, transform 520ms ease;
+  transition:
+    opacity 520ms ease,
+    transform 520ms ease;
 }
 
 .lp-scroll-animate.lp-visible {

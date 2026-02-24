@@ -1,6 +1,11 @@
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { clearTokens, getAccessToken, getRefreshToken, setAccessToken } from "@/shared/auth/tokenStorage";
+import {
+  clearTokens,
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken
+} from "@/shared/auth/tokenStorage";
 
 const apiBaseUrl =
   import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
