@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import type { Facility, Role } from "@/shared/auth/types";
-import { useAuth } from "@/shared/auth/context";
+import { useAuth } from "@/shared/auth/useAuth";
 
 interface GuardProps {
   children: ReactNode;

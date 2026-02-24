@@ -22,7 +22,7 @@ export default function StatusPage() {
           {!isLoading && !isError && data && (
             <strong>
               {data.status}
-              {showTimestamp && ` (${new Date(data.timestamp).toLocaleString()})`}
+              {showTimestamp && ` (${data.timestamp})`}
             </strong>
           )}
           {isError && <strong>Unavailable</strong>}
