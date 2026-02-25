@@ -38,7 +38,8 @@ function normalizeList(payload: unknown): { results: InvoiceRecord[]; count: num
 
   if (payload && typeof payload === "object" && "results" in payload) {
     const results = (payload as { results?: InvoiceRecord[] }).results;
-    const count = (payload as { count?: number }).count ?? (Array.isArray(results) ? results.length : 0);
+    const count =
+      (payload as { count?: number }).count ?? (Array.isArray(results) ? results.length : 0);
     return { results: Array.isArray(results) ? results : [], count };
   }
 
@@ -48,10 +49,16 @@ function normalizeList(payload: unknown): { results: InvoiceRecord[]; count: num
 const encodePathSegment = (id: string | number) => encodeURIComponent(String(id));
 
 export const invoiceAPI = {
-  list: async (facilityId: string, params: InvoiceListParams = {}): Promise<InvoiceListResponse> => {
-    const response = await apiClient.get(`/api/facilities/${encodePathSegment(facilityId)}/invoices/`, {
-      params
-    });
+  list: async (
+    facilityId: string,
+    params: InvoiceListParams = {}
+  ): Promise<InvoiceListResponse> => {
+    const response = await apiClient.get(
+      `/api/facilities/${encodePathSegment(facilityId)}/invoices/`,
+      {
+        params
+      }
+    );
     const data = response.data as {
       results?: InvoiceRecord[];
       count?: number;
@@ -73,7 +80,11 @@ export const invoiceAPI = {
     };
   },
 
-  recordPayment: async (facilityId: string, invoiceId: string | number, payload: Record<string, unknown>) => {
+  recordPayment: async (
+    facilityId: string,
+    invoiceId: string | number,
+    payload: Record<string, unknown>
+  ) => {
     const response = await apiClient.post(
       `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(invoiceId)}/payments/`,
       payload

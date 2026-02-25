@@ -19,7 +19,7 @@ const MOCK_REVENUE_MONTHS = [
   { label: "Nov", value: 242000 },
   { label: "Dez", value: 238000 },
   { label: "Jan", value: 213000 },
-  { label: "Fev", value: 256054 },
+  { label: "Fev", value: 256054 }
 ];
 
 const MOCK_RETENTION_MONTHS = [
@@ -28,7 +28,7 @@ const MOCK_RETENTION_MONTHS = [
   { label: "Nov", value: 88 },
   { label: "Dez", value: 90 },
   { label: "Jan", value: 89 },
-  { label: "Fev", value: 92 },
+  { label: "Fev", value: 92 }
 ];
 
 const MOCK_MINI_BARS = [65, 72, 58, 80, 75, 90, 85];
@@ -38,7 +38,7 @@ const MOCK_HEATMAP = [
   [0.3, 0.4, 0.6, 0.9, 1.0, 0.8, 0.5],
   [0.4, 0.5, 0.7, 0.9, 0.95, 0.85, 0.6],
   [0.3, 0.4, 0.6, 0.85, 0.9, 0.7, 0.45],
-  [0.2, 0.3, 0.4, 0.7, 0.8, 0.6, 0.3],
+  [0.2, 0.3, 0.4, 0.7, 0.8, 0.6, 0.3]
 ];
 const HEATMAP_HOURS = ["08h", "10h", "12h", "14h", "16h"];
 const HEATMAP_DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -48,7 +48,7 @@ const STATUS_COLORS: Record<string, string> = {
   OCUPADA: "var(--brand-primary)",
   RESERVADA: "var(--status-warning)",
   BLOQUEADA: "var(--status-error)",
-  EM_VISTORIA: "var(--status-info)",
+  EM_VISTORIA: "var(--status-info)"
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -56,7 +56,7 @@ const STATUS_LABELS: Record<string, string> = {
   OCUPADA: "Ocupada",
   RESERVADA: "Reservada",
   BLOQUEADA: "Bloqueada",
-  EM_VISTORIA: "Em Vistoria",
+  EM_VISTORIA: "Em Vistoria"
 };
 
 export default function DashboardPage() {
@@ -73,7 +73,7 @@ export default function DashboardPage() {
         const [unitList, facList, orgList] = await Promise.all([
           unitsApi.list().catch(() => [] as UnitRecord[]),
           facilitiesApi.list().catch(() => []),
-          organizationsApi.list().catch(() => []),
+          organizationsApi.list().catch(() => [])
         ]);
         if (mounted) {
           setUnits(unitList);
@@ -85,7 +85,9 @@ export default function DashboardPage() {
       }
     }
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const statusCounts = units.reduce<Record<string, number>>((acc, u) => {
@@ -95,13 +97,13 @@ export default function DashboardPage() {
 
   // Use real data when available, fallback to mock
   const totalUnits = units.length || 1248;
-  const occupancyRate = units.length > 0
-    ? Math.round(((statusCounts["OCUPADA"] || 0) / units.length) * 100)
-    : 87;
+  const occupancyRate =
+    units.length > 0 ? Math.round(((statusCounts["OCUPADA"] || 0) / units.length) * 100) : 87;
 
-  const statusData = units.length > 0
-    ? statusCounts
-    : { LIVRE: 187, OCUPADA: 892, RESERVADA: 84, BLOQUEADA: 52, EM_VISTORIA: 33 };
+  const statusData =
+    units.length > 0
+      ? statusCounts
+      : { LIVRE: 187, OCUPADA: 892, RESERVADA: 84, BLOQUEADA: 52, EM_VISTORIA: 33 };
 
   const totalForDonut = Object.values(statusData).reduce((a, b) => a + b, 0);
 
@@ -143,11 +145,10 @@ export default function DashboardPage() {
         <div className="dash-welcome">
           <div>
             <h1 className="dash-welcome__title">
-              {greeting}{user ? `, ${user.name.split(" ")[0]}` : ""}
+              {greeting}
+              {user ? `, ${user.name.split(" ")[0]}` : ""}
             </h1>
-            <p className="dash-welcome__sub">
-              Aqui está o resumo do seu sistema de armazenamento.
-            </p>
+            <p className="dash-welcome__sub">Aqui está o resumo do seu sistema de armazenamento.</p>
           </div>
         </div>
       )}
@@ -171,7 +172,9 @@ export default function DashboardPage() {
                 <div key={i} className="dash-mini-bars__bar" style={{ height: `${v}%` }} />
               ))}
             </div>
-            <span className="dash-card__compare">vs mês anterior: <strong>1.210</strong></span>
+            <span className="dash-card__compare">
+              vs mês anterior: <strong>1.210</strong>
+            </span>
           </div>
 
           {/* ═══ Card 2: Ocupação Mensal ═══ */}
@@ -194,7 +197,9 @@ export default function DashboardPage() {
                 opacity="0.08"
               />
             </svg>
-            <span className="dash-card__compare">vs mês anterior: <strong>88.5%</strong></span>
+            <span className="dash-card__compare">
+              vs mês anterior: <strong>88.5%</strong>
+            </span>
           </div>
 
           {/* ═══ Card 3: Distribuição de Status (donut) ═══ */}
@@ -243,9 +248,13 @@ export default function DashboardPage() {
           {/* ═══ Card 4: Receita Total (destaque) ═══ */}
           <div className="dash-card dash-card--revenue-highlight">
             <div className="dash-card__header">
-              <span className="dash-card__label" style={{ color: "rgba(255,255,255,0.8)" }}>Receita Total</span>
+              <span className="dash-card__label" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Receita Total
+              </span>
             </div>
-            <span className="dash-card__big-value" style={{ color: "#fff" }}>R$ 5.2M</span>
+            <span className="dash-card__big-value" style={{ color: "#fff" }}>
+              R$ 5.2M
+            </span>
             <span className="dash-revenue-hl__contracts">892 contratos ativos</span>
             <div className="dash-revenue-hl__breakdown">
               <div className="dash-revenue-hl__item">
@@ -262,14 +271,32 @@ export default function DashboardPage() {
             <div className="dash-revenue-hl__status-section">
               <span className="dash-revenue-hl__status-title">Status Pagamento</span>
               <div className="dash-payment-bar">
-                <div className="dash-payment-bar__seg dash-payment-bar__seg--ok" style={{ width: "70%" }} />
-                <div className="dash-payment-bar__seg dash-payment-bar__seg--late" style={{ width: "25%" }} />
-                <div className="dash-payment-bar__seg dash-payment-bar__seg--cancel" style={{ width: "5%" }} />
+                <div
+                  className="dash-payment-bar__seg dash-payment-bar__seg--ok"
+                  style={{ width: "70%" }}
+                />
+                <div
+                  className="dash-payment-bar__seg dash-payment-bar__seg--late"
+                  style={{ width: "25%" }}
+                />
+                <div
+                  className="dash-payment-bar__seg dash-payment-bar__seg--cancel"
+                  style={{ width: "5%" }}
+                />
               </div>
               <div className="dash-payment-legend">
-                <span><span className="dash-payment-legend__dot dash-payment-legend__dot--ok" />Em dia 70%</span>
-                <span><span className="dash-payment-legend__dot dash-payment-legend__dot--late" />Atrasado 25%</span>
-                <span><span className="dash-payment-legend__dot dash-payment-legend__dot--cancel" />Cancelado 5%</span>
+                <span>
+                  <span className="dash-payment-legend__dot dash-payment-legend__dot--ok" />
+                  Em dia 70%
+                </span>
+                <span>
+                  <span className="dash-payment-legend__dot dash-payment-legend__dot--late" />
+                  Atrasado 25%
+                </span>
+                <span>
+                  <span className="dash-payment-legend__dot dash-payment-legend__dot--cancel" />
+                  Cancelado 5%
+                </span>
               </div>
             </div>
           </div>
@@ -283,38 +310,60 @@ export default function DashboardPage() {
               <svg viewBox="0 0 120 120" className="dash-task-ring-svg">
                 {/* Done */}
                 <circle
-                  cx="60" cy="60" r={TASK_RADIUS}
-                  fill="none" stroke="var(--status-success)" strokeWidth="10"
+                  cx="60"
+                  cy="60"
+                  r={TASK_RADIUS}
+                  fill="none"
+                  stroke="var(--status-success)"
+                  strokeWidth="10"
                   strokeDasharray={`${taskDonePct * TASK_CIRC} ${TASK_CIRC - taskDonePct * TASK_CIRC}`}
                   strokeDashoffset={0}
                   transform="rotate(-90 60 60)"
                 />
                 {/* In Progress */}
                 <circle
-                  cx="60" cy="60" r={TASK_RADIUS}
-                  fill="none" stroke="var(--status-warning)" strokeWidth="10"
+                  cx="60"
+                  cy="60"
+                  r={TASK_RADIUS}
+                  fill="none"
+                  stroke="var(--status-warning)"
+                  strokeWidth="10"
                   strokeDasharray={`${taskInProgressPct * TASK_CIRC} ${TASK_CIRC - taskInProgressPct * TASK_CIRC}`}
                   strokeDashoffset={-(taskDonePct * TASK_CIRC)}
                   transform="rotate(-90 60 60)"
                 />
                 {/* Pending */}
                 <circle
-                  cx="60" cy="60" r={TASK_RADIUS}
-                  fill="none" stroke="var(--border)" strokeWidth="10"
+                  cx="60"
+                  cy="60"
+                  r={TASK_RADIUS}
+                  fill="none"
+                  stroke="var(--border)"
+                  strokeWidth="10"
                   strokeDasharray={`${taskPendingPct * TASK_CIRC} ${TASK_CIRC - taskPendingPct * TASK_CIRC}`}
                   strokeDashoffset={-((taskDonePct + taskInProgressPct) * TASK_CIRC)}
                   transform="rotate(-90 60 60)"
                 />
-                <text x="60" y="56" textAnchor="middle" className="dash-task-ring-value">{taskTotal}</text>
-                <text x="60" y="72" textAnchor="middle" className="dash-task-ring-label">tarefas</text>
+                <text x="60" y="56" textAnchor="middle" className="dash-task-ring-value">
+                  {taskTotal}
+                </text>
+                <text x="60" y="72" textAnchor="middle" className="dash-task-ring-label">
+                  tarefas
+                </text>
               </svg>
               <ul className="dash-task-legend">
                 <li>
-                  <span className="dash-task-legend__dot" style={{ background: "var(--status-success)" }} />
+                  <span
+                    className="dash-task-legend__dot"
+                    style={{ background: "var(--status-success)" }}
+                  />
                   Concluído <strong>{tasks.done}</strong>
                 </li>
                 <li>
-                  <span className="dash-task-legend__dot" style={{ background: "var(--status-warning)" }} />
+                  <span
+                    className="dash-task-legend__dot"
+                    style={{ background: "var(--status-warning)" }}
+                  />
                   Em andamento <strong>{tasks.inProgress}</strong>
                 </li>
                 <li>
@@ -332,7 +381,9 @@ export default function DashboardPage() {
               <span className="dash-badge dash-badge--up">+2.57%</span>
             </div>
             <span className="dash-card__big-value">892</span>
-            <span className="dash-card__compare">vs mês anterior: <strong>870</strong></span>
+            <span className="dash-card__compare">
+              vs mês anterior: <strong>870</strong>
+            </span>
             <div className="dash-contracts-extra">
               <div className="dash-contracts-row">
                 <span>Novos este mês</span>
@@ -361,7 +412,9 @@ export default function DashboardPage() {
             </div>
             <div className="dash-revenue-monthly__values">
               <span className="dash-card__big-value">R$ 256.054,50</span>
-              <span className="dash-card__compare">vs mês passado: <strong>R$ 213.378,75</strong></span>
+              <span className="dash-card__compare">
+                vs mês passado: <strong>R$ 213.378,75</strong>
+              </span>
             </div>
             <div className="dash-bar-chart">
               {MOCK_REVENUE_MONTHS.map((m, i) => (
@@ -404,7 +457,9 @@ export default function DashboardPage() {
             <div className="dash-heatmap">
               <div className="dash-heatmap__corner" />
               {HEATMAP_DAYS.map((d) => (
-                <span key={d} className="dash-heatmap__day-label">{d}</span>
+                <span key={d} className="dash-heatmap__day-label">
+                  {d}
+                </span>
               ))}
               {MOCK_HEATMAP.map((row, ri) => (
                 <Fragment key={ri}>

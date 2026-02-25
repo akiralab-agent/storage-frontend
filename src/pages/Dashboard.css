@@ -76,15 +76,42 @@
 }
 
 /* Card placement */
-.dash-card--units       { grid-column: 1; grid-row: 1; }
-.dash-card--occupancy   { grid-column: 2; grid-row: 1; }
-.dash-card--donut       { grid-column: 3; grid-row: 1 / span 2; }
-.dash-card--revenue-highlight { grid-column: 4; grid-row: 1 / span 2; }
-.dash-card--tasks       { grid-column: 1; grid-row: 2; }
-.dash-card--contracts   { grid-column: 2; grid-row: 2; }
-.dash-card--revenue-monthly { grid-column: 1 / span 2; grid-row: 3; }
-.dash-card--retention   { grid-column: 3; grid-row: 3; }
-.dash-card--heatmap     { grid-column: 4; grid-row: 3; }
+.dash-card--units {
+  grid-column: 1;
+  grid-row: 1;
+}
+.dash-card--occupancy {
+  grid-column: 2;
+  grid-row: 1;
+}
+.dash-card--donut {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+.dash-card--revenue-highlight {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+}
+.dash-card--tasks {
+  grid-column: 1;
+  grid-row: 2;
+}
+.dash-card--contracts {
+  grid-column: 2;
+  grid-row: 2;
+}
+.dash-card--revenue-monthly {
+  grid-column: 1 / span 2;
+  grid-row: 3;
+}
+.dash-card--retention {
+  grid-column: 3;
+  grid-row: 3;
+}
+.dash-card--heatmap {
+  grid-column: 4;
+  grid-row: 3;
+}
 
 /* ══════════════════════════════════════════
    Card Base
@@ -98,7 +125,9 @@
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
   overflow: hidden;
 }
 
@@ -348,9 +377,15 @@
   transition: width 400ms ease;
 }
 
-.dash-payment-bar__seg--ok     { background: var(--status-success); }
-.dash-payment-bar__seg--late   { background: var(--status-warning); }
-.dash-payment-bar__seg--cancel { background: var(--status-error); }
+.dash-payment-bar__seg--ok {
+  background: var(--status-success);
+}
+.dash-payment-bar__seg--late {
+  background: var(--status-warning);
+}
+.dash-payment-bar__seg--cancel {
+  background: var(--status-error);
+}
 
 .dash-payment-legend {
   display: flex;
@@ -373,9 +408,15 @@
   display: inline-block;
 }
 
-.dash-payment-legend__dot--ok     { background: var(--status-success); }
-.dash-payment-legend__dot--late   { background: var(--status-warning); }
-.dash-payment-legend__dot--cancel { background: var(--status-error); }
+.dash-payment-legend__dot--ok {
+  background: var(--status-success);
+}
+.dash-payment-legend__dot--late {
+  background: var(--status-warning);
+}
+.dash-payment-legend__dot--cancel {
+  background: var(--status-error);
+}
 
 /* ══════════════════════════════════════════
    Task Ring (Card 5)
@@ -588,15 +629,42 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .dash-card--units       { grid-column: 1; grid-row: auto; }
-  .dash-card--occupancy   { grid-column: 2; grid-row: auto; }
-  .dash-card--donut       { grid-column: 1; grid-row: auto; }
-  .dash-card--revenue-highlight { grid-column: 2; grid-row: auto; }
-  .dash-card--tasks       { grid-column: 1; grid-row: auto; }
-  .dash-card--contracts   { grid-column: 2; grid-row: auto; }
-  .dash-card--revenue-monthly { grid-column: 1 / span 2; grid-row: auto; }
-  .dash-card--retention   { grid-column: 1; grid-row: auto; }
-  .dash-card--heatmap     { grid-column: 2; grid-row: auto; }
+  .dash-card--units {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .dash-card--occupancy {
+    grid-column: 2;
+    grid-row: auto;
+  }
+  .dash-card--donut {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .dash-card--revenue-highlight {
+    grid-column: 2;
+    grid-row: auto;
+  }
+  .dash-card--tasks {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .dash-card--contracts {
+    grid-column: 2;
+    grid-row: auto;
+  }
+  .dash-card--revenue-monthly {
+    grid-column: 1 / span 2;
+    grid-row: auto;
+  }
+  .dash-card--retention {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .dash-card--heatmap {
+    grid-column: 2;
+    grid-row: auto;
+  }
 }
 
 @media (max-width: 640px) {

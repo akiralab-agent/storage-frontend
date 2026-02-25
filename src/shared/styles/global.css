@@ -10,14 +10,13 @@
   --ink-soft: #475569;
   --ink-faint: #64748b;
 
-
   /* ── Cores da marca (whitelabel: troque aqui) ── */
-  --brand-primary: #027368;        /* cor principal */
-  --brand-primary-light: #F2F2F2;  /* tom claro da primária */
-  --brand-secondary: #191726;      /* cor secundária */
-  --brand-dark: #191726;           /* tom escuro / texto */
-  --brand-muted: #F2F2F2;          /* tom suave / hovers */
-  --brand-subtle: #B4BEBF;         /* tom sutil / bordas */
+  --brand-primary: #027368; /* cor principal */
+  --brand-primary-light: #f2f2f2; /* tom claro da primária */
+  --brand-secondary: #191726; /* cor secundária */
+  --brand-dark: #191726; /* tom escuro / texto */
+  --brand-muted: #f2f2f2; /* tom suave / hovers */
+  --brand-subtle: #b4bebf; /* tom sutil / bordas */
 
   /* ── Status (whitelabel: troque aqui) ── */
   --status-success: #10b981;

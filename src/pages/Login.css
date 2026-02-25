@@ -9,7 +9,12 @@
   padding: 2rem 1rem;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, var(--brand-secondary) 0%, #1f2a3a 50%, var(--brand-secondary) 100%);
+  background: linear-gradient(
+    145deg,
+    var(--brand-secondary) 0%,
+    #1f2a3a 50%,
+    var(--brand-secondary) 100%
+  );
 }
 
 .login-page__pattern {
