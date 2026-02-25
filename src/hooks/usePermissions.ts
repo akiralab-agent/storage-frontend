@@ -38,7 +38,9 @@ function buildPermissionSet(roles: Role[] | undefined): Set<Permission> {
     return set;
   }
   roles.forEach((role) => {
-    ROLE_PERMISSIONS[role]?.forEach((perm) => set.add(perm));
+    ROLE_PERMISSIONS[role]?.forEach((perm) => {
+      set.add(perm);
+    });
   });
   return set;
 }
