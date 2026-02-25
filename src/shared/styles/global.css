@@ -10,18 +10,31 @@
   --ink-soft: #475569;
   --ink-faint: #64748b;
 
-  --brand-50: #eff6ff;
-  --brand-100: #dbeafe;
-  --brand-300: #93c5fd;
-  --brand-500: #3b82f6;
-  --brand-600: #2563eb;
-  --brand-700: #1d4ed8;
 
-  --emerald: #10b981;
-  --amber: #f59e0b;
-  --violet: #8b5cf6;
-  --rose: #f43f5e;
+  /* ── Cores da marca (whitelabel: troque aqui) ── */
+  --brand-primary: #027368;        /* cor principal */
+  --brand-primary-light: #F2F2F2;  /* tom claro da primária */
+  --brand-secondary: #191726;      /* cor secundária */
+  --brand-dark: #191726;           /* tom escuro / texto */
+  --brand-muted: #F2F2F2;          /* tom suave / hovers */
+  --brand-subtle: #B4BEBF;         /* tom sutil / bordas */
 
+  /* ── Status (whitelabel: troque aqui) ── */
+  --status-success: #10b981;
+  --status-success-light: #ecfdf3;
+  --status-success-dark: #047857;
+  --status-warning: #f59e0b;
+  --status-warning-light: #fef3c7;
+  --status-error: #f43f5e;
+  --status-error-light: #fff5f7;
+  --status-error-dark: #be123c;
+  --status-info: #8b5cf6;
+  --status-info-light: #ede9fe;
+
+  /* ── UI (whitelabel: troque aqui) ── */
+  --overlay: rgba(15, 23, 42, 0.45);
+  --hover-row: #f8fbff;
+  --focus-ring: rgba(59, 130, 246, 0.2);
   --border: #e2e8f0;
   --radius-sm: 10px;
   --radius-md: 16px;

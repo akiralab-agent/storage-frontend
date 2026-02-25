@@ -1,13 +1,17 @@
+/* ═══════════════════════════════════════════
+   Dashboard — Redesign CRM/Analytics
+   ═══════════════════════════════════════════ */
+
 .dash-page {
   padding: 2rem 1.5rem 3rem;
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
-/* ── Welcome ─────────────────────────────────────────── */
+/* ── Welcome ── */
 
 .dash-welcome {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .dash-welcome__title {
@@ -22,7 +26,7 @@
   font-size: 0.95rem;
 }
 
-/* ── Loading ─────────────────────────────────────────── */
+/* ── Loading ── */
 
 .dash-loading {
   text-align: center;
@@ -31,268 +35,541 @@
   font-weight: 600;
 }
 
-/* ── KPI Cards ───────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   Grid Layout
+   ══════════════════════════════════════════ */
 
-.dash-kpis {
+.dash-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  margin-bottom: 2rem;
 }
 
-.dash-kpi {
+/* Card placement */
+.dash-card--units       { grid-column: 1; grid-row: 1; }
+.dash-card--occupancy   { grid-column: 2; grid-row: 1; }
+.dash-card--donut       { grid-column: 3; grid-row: 1 / span 2; }
+.dash-card--revenue-highlight { grid-column: 4; grid-row: 1 / span 2; }
+.dash-card--tasks       { grid-column: 1; grid-row: 2; }
+.dash-card--contracts   { grid-column: 2; grid-row: 2; }
+.dash-card--revenue-monthly { grid-column: 1 / span 2; grid-row: 3; }
+.dash-card--retention   { grid-column: 3; grid-row: 3; }
+.dash-card--heatmap     { grid-column: 4; grid-row: 3; }
+
+/* ══════════════════════════════════════════
+   Card Base
+   ══════════════════════════════════════════ */
+
+.dash-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 1.25rem;
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  flex-direction: column;
   box-shadow: var(--shadow-sm);
   transition: transform 180ms ease, box-shadow 180ms ease;
+  overflow: hidden;
 }
 
-.dash-kpi:hover {
+.dash-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
-.dash-kpi__icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
+.dash-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.dash-card__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dash-card__big-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+
+.dash-card__compare {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  margin-top: auto;
+}
+
+.dash-card__compare strong {
+  color: var(--ink-soft);
+}
+
+/* ── Badges ── */
+
+.dash-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+.dash-badge--up {
+  background: var(--status-success-light);
+  color: var(--status-success-dark);
+}
+
+.dash-badge--down {
+  background: var(--status-error-light);
+  color: var(--status-error-dark);
+}
+
+/* ══════════════════════════════════════════
+   Mini Bar Chart (Card 1)
+   ══════════════════════════════════════════ */
+
+.dash-mini-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 40px;
+  margin: 0.5rem 0;
   flex-shrink: 0;
 }
 
-.dash-kpi__icon--blue {
-  background: var(--brand-50);
-  color: var(--brand-600);
+.dash-mini-bars__bar {
+  flex: 1;
+  background: var(--brand-primary);
+  border-radius: 2px;
+  opacity: 0.7;
+  min-height: 4px;
+  transition: opacity 180ms ease;
 }
 
-.dash-kpi__icon--emerald {
-  background: #ecfdf5;
-  color: #059669;
+.dash-mini-bars__bar:last-child {
+  opacity: 1;
 }
 
-.dash-kpi__icon--violet {
-  background: #ede9fe;
-  color: #7c3aed;
+/* ══════════════════════════════════════════
+   Sparkline (Card 2)
+   ══════════════════════════════════════════ */
+
+.dash-sparkline {
+  width: 100%;
+  height: 36px;
+  margin: 0.5rem 0;
+  flex-shrink: 0;
 }
 
-.dash-kpi__icon--amber {
-  background: #fef3c7;
-  color: #d97706;
+/* ══════════════════════════════════════════
+   Donut Ring (Card 3)
+   ══════════════════════════════════════════ */
+
+.dash-donut-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
 }
 
-.dash-kpi__content {
+.dash-donut-svg {
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+}
+
+.dash-donut-center-value {
+  font-size: 18px;
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+.dash-donut-center-label {
+  font-size: 10px;
+  fill: var(--ink-faint);
+  font-weight: 600;
+}
+
+.dash-donut-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dash-donut-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.dash-donut-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dash-donut-legend__val {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ══════════════════════════════════════════
+   Revenue Highlight (Card 4)
+   ══════════════════════════════════════════ */
+
+.dash-card--revenue-highlight {
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  border-color: transparent;
+  color: #fff;
+}
+
+.dash-card--revenue-highlight:hover {
+  box-shadow: 0 18px 42px rgba(2, 115, 104, 0.25);
+}
+
+.dash-card--revenue-highlight .dash-card__big-value {
+  color: #fff;
+}
+
+.dash-revenue-hl__contracts {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.75rem;
+}
+
+.dash-revenue-hl__breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.dash-revenue-hl__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.dash-revenue-hl__item strong {
+  margin-left: auto;
+  color: #fff;
+}
+
+.dash-revenue-hl__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dash-revenue-hl__dot--ok {
+  background: var(--status-success);
+}
+
+.dash-revenue-hl__dot--pending {
+  background: var(--status-warning);
+}
+
+.dash-revenue-hl__status-section {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.dash-revenue-hl__status-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Payment status bar */
+
+.dash-payment-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.dash-payment-bar__seg {
+  height: 100%;
+  transition: width 400ms ease;
+}
+
+.dash-payment-bar__seg--ok     { background: var(--status-success); }
+.dash-payment-bar__seg--late   { background: var(--status-warning); }
+.dash-payment-bar__seg--cancel { background: var(--status-error); }
+
+.dash-payment-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.dash-payment-legend span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dash-payment-legend__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dash-payment-legend__dot--ok     { background: var(--status-success); }
+.dash-payment-legend__dot--late   { background: var(--status-warning); }
+.dash-payment-legend__dot--cancel { background: var(--status-error); }
+
+/* ══════════════════════════════════════════
+   Task Ring (Card 5)
+   ══════════════════════════════════════════ */
+
+.dash-task-ring-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.dash-task-ring-svg {
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.dash-task-ring-value {
+  font-size: 22px;
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+.dash-task-ring-label {
+  font-size: 10px;
+  fill: var(--ink-faint);
+  font-weight: 600;
+}
+
+.dash-task-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dash-task-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.dash-task-legend li strong {
+  margin-left: 0.25rem;
+  color: var(--ink);
+}
+
+.dash-task-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   Contracts (Card 6)
+   ══════════════════════════════════════════ */
+
+.dash-contracts-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.dash-contracts-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.dash-contracts-row strong {
+  color: var(--ink);
+}
+
+/* ══════════════════════════════════════════
+   Bar Charts (Cards 7, 8)
+   ══════════════════════════════════════════ */
+
+.dash-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 110px;
+  margin-top: 0.75rem;
+  flex-shrink: 0;
+}
+
+.dash-bar-chart--small {
+  height: 80px;
+}
+
+.dash-bar-chart__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.dash-bar-chart__bar {
+  width: 100%;
+  background: var(--brand-primary);
+  border-radius: 3px 3px 0 0;
+  opacity: 0.35;
+  transition: opacity 180ms ease;
+  min-height: 4px;
+}
+
+.dash-bar-chart__bar--active {
+  opacity: 1;
+}
+
+.dash-bar-chart__col:hover .dash-bar-chart__bar {
+  opacity: 0.75;
+}
+
+.dash-bar-chart__col:hover .dash-bar-chart__bar--active {
+  opacity: 1;
+}
+
+.dash-bar-chart__label {
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  margin-top: 0.3rem;
+  font-weight: 600;
+}
+
+.dash-revenue-monthly__values {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
 }
 
-.dash-kpi__value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1.1;
-}
+/* ══════════════════════════════════════════
+   Heatmap (Card 9)
+   ══════════════════════════════════════════ */
 
-.dash-kpi__label {
-  font-size: 0.82rem;
-  color: var(--ink-faint);
-  font-weight: 600;
-}
-
-/* ── Sections ────────────────────────────────────────── */
-
-.dash-section {
-  margin-bottom: 2rem;
-}
-
-.dash-section__title {
-  font-size: 1.1rem;
-  color: var(--ink);
-  margin-bottom: 1rem;
-}
-
-/* ── Status Cards ────────────────────────────────────── */
-
-.dash-statuses {
+.dash-heatmap {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  grid-template-columns: auto repeat(7, 1fr);
+  gap: 3px;
+  margin-top: 0.5rem;
 }
 
-.dash-stat {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  border-top: 3px solid transparent;
+.dash-heatmap__corner {
+  /* empty top-left corner */
 }
 
-.dash-stat--free {
-  border-top-color: var(--emerald);
-}
-
-.dash-stat--occupied {
-  border-top-color: var(--brand-500);
-}
-
-.dash-stat--reserved {
-  border-top-color: var(--amber);
-}
-
-.dash-stat--blocked {
-  border-top-color: var(--rose);
-}
-
-.dash-stat--inspection {
-  border-top-color: var(--violet);
-}
-
-.dash-stat__value {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.dash-stat__label {
-  font-size: 0.76rem;
-  color: var(--ink-faint);
+.dash-heatmap__day-label,
+.dash-heatmap__hour-label {
+  font-size: 0.62rem;
   font-weight: 600;
-}
-
-/* ── Occupancy Bar ───────────────────────────────────── */
-
-.dash-occupancy {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-}
-
-.dash-occupancy__header {
+  color: var(--ink-faint);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.6rem;
-  font-size: 0.88rem;
-  color: var(--ink-soft);
+  justify-content: center;
+}
+
+.dash-heatmap__hour-label {
+  padding-right: 4px;
+  justify-content: flex-end;
+}
+
+.dash-heatmap__cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  min-height: 18px;
+  transition: transform 120ms ease;
+  cursor: default;
+}
+
+.dash-heatmap__cell:hover {
+  transform: scale(1.15);
+}
+
+.dash-heatmap__scale {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--ink-faint);
   font-weight: 600;
 }
 
-.dash-occupancy__pct {
-  color: var(--brand-600);
-  font-weight: 700;
+.dash-heatmap__scale-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(2, 115, 104, 0.15), var(--brand-primary));
 }
 
-.dash-occupancy__track {
-  height: 10px;
-  background: var(--surface-muted);
-  border-radius: 999px;
-  overflow: hidden;
-}
+/* ══════════════════════════════════════════
+   Responsive
+   ══════════════════════════════════════════ */
 
-.dash-occupancy__fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--brand-500), var(--brand-600));
-  border-radius: 999px;
-  transition: width 600ms ease;
-  min-width: 0;
-}
-
-/* ── Quick Links ─────────────────────────────────────── */
-
-.dash-quick-links {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.dash-quick-link {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  position: relative;
-  overflow: hidden;
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-}
-
-.dash-quick-link:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.dash-quick-link--blue:hover {
-  border-color: var(--brand-300);
-}
-
-.dash-quick-link--emerald:hover {
-  border-color: #6ee7b7;
-}
-
-.dash-quick-link--violet:hover {
-  border-color: #c4b5fd;
-}
-
-.dash-quick-link--amber:hover {
-  border-color: #fcd34d;
-}
-
-.dash-quick-link__label {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.dash-quick-link__desc {
-  font-size: 0.82rem;
-  color: var(--ink-faint);
-}
-
-.dash-quick-link__arrow {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  color: var(--ink-faint);
-  transition: transform 180ms ease, color 180ms ease;
-}
-
-.dash-quick-link:hover .dash-quick-link__arrow {
-  transform: translateX(3px);
-  color: var(--brand-600);
-}
-
-/* ── Responsive ──────────────────────────────────────── */
-
-@media (max-width: 768px) {
-  .dash-kpis {
-    grid-template-columns: 1fr 1fr;
+@media (max-width: 1024px) {
+  .dash-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .dash-statuses {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .dash-quick-links {
-    grid-template-columns: 1fr;
-  }
+  .dash-card--units       { grid-column: 1; grid-row: auto; }
+  .dash-card--occupancy   { grid-column: 2; grid-row: auto; }
+  .dash-card--donut       { grid-column: 1; grid-row: auto; }
+  .dash-card--revenue-highlight { grid-column: 2; grid-row: auto; }
+  .dash-card--tasks       { grid-column: 1; grid-row: auto; }
+  .dash-card--contracts   { grid-column: 2; grid-row: auto; }
+  .dash-card--revenue-monthly { grid-column: 1 / span 2; grid-row: auto; }
+  .dash-card--retention   { grid-column: 1; grid-row: auto; }
+  .dash-card--heatmap     { grid-column: 2; grid-row: auto; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .dash-page {
     padding: 1.25rem 1rem 2rem;
   }
@@ -301,17 +578,29 @@
     font-size: 1.35rem;
   }
 
-  .dash-kpis {
+  .dash-grid {
     grid-template-columns: 1fr;
   }
 
-  .dash-statuses {
-    grid-template-columns: repeat(2, 1fr);
+  .dash-card--units,
+  .dash-card--occupancy,
+  .dash-card--donut,
+  .dash-card--revenue-highlight,
+  .dash-card--tasks,
+  .dash-card--contracts,
+  .dash-card--revenue-monthly,
+  .dash-card--retention,
+  .dash-card--heatmap {
+    grid-column: 1;
+    grid-row: auto;
   }
-}
 
-@media (min-width: 1024px) {
-  .dash-kpis {
-    grid-template-columns: repeat(4, 1fr);
+  .dash-task-ring-wrap {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .dash-card__big-value {
+    font-size: 1.5rem;
   }
 }

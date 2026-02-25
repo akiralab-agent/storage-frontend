@@ -92,12 +92,12 @@
 }
 
 .fsel__option--active {
-  background: var(--brand-50);
-  color: var(--brand-700);
+  background: var(--brand-primary-light);
+  color: var(--brand-dark);
 }
 
 .fsel__option--active:hover {
-  background: var(--brand-100);
+  background: var(--brand-muted);
 }
 
 .fsel__empty {

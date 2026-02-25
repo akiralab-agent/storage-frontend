@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════
+   Login Page — usa variáveis de global.css
+   ═══════════════════════════════════════════ */
+
 .login-page {
   min-height: 100vh;
   display: grid;
@@ -5,16 +9,16 @@
   padding: 2rem 1rem;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 48%, #0f172a 100%);
+  background: linear-gradient(145deg, var(--brand-secondary) 0%, #1f2a3a 50%, var(--brand-secondary) 100%);
 }
 
 .login-page__pattern {
   position: absolute;
   inset: 0;
-  opacity: 0.12;
+  opacity: 0.1;
   background-image: radial-gradient(
     circle at 1px 1px,
-    rgba(255, 255, 255, 0.14) 1px,
+    rgba(255, 255, 255, 0.12) 1px,
     transparent 0
   );
   background-size: 38px 38px;
@@ -27,8 +31,8 @@
   background: var(--surface);
   border-radius: var(--radius-lg);
   padding: 2.5rem 2rem;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(59, 130, 246, 0.08);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
   display: grid;
   gap: 2rem;
 }
@@ -53,7 +57,7 @@
   display: grid;
   place-items: center;
   border-radius: 12px;
-  background: var(--brand-600);
+  background: var(--brand-primary);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.82rem;
@@ -75,6 +79,8 @@
   color: var(--ink-soft);
   font-size: 0.95rem;
 }
+
+/* ── Form ── */
 
 .login-form {
   display: grid;
@@ -111,12 +117,12 @@
 
 .login-field__input:focus {
   outline: none;
-  border-color: var(--brand-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(2, 115, 104, 0.15);
 }
 
 .login-field__input--error {
-  border-color: var(--rose);
+  border-color: var(--status-error);
 }
 
 .login-field__input--error:focus {
@@ -125,31 +131,33 @@
 
 .login-field__error {
   font-size: 0.8rem;
-  color: var(--rose);
+  color: var(--status-error);
   font-weight: 500;
 }
 
 .login-form__error {
   padding: 0.65rem 0.85rem;
   border-radius: var(--radius-sm);
-  background: rgba(244, 63, 94, 0.08);
+  background: var(--status-error-light);
   border: 1px solid rgba(244, 63, 94, 0.2);
-  color: var(--rose);
+  color: var(--status-error-dark);
   font-size: 0.88rem;
   font-weight: 500;
 }
+
+/* ── Submit button ── */
 
 .login-form__submit {
   width: 100%;
   padding: 0.78rem 1rem;
   border: none;
   border-radius: 12px;
-  background: var(--brand-600);
+  background: var(--brand-primary);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 20px rgba(2, 115, 104, 0.25);
   transition:
     background-color 160ms ease,
     transform 160ms ease,
@@ -157,9 +165,9 @@
 }
 
 .login-form__submit:hover:not(:disabled) {
-  background: var(--brand-700);
+  background: var(--brand-secondary);
   transform: translateY(-1px);
-  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.38);
+  box-shadow: 0 12px 26px rgba(25, 23, 38, 0.3);
 }
 
 .login-form__submit:active:not(:disabled) {
@@ -170,6 +178,8 @@
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+/* ── Footer ── */
 
 .login-card__footer {
   text-align: center;

@@ -21,7 +21,7 @@
 .orgs-primary {
   border: 0;
   border-radius: 999px;
-  background: var(--brand-600);
+  background: var(--brand-secondary);
   color: #ffffff;
   font-weight: 600;
   padding: 0.65rem 1.4rem;
@@ -31,7 +31,7 @@
 
 .orgs-primary:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--brand-600);
+  box-shadow: 0 0 0 2px var(--brand-secondary);
 }
 
 .orgs-primary:disabled {
@@ -68,7 +68,7 @@
 }
 
 .orgs-table tbody tr:hover {
-  background: #f8fbff;
+  background: var(--hover-row);
 }
 
 .orgs-actions {
@@ -89,7 +89,7 @@
 
 .orgs-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--brand-600);
+  box-shadow: 0 0 0 2px var(--brand-secondary);
 }
 
 .orgs-button:disabled {
@@ -98,9 +98,9 @@
 }
 
 .orgs-button--danger {
-  color: var(--rose);
+  color: var(--status-error);
   border-color: rgba(244, 63, 94, 0.4);
-  background: #fff5f7;
+  background: var(--status-error-light);
 }
 
 .orgs-empty {
@@ -121,13 +121,13 @@
 
 .orgs-alert--error {
   background: #fff1f2;
-  color: #be123c;
+  color: var(--status-error-dark);
   border: 1px solid rgba(244, 63, 94, 0.4);
 }
 
 .orgs-alert--success {
-  background: #ecfdf3;
-  color: #047857;
+  background: var(--status-success-light);
+  color: var(--status-success-dark);
   border: 1px solid rgba(16, 185, 129, 0.35);
 }
 
@@ -143,7 +143,7 @@
 .orgs-modal__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--overlay);
 }
 
 .orgs-modal__panel {
@@ -185,16 +185,16 @@
 
 .orgs-input:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--brand-600);
+  box-shadow: 0 0 0 2px var(--brand-secondary);
 }
 
 .orgs-input--error {
   border-color: rgba(244, 63, 94, 0.65);
-  background: #fff5f7;
+  background: var(--status-error-light);
 }
 
 .orgs-error {
-  color: #be123c;
+  color: var(--status-error-dark);
   font-weight: 600;
   font-size: 0.9rem;
 }

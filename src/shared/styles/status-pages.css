@@ -3,7 +3,7 @@
   display: grid;
   place-items: center;
   padding: 3rem 1.5rem;
-  background: radial-gradient(circle at top, #f8fbff, #edf2fb 48%, #e2e8f4 100%);
+  background: radial-gradient(circle at top, var(--hover-row), #edf2fb 48%, #e2e8f4 100%);
 }
 
 .card {
@@ -31,6 +31,6 @@
 }
 
 .pill-button:hover {
-  background: var(--brand-100);
-  color: var(--brand-700);
+  background: var(--brand-muted);
+  color: var(--brand-dark);
 }

@@ -64,11 +64,33 @@ export default function AuthenticatedLayout() {
     (item) => !item.roles || (user && item.roles.some((r) => user.roles.includes(r)))
   );
 
+  const toggleCollapse = () => setSidebarCollapsed((prev) => !prev);
+
   return (
     <div className={`app-shell ${sidebarCollapsed ? "app-shell--collapsed" : ""}`}>
       <aside className={`sidebar ${sidebarOpen ? "sidebar--open" : ""}`}>
+        {/* ── Rail (icon strip) ── */}
         <div className="sidebar__rail">
-          <div className="sidebar__logo">AL</div>
+          <div className="sidebar__logo">
+            <span>AL</span>
+          </div>
+
+          {/* Expand button — visible only on desktop when collapsed */}
+          <button
+            type="button"
+            className="sidebar__rail-toggle"
+            onClick={toggleCollapse}
+            title={sidebarCollapsed ? "Expandir menu" : "Recolher menu"}
+            aria-label={sidebarCollapsed ? "Expandir menu" : "Recolher menu"}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {sidebarCollapsed ? (
+                <><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></>
+              ) : (
+                <polyline points="15 18 9 12 15 6" />
+              )}
+            </svg>
+          </button>
 
           <nav className="sidebar__rail-nav">
             {visibleItems.map((item) => (
@@ -79,9 +101,9 @@ export default function AuthenticatedLayout() {
                   `sidebar__rail-link ${isActive ? "sidebar__rail-link--active" : ""}`
                 }
                 onClick={() => setSidebarOpen(false)}
-                title={item.label}
               >
                 {ICONS[item.icon]}
+                <span className="sidebar__rail-tooltip">{item.label}</span>
               </NavLink>
             ))}
           </nav>
@@ -90,9 +112,11 @@ export default function AuthenticatedLayout() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
             </svg>
+            <span className="sidebar__rail-tooltip">Sair</span>
           </button>
         </div>
 
+        {/* ── Panel (full nav) ── */}
         <div className="sidebar__panel">
           <div className="sidebar__brand">
             <div>
@@ -104,16 +128,12 @@ export default function AuthenticatedLayout() {
               <button
                 type="button"
                 className="sidebar__panel-action sidebar__panel-action--collapse"
-                onClick={() => setSidebarCollapsed((prev) => !prev)}
-                aria-label={sidebarCollapsed ? "Expandir menu" : "Recolher menu"}
-                title={sidebarCollapsed ? "Expandir menu" : "Recolher menu"}
+                onClick={toggleCollapse}
+                aria-label="Recolher menu"
+                title="Recolher menu"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  {sidebarCollapsed ? (
-                    <polyline points="9 18 15 12 9 6" />
-                  ) : (
-                    <polyline points="15 18 9 12 15 6" />
-                  )}
+                  <polyline points="15 18 9 12 15 6" />
                 </svg>
               </button>
               <button
