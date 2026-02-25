@@ -1,3 +1,5 @@
+import "@/shared/styles/status-pages.css";
+
 export default function NotFoundPage() {
   return (
     <main className="page">

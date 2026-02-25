@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./MarketingLanding.css";
 
 type NavLink = {
   label: string;

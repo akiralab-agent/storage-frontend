@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import FacilitySelector from "@/components/FacilitySelector";
 import { useAuth } from "@/shared/auth";
+import "./AuthenticatedLayout.css";
 
 export default function AuthenticatedLayout() {
   const { user, logout } = useAuth();

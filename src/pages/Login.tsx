@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/auth";
 import axios from "axios";
+import "./Login.css";
 
 type LoginFormValues = {
   username: string;

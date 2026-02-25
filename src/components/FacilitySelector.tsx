@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { apiClient } from "@/api/client";
 import { useFacility } from "@/shared/facility/useFacility";
+import "./FacilitySelector.css";
 
 export default function FacilitySelector() {
   const { facilities, selectedFacilityId, setSelectedFacilityId } = useFacility();
