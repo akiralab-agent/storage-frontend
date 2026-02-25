@@ -106,7 +106,7 @@ export default function InvoiceListPage() {
 
   const canView =
     hasPermission("billing.view_invoice") || hasPermission("billing.view_invoices");
-  const canRecordPayment = hasPermission("billing.record_payment") || canView;
+  const canRecordPayment = hasPermission("billing.record_payment");
   const canVoid = hasPermission("billing.void_invoice");
 
   const totalPages = useMemo(() => {
