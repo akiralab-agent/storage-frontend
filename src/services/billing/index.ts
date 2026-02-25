@@ -45,9 +45,11 @@ function normalizeList(payload: unknown): { results: InvoiceRecord[]; count: num
   return { results: [], count: 0 };
 }
 
+const encodePathSegment = (id: string | number) => encodeURIComponent(String(id));
+
 export const invoiceAPI = {
   list: async (facilityId: string, params: InvoiceListParams = {}): Promise<InvoiceListResponse> => {
-    const response = await apiClient.get(`/api/facilities/${facilityId}/invoices/`, {
+    const response = await apiClient.get(`/api/facilities/${encodePathSegment(facilityId)}/invoices/`, {
       params
     });
     const data = response.data as {
@@ -73,14 +75,16 @@ export const invoiceAPI = {
 
   recordPayment: async (facilityId: string, invoiceId: string | number, payload: Record<string, unknown>) => {
     const response = await apiClient.post(
-      `/api/facilities/${facilityId}/invoices/${invoiceId}/payments/`,
+      `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(invoiceId)}/payments/`,
       payload
     );
     return response.data;
   },
 
   voidInvoice: async (facilityId: string, invoiceId: string | number) => {
-    const response = await apiClient.post(`/api/facilities/${facilityId}/invoices/${invoiceId}/void/`);
+    const response = await apiClient.post(
+      `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(invoiceId)}/void/`
+    );
     return response.data;
   }
 };
