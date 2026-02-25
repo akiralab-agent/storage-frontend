@@ -138,20 +138,25 @@ export default function DashboardPage() {
   void orgCount;
 
   return (
-    <main className="dash-page">
-      <div className="dash-welcome">
-        <div>
-          <h1 className="dash-welcome__title">
-            {greeting}{user ? `, ${user.name.split(" ")[0]}` : ""}
-          </h1>
-          <p className="dash-welcome__sub">
-            Aqui está o resumo do seu sistema de armazenamento.
-          </p>
+    <main className={`dash-page ${loading ? "dash-page--loading" : ""}`}>
+      {!loading && (
+        <div className="dash-welcome">
+          <div>
+            <h1 className="dash-welcome__title">
+              {greeting}{user ? `, ${user.name.split(" ")[0]}` : ""}
+            </h1>
+            <p className="dash-welcome__sub">
+              Aqui está o resumo do seu sistema de armazenamento.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {loading ? (
-        <div className="dash-loading">Carregando dados...</div>
+        <div className="dash-loading" role="status" aria-live="polite">
+          <img className="dash-loading__gif" src="/box.gif" alt="Loading" />
+          <span className="dash-loading__text">loading...</span>
+        </div>
       ) : (
         <div className="dash-grid">
           {/* ═══ Card 1: Total Unidades ═══ */}
