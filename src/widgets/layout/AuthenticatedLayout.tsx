@@ -3,6 +3,7 @@ import FacilitySelector from "@/components/FacilitySelector";
 import { useAuth } from "@/shared/auth";
 import type { Role } from "@/shared/auth";
 import { useState } from "react";
+import "./AuthenticatedLayout.css";
 
 type NavItem = {
   to: string;
