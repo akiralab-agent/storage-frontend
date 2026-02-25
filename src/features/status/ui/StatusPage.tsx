@@ -1,6 +1,7 @@
 import { env } from "@/shared/config/env";
 import { useStatusQuery } from "@/features/status/hooks";
 import { useStatusViewStore } from "@/features/status/store/statusViewStore";
+import "@/shared/styles/status-pages.css";
 
 export default function StatusPage() {
   const { data, isLoading, isError, error } = useStatusQuery();

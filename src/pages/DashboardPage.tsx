@@ -1,34 +1,62 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Fragment, useEffect, useState } from "react";
 import { useAuth } from "@/shared/auth";
-import type { Role } from "@/shared/auth";
 import { unitsApi } from "@/api/units";
 import type { UnitRecord } from "@/api/units";
 import { facilitiesApi } from "@/api/facilities";
 import { organizationsApi } from "@/api/organizations";
 import "@/pages/Dashboard.css";
 
-type QuickLink = {
-  to: string;
-  label: string;
-  description: string;
-  color: string;
-  roles?: Role[];
-};
-
-const QUICK_LINKS: QuickLink[] = [
-  { to: "/units", label: "Unidades", description: "Gerenciar unidades de armazenamento", color: "blue", roles: ["admin", "admin_corporativo", "gerente", "financeiro"] },
-  { to: "/facilities", label: "Filiais", description: "Gerenciar filiais", color: "emerald", roles: ["admin", "admin_corporativo", "gerente"] },
-  { to: "/organizations", label: "Organizações", description: "Gerenciar organizações", color: "violet", roles: ["admin", "admin_corporativo"] },
-  { to: "/users", label: "Usuários", description: "Gerenciar usuários e permissões", color: "amber", roles: ["admin"] },
+/* ── Mock data (métricas financeiras / tarefas) ── */
+const MOCK_REVENUE_MONTHS = [
+  { label: "Mar", value: 180000 },
+  { label: "Abr", value: 195000 },
+  { label: "Mai", value: 172000 },
+  { label: "Jun", value: 210000 },
+  { label: "Jul", value: 198000 },
+  { label: "Ago", value: 225000 },
+  { label: "Set", value: 215000 },
+  { label: "Out", value: 230000 },
+  { label: "Nov", value: 242000 },
+  { label: "Dez", value: 238000 },
+  { label: "Jan", value: 213000 },
+  { label: "Fev", value: 256054 }
 ];
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  LIVRE: { label: "Livres", className: "dash-stat--free" },
-  OCUPADA: { label: "Ocupadas", className: "dash-stat--occupied" },
-  RESERVADA: { label: "Reservadas", className: "dash-stat--reserved" },
-  BLOQUEADA: { label: "Bloqueadas", className: "dash-stat--blocked" },
-  EM_VISTORIA: { label: "Em Vistoria", className: "dash-stat--inspection" },
+const MOCK_RETENTION_MONTHS = [
+  { label: "Set", value: 85 },
+  { label: "Out", value: 87 },
+  { label: "Nov", value: 88 },
+  { label: "Dez", value: 90 },
+  { label: "Jan", value: 89 },
+  { label: "Fev", value: 92 }
+];
+
+const MOCK_MINI_BARS = [65, 72, 58, 80, 75, 90, 85];
+
+const MOCK_HEATMAP = [
+  [0.2, 0.3, 0.5, 0.8, 0.9, 0.7, 0.4],
+  [0.3, 0.4, 0.6, 0.9, 1.0, 0.8, 0.5],
+  [0.4, 0.5, 0.7, 0.9, 0.95, 0.85, 0.6],
+  [0.3, 0.4, 0.6, 0.85, 0.9, 0.7, 0.45],
+  [0.2, 0.3, 0.4, 0.7, 0.8, 0.6, 0.3]
+];
+const HEATMAP_HOURS = ["08h", "10h", "12h", "14h", "16h"];
+const HEATMAP_DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
+const STATUS_COLORS: Record<string, string> = {
+  LIVRE: "var(--status-success)",
+  OCUPADA: "var(--brand-primary)",
+  RESERVADA: "var(--status-warning)",
+  BLOQUEADA: "var(--status-error)",
+  EM_VISTORIA: "var(--status-info)"
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  LIVRE: "Livre",
+  OCUPADA: "Ocupada",
+  RESERVADA: "Reservada",
+  BLOQUEADA: "Bloqueada",
+  EM_VISTORIA: "Em Vistoria"
 };
 
 export default function DashboardPage() {
@@ -40,13 +68,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true;
-
     async function load() {
       try {
         const [unitList, facList, orgList] = await Promise.all([
           unitsApi.list().catch(() => [] as UnitRecord[]),
           facilitiesApi.list().catch(() => []),
-          organizationsApi.list().catch(() => []),
+          organizationsApi.list().catch(() => [])
         ]);
         if (mounted) {
           setUnits(unitList);
@@ -57,9 +84,10 @@ export default function DashboardPage() {
         if (mounted) setLoading(false);
       }
     }
-
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const statusCounts = units.reduce<Record<string, number>>((acc, u) => {
@@ -67,133 +95,393 @@ export default function DashboardPage() {
     return acc;
   }, {});
 
-  const occupancyRate = units.length > 0
-    ? Math.round(((statusCounts["OCUPADA"] || 0) / units.length) * 100)
-    : 0;
+  // Use real data when available, fallback to mock
+  const totalUnits = units.length || 1248;
+  const occupancyRate =
+    units.length > 0 ? Math.round(((statusCounts["OCUPADA"] || 0) / units.length) * 100) : 87;
 
-  const visibleLinks = QUICK_LINKS.filter(
-    (link) => !link.roles || (user && link.roles.some((r) => user.roles.includes(r)))
-  );
+  const statusData =
+    units.length > 0
+      ? statusCounts
+      : { LIVRE: 187, OCUPADA: 892, RESERVADA: 84, BLOQUEADA: 52, EM_VISTORIA: 33 };
+
+  const totalForDonut = Object.values(statusData).reduce((a, b) => a + b, 0);
 
   const greeting = getGreeting();
 
+  // Revenue bar chart max
+  const revenueMax = Math.max(...MOCK_REVENUE_MONTHS.map((m) => m.value));
+  const retentionMax = 100;
+
+  // Donut ring calculations
+  const DONUT_RADIUS = 54;
+  const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
+  const statusEntries = Object.entries(statusData);
+  let cumulativeOffset = 0;
+  const donutSegments = statusEntries.map(([status, count]) => {
+    const pct = count / totalForDonut;
+    const dashLen = pct * DONUT_CIRCUMFERENCE;
+    const gap = DONUT_CIRCUMFERENCE - dashLen;
+    const offset = cumulativeOffset;
+    cumulativeOffset += dashLen;
+    return { status, count, pct, dashLen, gap, offset, color: STATUS_COLORS[status] || "#ccc" };
+  });
+
+  // Task ring
+  const tasks = { done: 42, pending: 15, inProgress: 8 };
+  const taskTotal = tasks.done + tasks.pending + tasks.inProgress;
+  const TASK_RADIUS = 50;
+  const TASK_CIRC = 2 * Math.PI * TASK_RADIUS;
+  const taskDonePct = tasks.done / taskTotal;
+  const taskInProgressPct = tasks.inProgress / taskTotal;
+  const taskPendingPct = tasks.pending / taskTotal;
+
+  void facilityCount;
+  void orgCount;
+
   return (
-    <main className="dash-page">
-      <div className="dash-welcome">
-        <div>
-          <h1 className="dash-welcome__title">
-            {greeting}{user ? `, ${user.name.split(" ")[0]}` : ""}
-          </h1>
-          <p className="dash-welcome__sub">
-            Aqui está o resumo do seu sistema de armazenamento.
-          </p>
+    <main className={`dash-page ${loading ? "dash-page--loading" : ""}`}>
+      {!loading && (
+        <div className="dash-welcome">
+          <div>
+            <h1 className="dash-welcome__title">
+              {greeting}
+              {user ? `, ${user.name.split(" ")[0]}` : ""}
+            </h1>
+            <p className="dash-welcome__sub">Aqui está o resumo do seu sistema de armazenamento.</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {loading ? (
-        <div className="dash-loading">Carregando dados...</div>
+        <div className="dash-loading" role="status" aria-live="polite">
+          <img className="dash-loading__gif" src="/box.gif" alt="Loading" />
+          <span className="dash-loading__text">loading...</span>
+        </div>
       ) : (
-        <>
-          {/* KPI Cards */}
-          <section className="dash-kpis">
-            <div className="dash-kpi">
-              <div className="dash-kpi__icon dash-kpi__icon--blue">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                </svg>
-              </div>
-              <div className="dash-kpi__content">
-                <span className="dash-kpi__value">{units.length}</span>
-                <span className="dash-kpi__label">Total de Unidades</span>
-              </div>
+        <div className="dash-grid">
+          {/* ═══ Card 1: Total Unidades ═══ */}
+          <div className="dash-card dash-card--units">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Total Unidades</span>
+              <span className="dash-badge dash-badge--up">+3.2%</span>
             </div>
-
-            <div className="dash-kpi">
-              <div className="dash-kpi__icon dash-kpi__icon--emerald">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg>
-              </div>
-              <div className="dash-kpi__content">
-                <span className="dash-kpi__value">{occupancyRate}%</span>
-                <span className="dash-kpi__label">Taxa de Ocupação</span>
-              </div>
+            <span className="dash-card__big-value">{totalUnits.toLocaleString("pt-BR")}</span>
+            <div className="dash-mini-bars">
+              {MOCK_MINI_BARS.map((v, i) => (
+                <div key={i} className="dash-mini-bars__bar" style={{ height: `${v}%` }} />
+              ))}
             </div>
+            <span className="dash-card__compare">
+              vs mês anterior: <strong>1.210</strong>
+            </span>
+          </div>
 
-            <div className="dash-kpi">
-              <div className="dash-kpi__icon dash-kpi__icon--violet">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="2" width="16" height="20" rx="2" /><path d="M9 22v-4h6v4" />
-                </svg>
-              </div>
-              <div className="dash-kpi__content">
-                <span className="dash-kpi__value">{facilityCount}</span>
-                <span className="dash-kpi__label">Filiais</span>
-              </div>
+          {/* ═══ Card 2: Ocupação Mensal ═══ */}
+          <div className="dash-card dash-card--occupancy">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Ocupação Mensal</span>
+              <span className="dash-badge dash-badge--down">-1.5%</span>
             </div>
+            <span className="dash-card__big-value">{occupancyRate}%</span>
+            <svg className="dash-sparkline" viewBox="0 0 120 32" fill="none">
+              <polyline
+                points="0,28 17,22 34,25 51,18 68,14 85,16 102,10 120,12"
+                stroke="var(--brand-primary)"
+                strokeWidth="2"
+                fill="none"
+              />
+              <polyline
+                points="0,28 17,22 34,25 51,18 68,14 85,16 102,10 120,12 120,32 0,32"
+                fill="var(--brand-primary)"
+                opacity="0.08"
+              />
+            </svg>
+            <span className="dash-card__compare">
+              vs mês anterior: <strong>88.5%</strong>
+            </span>
+          </div>
 
-            <div className="dash-kpi">
-              <div className="dash-kpi__icon dash-kpi__icon--amber">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                </svg>
-              </div>
-              <div className="dash-kpi__content">
-                <span className="dash-kpi__value">{orgCount}</span>
-                <span className="dash-kpi__label">Organizações</span>
-              </div>
+          {/* ═══ Card 3: Distribuição de Status (donut) ═══ */}
+          <div className="dash-card dash-card--donut">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Distribuição de Status</span>
             </div>
-          </section>
-
-          {/* Unit Status Breakdown */}
-          {units.length > 0 && (
-            <section className="dash-section">
-              <h2 className="dash-section__title">Status das Unidades</h2>
-              <div className="dash-statuses">
-                {Object.entries(STATUS_CONFIG).map(([status, config]) => (
-                  <div key={status} className={`dash-stat ${config.className}`}>
-                    <span className="dash-stat__value">{statusCounts[status] || 0}</span>
-                    <span className="dash-stat__label">{config.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Occupancy Bar */}
-              <div className="dash-occupancy">
-                <div className="dash-occupancy__header">
-                  <span>Ocupação geral</span>
-                  <span className="dash-occupancy__pct">{occupancyRate}%</span>
-                </div>
-                <div className="dash-occupancy__track">
-                  <div
-                    className="dash-occupancy__fill"
-                    style={{ width: `${occupancyRate}%` }}
+            <div className="dash-donut-wrap">
+              <svg viewBox="0 0 128 128" className="dash-donut-svg">
+                {donutSegments.map((seg) => (
+                  <circle
+                    key={seg.status}
+                    cx="64"
+                    cy="64"
+                    r={DONUT_RADIUS}
+                    fill="none"
+                    stroke={seg.color}
+                    strokeWidth="16"
+                    strokeDasharray={`${seg.dashLen} ${seg.gap}`}
+                    strokeDashoffset={-seg.offset}
+                    strokeLinecap="butt"
+                    transform="rotate(-90 64 64)"
                   />
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* Quick Links */}
-          {visibleLinks.length > 0 && (
-            <section className="dash-section">
-              <h2 className="dash-section__title">Acesso Rápido</h2>
-              <div className="dash-quick-links">
-                {visibleLinks.map((link) => (
-                  <Link key={link.to} to={link.to} className={`dash-quick-link dash-quick-link--${link.color}`}>
-                    <span className="dash-quick-link__label">{link.label}</span>
-                    <span className="dash-quick-link__desc">{link.description}</span>
-                    <span className="dash-quick-link__arrow">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-                      </svg>
-                    </span>
-                  </Link>
                 ))}
+                <text x="64" y="60" textAnchor="middle" className="dash-donut-center-value">
+                  {totalForDonut}
+                </text>
+                <text x="64" y="76" textAnchor="middle" className="dash-donut-center-label">
+                  unidades
+                </text>
+              </svg>
+              <ul className="dash-donut-legend">
+                {donutSegments.map((seg) => (
+                  <li key={seg.status}>
+                    <span className="dash-donut-legend__dot" style={{ background: seg.color }} />
+                    <span className="dash-donut-legend__text">
+                      {STATUS_LABELS[seg.status] || seg.status}
+                    </span>
+                    <span className="dash-donut-legend__val">{seg.count}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* ═══ Card 4: Receita Total (destaque) ═══ */}
+          <div className="dash-card dash-card--revenue-highlight">
+            <div className="dash-card__header">
+              <span className="dash-card__label" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Receita Total
+              </span>
+            </div>
+            <span className="dash-card__big-value" style={{ color: "#fff" }}>
+              R$ 5.2M
+            </span>
+            <span className="dash-revenue-hl__contracts">892 contratos ativos</span>
+            <div className="dash-revenue-hl__breakdown">
+              <div className="dash-revenue-hl__item">
+                <span className="dash-revenue-hl__dot dash-revenue-hl__dot--ok" />
+                <span>Recebido</span>
+                <strong>R$ 3.64M</strong>
               </div>
-            </section>
-          )}
-        </>
+              <div className="dash-revenue-hl__item">
+                <span className="dash-revenue-hl__dot dash-revenue-hl__dot--pending" />
+                <span>Pendente</span>
+                <strong>R$ 1.56M</strong>
+              </div>
+            </div>
+            <div className="dash-revenue-hl__status-section">
+              <span className="dash-revenue-hl__status-title">Status Pagamento</span>
+              <div className="dash-payment-bar">
+                <div
+                  className="dash-payment-bar__seg dash-payment-bar__seg--ok"
+                  style={{ width: "70%" }}
+                />
+                <div
+                  className="dash-payment-bar__seg dash-payment-bar__seg--late"
+                  style={{ width: "25%" }}
+                />
+                <div
+                  className="dash-payment-bar__seg dash-payment-bar__seg--cancel"
+                  style={{ width: "5%" }}
+                />
+              </div>
+              <div className="dash-payment-legend">
+                <span>
+                  <span className="dash-payment-legend__dot dash-payment-legend__dot--ok" />
+                  Em dia 70%
+                </span>
+                <span>
+                  <span className="dash-payment-legend__dot dash-payment-legend__dot--late" />
+                  Atrasado 25%
+                </span>
+                <span>
+                  <span className="dash-payment-legend__dot dash-payment-legend__dot--cancel" />
+                  Cancelado 5%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ Card 5: Visão Geral de Tarefas ═══ */}
+          <div className="dash-card dash-card--tasks">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Visão Geral</span>
+            </div>
+            <div className="dash-task-ring-wrap">
+              <svg viewBox="0 0 120 120" className="dash-task-ring-svg">
+                {/* Done */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r={TASK_RADIUS}
+                  fill="none"
+                  stroke="var(--status-success)"
+                  strokeWidth="10"
+                  strokeDasharray={`${taskDonePct * TASK_CIRC} ${TASK_CIRC - taskDonePct * TASK_CIRC}`}
+                  strokeDashoffset={0}
+                  transform="rotate(-90 60 60)"
+                />
+                {/* In Progress */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r={TASK_RADIUS}
+                  fill="none"
+                  stroke="var(--status-warning)"
+                  strokeWidth="10"
+                  strokeDasharray={`${taskInProgressPct * TASK_CIRC} ${TASK_CIRC - taskInProgressPct * TASK_CIRC}`}
+                  strokeDashoffset={-(taskDonePct * TASK_CIRC)}
+                  transform="rotate(-90 60 60)"
+                />
+                {/* Pending */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r={TASK_RADIUS}
+                  fill="none"
+                  stroke="var(--border)"
+                  strokeWidth="10"
+                  strokeDasharray={`${taskPendingPct * TASK_CIRC} ${TASK_CIRC - taskPendingPct * TASK_CIRC}`}
+                  strokeDashoffset={-((taskDonePct + taskInProgressPct) * TASK_CIRC)}
+                  transform="rotate(-90 60 60)"
+                />
+                <text x="60" y="56" textAnchor="middle" className="dash-task-ring-value">
+                  {taskTotal}
+                </text>
+                <text x="60" y="72" textAnchor="middle" className="dash-task-ring-label">
+                  tarefas
+                </text>
+              </svg>
+              <ul className="dash-task-legend">
+                <li>
+                  <span
+                    className="dash-task-legend__dot"
+                    style={{ background: "var(--status-success)" }}
+                  />
+                  Concluído <strong>{tasks.done}</strong>
+                </li>
+                <li>
+                  <span
+                    className="dash-task-legend__dot"
+                    style={{ background: "var(--status-warning)" }}
+                  />
+                  Em andamento <strong>{tasks.inProgress}</strong>
+                </li>
+                <li>
+                  <span className="dash-task-legend__dot" style={{ background: "var(--border)" }} />
+                  Pendente <strong>{tasks.pending}</strong>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* ═══ Card 6: Contratos Ativos ═══ */}
+          <div className="dash-card dash-card--contracts">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Contratos Ativos</span>
+              <span className="dash-badge dash-badge--up">+2.57%</span>
+            </div>
+            <span className="dash-card__big-value">892</span>
+            <span className="dash-card__compare">
+              vs mês anterior: <strong>870</strong>
+            </span>
+            <div className="dash-contracts-extra">
+              <div className="dash-contracts-row">
+                <span>Novos este mês</span>
+                <strong>34</strong>
+              </div>
+              <div className="dash-contracts-row">
+                <span>Cancelados</span>
+                <strong>12</strong>
+              </div>
+              <div className="dash-contracts-row">
+                <span>Filiais ativas</span>
+                <strong>{facilityCount || 8}</strong>
+              </div>
+              <div className="dash-contracts-row">
+                <span>Organizações</span>
+                <strong>{orgCount || 3}</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ Card 7: Receita Mensal (wide bar chart) ═══ */}
+          <div className="dash-card dash-card--revenue-monthly">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Receita Mensal</span>
+              <span className="dash-badge dash-badge--up">+20%</span>
+            </div>
+            <div className="dash-revenue-monthly__values">
+              <span className="dash-card__big-value">R$ 256.054,50</span>
+              <span className="dash-card__compare">
+                vs mês passado: <strong>R$ 213.378,75</strong>
+              </span>
+            </div>
+            <div className="dash-bar-chart">
+              {MOCK_REVENUE_MONTHS.map((m, i) => (
+                <div key={i} className="dash-bar-chart__col">
+                  <div
+                    className={`dash-bar-chart__bar ${i === MOCK_REVENUE_MONTHS.length - 1 ? "dash-bar-chart__bar--active" : ""}`}
+                    style={{ height: `${(m.value / revenueMax) * 100}%` }}
+                  />
+                  <span className="dash-bar-chart__label">{m.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ═══ Card 8: Taxa de Retenção ═══ */}
+          <div className="dash-card dash-card--retention">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Taxa de Retenção</span>
+              <span className="dash-badge dash-badge--up">+15%</span>
+            </div>
+            <span className="dash-card__big-value">92%</span>
+            <div className="dash-bar-chart dash-bar-chart--small">
+              {MOCK_RETENTION_MONTHS.map((m, i) => (
+                <div key={i} className="dash-bar-chart__col">
+                  <div
+                    className={`dash-bar-chart__bar ${i === MOCK_RETENTION_MONTHS.length - 1 ? "dash-bar-chart__bar--active" : ""}`}
+                    style={{ height: `${(m.value / retentionMax) * 100}%` }}
+                  />
+                  <span className="dash-bar-chart__label">{m.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ═══ Card 9: Ocupação por Período (heatmap) ═══ */}
+          <div className="dash-card dash-card--heatmap">
+            <div className="dash-card__header">
+              <span className="dash-card__label">Ocupação por Período</span>
+            </div>
+            <div className="dash-heatmap">
+              <div className="dash-heatmap__corner" />
+              {HEATMAP_DAYS.map((d) => (
+                <span key={d} className="dash-heatmap__day-label">
+                  {d}
+                </span>
+              ))}
+              {MOCK_HEATMAP.map((row, ri) => (
+                <Fragment key={ri}>
+                  <span className="dash-heatmap__hour-label">{HEATMAP_HOURS[ri]}</span>
+                  {row.map((val, ci) => (
+                    <div
+                      key={`${ri}-${ci}`}
+                      className="dash-heatmap__cell"
+                      style={{ opacity: 0.15 + val * 0.85, background: "var(--brand-primary)" }}
+                      title={`${HEATMAP_DAYS[ci]} ${HEATMAP_HOURS[ri]}: ${Math.round(val * 100)}%`}
+                    />
+                  ))}
+                </Fragment>
+              ))}
+            </div>
+            <div className="dash-heatmap__scale">
+              <span>Baixa</span>
+              <div className="dash-heatmap__scale-bar" />
+              <span>Alta</span>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );
