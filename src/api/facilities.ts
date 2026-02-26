@@ -1,17 +1,17 @@
 import { apiClient } from "@/api/client";
 
 export type FacilityRecord = {
-  id: string;
+  id: number;
   name: string;
   address: string;
-  organization: string;
+  organization: number;
   timezone: string;
 };
 
 export type FacilityPayload = {
   name: string;
   address: string;
-  organization: string;
+  organization: number;
   timezone: string;
 };
 
@@ -32,21 +32,21 @@ function normalizeList(payload: unknown): FacilityRecord[] {
 
 export const facilitiesApi = {
   list: async (): Promise<FacilityRecord[]> => {
-    const response = await apiClient.get("/api/facilities/");
+    const response = await apiClient.get("/api/v1/organizations/facilities/");
     return normalizeList(response.data);
   },
 
   create: async (data: FacilityPayload): Promise<FacilityRecord> => {
-    const response = await apiClient.post("/api/facilities/", data);
+    const response = await apiClient.post("/api/v1/organizations/facilities/", data);
     return response.data as FacilityRecord;
   },
 
-  update: async (id: string, data: FacilityPayload): Promise<FacilityRecord> => {
-    const response = await apiClient.put(`/api/facilities/${id}/`, data);
+  update: async (id: number, data: FacilityPayload): Promise<FacilityRecord> => {
+    const response = await apiClient.put(`/api/v1/organizations/facilities/${id}/`, data);
     return response.data as FacilityRecord;
   },
 
-  delete: async (id: string): Promise<void> => {
-    await apiClient.delete(`/api/facilities/${id}/`);
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/api/v1/organizations/facilities/${id}/`);
   }
 };

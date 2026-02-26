@@ -8,8 +8,14 @@ interface GuardProps {
 }
 
 export function RequireRole({ roles, children }: GuardProps & { roles: Role[] }) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const location = useLocation();
+
+  // Show nothing while loading - let the app finish initialization
+  if (isLoading) {
+    return null;
+  }
+
   const authorized = !!user && roles.some((role) => user.roles.includes(role));
 
   if (!authorized) {

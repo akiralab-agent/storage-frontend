@@ -13,22 +13,22 @@ const ROLE_OPTIONS = [
 ];
 
 type FacilityOption = {
-  id: string;
+  id: number;
   name: string;
 };
 
 type UserOption = {
-  id: string;
+  id: number;
   email: string;
 };
 
 type UserProfile = {
-  id: string;
-  user?: UserOption | string | null;
-  user_id?: string | null;
+  id: number;
+  user?: UserOption | number | null;
+  user_id?: number | null;
   user_email?: string | null;
   role?: string | null;
-  facilities?: Array<FacilityOption | string> | null;
+  facilities?: Array<FacilityOption | number> | null;
 };
 
 type UserFormValues = {
@@ -66,7 +66,7 @@ function normalizeUser(profile: UserProfile): UserOption | null {
     }
   }
 
-  const id = profile.user_id ?? (typeof profile.user === "string" ? profile.user : "");
+  const id = profile.user_id ?? (typeof profile.user === "number" ? profile.user : null);
   const email = profile.user_email ?? (profile as { email?: string }).email ?? "";
 
   if (id && email) {
@@ -82,13 +82,13 @@ function normalizeAuthUser(payload: unknown): UserOption | null {
   }
 
   const candidate = payload as {
-    id?: string | null;
+    id?: number | null;
     email?: string | null;
-    user_id?: string | null;
+    user_id?: number | null;
     user_email?: string | null;
   };
 
-  const id = candidate.id ?? candidate.user_id ?? "";
+  const id = candidate.id ?? candidate.user_id ?? null;
   const email = candidate.email ?? candidate.user_email ?? "";
 
   if (id && email) {
@@ -98,19 +98,19 @@ function normalizeAuthUser(payload: unknown): UserOption | null {
   return null;
 }
 
-function normalizeFacilityId(facility: FacilityOption | string): string {
-  return typeof facility === "string" ? facility : facility.id;
+function normalizeFacilityId(facility: FacilityOption | number): string {
+  return typeof facility === "number" ? String(facility) : String(facility.id);
 }
 
 function normalizeFacilityName(
-  facility: FacilityOption | string,
+  facility: FacilityOption | number,
   facilityMap: Map<string, string>
 ): string {
-  if (typeof facility === "string") {
-    return facilityMap.get(facility) ?? facility;
+  if (typeof facility === "number") {
+    return facilityMap.get(String(facility)) ?? String(facility);
   }
 
-  return facility.name ?? facilityMap.get(facility.id) ?? facility.id;
+  return facility.name ?? facilityMap.get(String(facility.id)) ?? String(facility.id);
 }
 
 function getFacilityValidationMessage(role: string, facilityIds: string[]): string | null {
@@ -167,7 +167,7 @@ export default function UsersPage() {
   const selectedRole = watch("role");
   const selectedFacilities = watch("facilityIds");
   const facilityMap = useMemo(
-    () => new Map(facilities.map((facility) => [facility.id, facility.name])),
+    () => new Map(facilities.map((facility) => [String(facility.id), facility.name])),
     [facilities]
   );
 
@@ -198,10 +198,9 @@ export default function UsersPage() {
       setLoadError(null);
 
       try {
-        const [profilesResponse, usersResponse, facilitiesResponse] = await Promise.all([
-          apiClient.get("/api/users/"),
-          apiClient.get("/api/auth/users/"),
-          apiClient.get("/api/facilities/")
+        const [profilesResponse, facilitiesResponse] = await Promise.all([
+          apiClient.get("/api/v1/users/"),
+          apiClient.get("/api/v1/organizations/facilities/")
         ]);
 
         if (!isMounted) {
@@ -209,18 +208,11 @@ export default function UsersPage() {
         }
 
         const profileList = normalizeList<UserProfile>(profilesResponse.data);
-        const userList = normalizeList<unknown>(usersResponse.data);
         const facilityList = normalizeList<FacilityOption>(facilitiesResponse.data);
         setProfiles(profileList);
         setFacilities(facilityList);
 
         const userMap = new Map<string, UserOption>();
-        userList.forEach((entry) => {
-          const user = normalizeAuthUser(entry);
-          if (user) {
-            userMap.set(user.id, user);
-          }
-        });
 
         profileList.forEach((profile) => {
           const user = normalizeUser(profile);
@@ -345,7 +337,7 @@ export default function UsersPage() {
   }, [closeModal, isModalOpen]);
 
   const refreshProfiles = async () => {
-    const response = await apiClient.get("/api/users/");
+    const response = await apiClient.get("/api/v1/users/");
     const profileList = normalizeList<UserProfile>(response.data);
     setProfiles(profileList);
 
@@ -398,9 +390,9 @@ export default function UsersPage() {
         : "User created successfully.";
 
       if (editingProfile) {
-        await apiClient.put(`/api/users/${editingProfile.id}/`, payload);
+        await apiClient.put(`/api/v1/users/${editingProfile.id}/`, payload);
       } else {
-        await apiClient.post("/api/users/", payload);
+        await apiClient.post("/api/v1/users/", payload);
       }
 
       await refreshProfiles();
@@ -435,7 +427,7 @@ export default function UsersPage() {
         next.add(profile.id);
         return next;
       });
-      await apiClient.delete(`/api/users/${profile.id}/`);
+      await apiClient.delete(`/api/v1/users/${profile.id}/`);
       await refreshProfiles();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 404) {

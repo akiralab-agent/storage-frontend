@@ -3,6 +3,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { unitsApi, unitTypesApi } from "@/api/units";
 import type { UnitRecord, UnitPayload, UnitStatus, UnitType } from "@/api/units";
+import { useFacility } from "@/contexts/FacilityContext";
 import "@/pages/Units.css";
 
 const STATUS_OPTIONS: { value: UnitStatus; label: string }[] = [
@@ -28,6 +29,7 @@ const DEFAULT_FORM_VALUES: UnitFormValues = {
 };
 
 export default function UnitsPage() {
+  const { selectedFacilityId } = useFacility();
   const [units, setUnits] = useState<UnitRecord[]>([]);
   const [unitTypes, setUnitTypes] = useState<UnitType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,7 +90,7 @@ export default function UnitsPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [selectedFacilityId]);
 
   const openCreateModal = () => {
     setEditingUnit(null);

@@ -6,7 +6,6 @@ import {
   getRefreshToken,
   setAccessToken
 } from "@/shared/auth/tokenStorage";
-import { getSelectedFacilityId } from "@/shared/facility/store";
 import { readStoredFacilityId } from "@/shared/facility/storage";
 
 const apiBaseUrl =
@@ -22,7 +21,8 @@ apiClient.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  const facilityId = getSelectedFacilityId() ?? readStoredFacilityId();
+  // Always read facility ID from localStorage for consistency
+  const facilityId = readStoredFacilityId();
   if (facilityId) {
     config.headers["X-Facility-ID"] = facilityId;
   }

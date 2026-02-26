@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { apiClient } from "@/api/client";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/auth";
-import { useFacilityStore } from "@/shared/facility/store";
 import { readStoredFacilityId, writeStoredFacilityId } from "@/shared/facility/storage";
 
 type Facility = {
@@ -9,63 +7,37 @@ type Facility = {
   name: string;
 };
 
-function applyFacilityHeader(facilityId: string | null) {
-  if (facilityId) {
-    apiClient.defaults.headers.common["X-Facility-ID"] = facilityId;
-  } else {
-    delete apiClient.defaults.headers.common["X-Facility-ID"];
-  }
-}
-
 export function useFacility() {
   const [facilities, setFacilities] = useState<Facility[]>([]);
-  const [selectedFacilityId, setSelectedFacilityIdState] = useState<string | null>(null);
-  const setGlobalFacilityId = useFacilityStore((state) => state.setSelectedFacilityId);
-  const { isAuthenticated } = useAuth();
+  const [selectedFacilityId, setSelectedFacilityIdState] = useState<string | null>(() => {
+    return readStoredFacilityId();
+  });
+  const { user, isAuthenticated } = useAuth();
 
-  const setSelectedFacilityId = useCallback(
-    (facilityId: string | null) => {
-      setSelectedFacilityIdState(facilityId);
-      setGlobalFacilityId(facilityId);
-      writeStoredFacilityId(facilityId);
-      applyFacilityHeader(facilityId);
-    },
-    [setGlobalFacilityId]
-  );
+  const setSelectedFacilityId = (facilityId: string | null) => {
+    setSelectedFacilityIdState(facilityId);
+    writeStoredFacilityId(facilityId);
+  };
 
+  // Sync facilities from user profile
   useEffect(() => {
-    const saved = readStoredFacilityId();
-    if (saved) {
-      setSelectedFacilityId(saved);
-    }
-  }, [setSelectedFacilityId]);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user?.facilities?.length) {
+      setFacilities([]);
       return;
     }
 
-    let isActive = true;
+    setFacilities(user.facilities);
 
-    apiClient
-      .get("/api/facilities/")
-      .then((response) => {
-        if (!isActive) {
-          return;
-        }
-        const data = Array.isArray(response.data) ? response.data : [];
-        setFacilities(data);
-      })
-      .catch(() => {
-        if (isActive) {
-          setFacilities([]);
-        }
-      });
-
-    return () => {
-      isActive = false;
-    };
-  }, [isAuthenticated]);
+    // Ensure selected facility is valid
+    const current = readStoredFacilityId();
+    if (current && user.facilities.some((f) => String(f.id) === current)) {
+      setSelectedFacilityIdState(current);
+    } else {
+      const firstId = String(user.facilities[0].id);
+      setSelectedFacilityIdState(firstId);
+      writeStoredFacilityId(firstId);
+    }
+  }, [isAuthenticated, user]);
 
   return {
     facilities,

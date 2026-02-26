@@ -1,7 +1,7 @@
 import { apiClient } from "@/api/client";
 
 export type Organization = {
-  id: string;
+  id: number;
   name: string;
   tax_id: string;
   timezone: string;
@@ -30,21 +30,21 @@ function normalizeList(payload: unknown): Organization[] {
 
 export const organizationsApi = {
   list: async (): Promise<Organization[]> => {
-    const response = await apiClient.get("/api/organizations/");
+    const response = await apiClient.get("/api/v1/organizations/");
     return normalizeList(response.data);
   },
 
   create: async (data: OrganizationPayload): Promise<Organization> => {
-    const response = await apiClient.post("/api/organizations/", data);
+    const response = await apiClient.post("/api/v1/organizations/", data);
     return response.data as Organization;
   },
 
-  update: async (id: string, data: OrganizationPayload): Promise<Organization> => {
-    const response = await apiClient.put(`/api/organizations/${id}/`, data);
+  update: async (id: number, data: OrganizationPayload): Promise<Organization> => {
+    const response = await apiClient.put(`/api/v1/organizations/${id}/`, data);
     return response.data as Organization;
   },
 
-  delete: async (id: string): Promise<void> => {
-    await apiClient.delete(`/api/organizations/${id}/`);
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/api/v1/organizations/${id}/`);
   }
 };
