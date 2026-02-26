@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useFacility } from "@/contexts/FacilityContext";
 import { usePermissions } from "@/hooks/usePermissions";
-import { invoiceAPI, paymentAPI } from "@/services/billing";
+import { encodePathSegment, invoiceAPI, paymentAPI } from "@/services/billing";
 import "@/pages/billing/InvoiceListPage.css";
 import "@/pages/billing/InvoiceDetailPage.css";
 
@@ -143,6 +143,7 @@ export default function InvoiceDetailPage() {
 
   const [isVoidModalOpen, setIsVoidModalOpen] = useState(false);
   const [voidReason, setVoidReason] = useState("");
+  const [isVoiding, setIsVoiding] = useState(false);
   const modalPanelRef = useRef(null);
 
   const canView = hasPermission("billing.view_invoice") || hasPermission("billing.view_invoices");
@@ -291,10 +292,11 @@ export default function InvoiceDetailPage() {
   const handleVoidSubmit = async (event) => {
     event.preventDefault();
 
-    if (!facilityId || !invoiceId || !canVoid) {
+    if (!facilityId || !invoiceId || !canVoid || isVoiding) {
       return;
     }
 
+    setIsVoiding(true);
     setLoadError(null);
     setPageSuccess(null);
 
@@ -307,6 +309,8 @@ export default function InvoiceDetailPage() {
       await fetchInvoice();
     } catch {
       setLoadError("Unable to void invoice. Please try again.");
+    } finally {
+      setIsVoiding(false);
     }
   };
 
@@ -337,7 +341,11 @@ export default function InvoiceDetailPage() {
   }
 
   const invoiceNumber = getInvoiceNumber(invoice, invoiceId);
-  const pdfHref = invoiceId ? `/api/facilities/${facilityId}/invoices/${invoiceId}/pdf/` : "#";
+  const pdfHref = invoiceId
+    ? `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(
+        invoiceId
+      )}/pdf/`
+    : "#";
 
   return (
     <div className="invoice-page">
@@ -555,7 +563,11 @@ export default function InvoiceDetailPage() {
                 <button className="invoice-button" type="button" onClick={closeVoidModal}>
                   Cancel
                 </button>
-                <button className="invoice-button invoice-button--danger" type="submit">
+                <button
+                  className="invoice-button invoice-button--danger"
+                  type="submit"
+                  disabled={isVoiding}
+                >
                   Void invoice
                 </button>
               </div>
