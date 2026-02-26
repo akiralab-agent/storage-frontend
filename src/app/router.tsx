@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import { statusRoutes } from "@/features/status/routes";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/Login";
 import DashboardPage from "@/pages/DashboardPage";
@@ -59,8 +58,7 @@ export const router = createBrowserRouter([
             <UnitsPage />
           </RequireRole>
         )
-      },
-      ...statusRoutes
+      }
     ]
   },
   {
