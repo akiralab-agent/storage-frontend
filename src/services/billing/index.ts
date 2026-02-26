@@ -46,14 +46,12 @@ function normalizeList(payload: unknown): { results: InvoiceRecord[]; count: num
   return { results: [], count: 0 };
 }
 
-const encodePathSegment = (id: string | number) => encodeURIComponent(String(id));
+export const encodePathSegment = (id: string | number) => encodeURIComponent(String(id));
 
 export const invoiceAPI = {
   get: async (facilityId: string, invoiceId: string | number) => {
     const response = await apiClient.get(
-      `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(
-        invoiceId
-      )}/`
+      `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(invoiceId)}/`
     );
     return response.data;
   },
