@@ -62,13 +62,7 @@ function getInvoiceNumber(invoice, fallbackId) {
 }
 
 function getInvoiceTotal(invoice) {
-  return (
-    invoice?.total ??
-    invoice?.amount_total ??
-    invoice?.total_amount ??
-    invoice?.amount ??
-    "—"
-  );
+  return invoice?.total ?? invoice?.amount_total ?? invoice?.total_amount ?? invoice?.amount ?? "—";
 }
 
 function getInvoiceAmountDue(invoice) {
@@ -163,7 +157,12 @@ export default function InvoiceDetailPage() {
       const quantity =
         item?.quantity ?? item?.qty ?? item?.count ?? item?.units ?? item?.unit_count ?? 1;
       const unitPrice =
-        item?.unit_price ?? item?.unitPrice ?? item?.price ?? item?.amount ?? item?.unit_amount ?? 0;
+        item?.unit_price ??
+        item?.unitPrice ??
+        item?.price ??
+        item?.amount ??
+        item?.unit_amount ??
+        0;
       const lineTotal =
         item?.total ??
         item?.line_total ??
@@ -334,9 +333,7 @@ export default function InvoiceDetailPage() {
   }
 
   const invoiceNumber = getInvoiceNumber(invoice, invoiceId);
-  const pdfHref = invoiceId
-    ? `/api/facilities/${facilityId}/invoices/${invoiceId}/pdf/`
-    : "#";
+  const pdfHref = invoiceId ? `/api/facilities/${facilityId}/invoices/${invoiceId}/pdf/` : "#";
 
   return (
     <div className="invoice-page">
@@ -347,9 +344,7 @@ export default function InvoiceDetailPage() {
           <div className="invoice-header-meta">
             <span>Issued {formatDate(invoice?.issue_date)}</span>
             <span>Due {formatDate(invoice?.due_date)}</span>
-            <span
-              className={`invoice-status invoice-status--${formatStatusClass(invoiceStatus)}`}
-            >
+            <span className={`invoice-status invoice-status--${formatStatusClass(invoiceStatus)}`}>
               {formatStatusLabel(invoiceStatus)}
             </span>
             <span>Total {formatCurrency(getInvoiceTotal(invoice))}</span>
@@ -390,9 +385,7 @@ export default function InvoiceDetailPage() {
                 <div className="invoice-detail-row">
                   <span className="invoice-detail-label">Status</span>
                   <span
-                    className={`invoice-status invoice-status--${formatStatusClass(
-                      invoiceStatus
-                    )}`}
+                    className={`invoice-status invoice-status--${formatStatusClass(invoiceStatus)}`}
                   >
                     {formatStatusLabel(invoiceStatus)}
                   </span>
