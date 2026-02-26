@@ -139,6 +139,7 @@ export default function InvoiceDetailPage() {
     method: PAYMENT_METHODS[0].value,
     transactionId: ""
   });
+  const [isPaymentSubmitting, setIsPaymentSubmitting] = useState(false);
 
   const [isVoidModalOpen, setIsVoidModalOpen] = useState(false);
   const [voidReason, setVoidReason] = useState("");
@@ -247,12 +248,13 @@ export default function InvoiceDetailPage() {
   const handlePaymentSubmit = async (event) => {
     event.preventDefault();
 
-    if (!facilityId || !invoiceId || !canRecordPayment) {
+    if (!facilityId || !invoiceId || !canRecordPayment || isPaymentSubmitting) {
       return;
     }
 
     setLoadError(null);
     setPageSuccess(null);
+    setIsPaymentSubmitting(true);
 
     const numericAmount = normalizeNumber(paymentForm.amount, null);
 
@@ -272,6 +274,8 @@ export default function InvoiceDetailPage() {
       await fetchInvoice();
     } catch {
       setLoadError("Unable to record payment. Please try again.");
+    } finally {
+      setIsPaymentSubmitting(false);
     }
   };
 
@@ -477,6 +481,7 @@ export default function InvoiceDetailPage() {
                       step="0.01"
                       value={paymentForm.amount}
                       onChange={handlePaymentChange("amount")}
+                      disabled={isPaymentSubmitting}
                       required
                     />
                   </label>
@@ -486,6 +491,7 @@ export default function InvoiceDetailPage() {
                       className="invoice-input"
                       value={paymentForm.method}
                       onChange={handlePaymentChange("method")}
+                      disabled={isPaymentSubmitting}
                     >
                       {PAYMENT_METHODS.map((method) => (
                         <option key={method.value} value={method.value}>
@@ -502,6 +508,7 @@ export default function InvoiceDetailPage() {
                       value={paymentForm.transactionId}
                       onChange={handlePaymentChange("transactionId")}
                       placeholder="Optional"
+                      disabled={isPaymentSubmitting}
                     />
                   </label>
                 </div>
@@ -509,7 +516,7 @@ export default function InvoiceDetailPage() {
                   <button
                     className="invoice-button invoice-button--primary"
                     type="submit"
-                    disabled={isVoid}
+                    disabled={isVoid || isPaymentSubmitting}
                   >
                     Record payment
                   </button>
