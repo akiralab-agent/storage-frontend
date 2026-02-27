@@ -25,7 +25,10 @@ export function RequireRole({ roles, children }: GuardProps & { roles: Role[] })
   return <>{children}</>;
 }
 
-export function RequireFacility({ facilities, children }: GuardProps & { facilities: FacilityInfo[] }) {
+export function RequireFacility({
+  facilities,
+  children
+}: GuardProps & { facilities: FacilityInfo[] }) {
   const { user } = useAuth();
   const location = useLocation();
   const authorized = !!user && facilities.some((facility) => user.facilities.includes(facility));
