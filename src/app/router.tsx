@@ -9,6 +9,9 @@ import UnitsPage from "@/pages/Units";
 import LeadsPage from "@/pages/Leads";
 import LeadDetailPage from "@/pages/LeadDetail";
 import LeadConvertPage from "@/pages/LeadConvert";
+import TenantsPage from "@/pages/Tenants";
+import TenantDetailPage from "@/pages/TenantDetail";
+import Tenant360Page from "@/pages/Tenant360";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { RequireRole } from "@/shared/auth";
@@ -83,6 +86,38 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole roles={["admin", "admin_corporativo", "gerente"]}>
             <LeadConvertPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/tenants",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops", "financeiro"]}>
+            <TenantsPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/tenants/new",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente"]}>
+            <TenantDetailPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/tenants/:id",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops", "financeiro"]}>
+            <TenantDetailPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/tenants/:id/360",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops", "financeiro"]}>
+            <Tenant360Page />
           </RequireRole>
         )
       }

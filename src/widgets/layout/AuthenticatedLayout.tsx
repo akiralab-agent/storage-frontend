@@ -21,6 +21,12 @@ const NAV_ITEMS: NavItem[] = [
     roles: ["admin", "admin_corporativo", "gerente", "ops"]
   },
   {
+    to: "/tenants",
+    label: "Inquilinos",
+    icon: "user",
+    roles: ["admin", "admin_corporativo", "gerente", "ops", "financeiro"]
+  },
+  {
     to: "/units",
     label: "Unidades",
     icon: "box",
@@ -125,6 +131,21 @@ const ICONS: Record<string, JSX.Element> = {
     >
       <rect x="2" y="7" width="20" height="14" rx="2" />
       <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </svg>
+  ),
+  user: (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   ),
   users: (
