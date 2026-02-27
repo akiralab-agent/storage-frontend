@@ -547,4 +547,3 @@ export default function InvoiceListPage() {
     </div>
   );
 }
-

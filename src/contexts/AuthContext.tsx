@@ -44,7 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .then((profile) => {
           // Set default facility from profile
           const savedFacilityId = readStoredFacilityId();
-          if (savedFacilityId && profile.facilities?.some((f) => String(f.id) === savedFacilityId)) {
+          if (
+            savedFacilityId &&
+            profile.facilities?.some((f) => String(f.id) === savedFacilityId)
+          ) {
             // Keep existing
           } else if (profile.facilities?.length) {
             writeStoredFacilityId(String(profile.facilities[0].id));
@@ -61,29 +64,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = useCallback(async ({ username, password }: { username: string; password: string }) => {
-    const response = await apiClient.post("/api/token/", { username, password });
-    const access = response.data?.access as string | undefined;
-    const refresh = response.data?.refresh as string | undefined;
+  const login = useCallback(
+    async ({ username, password }: { username: string; password: string }) => {
+      const response = await apiClient.post("/api/token/", { username, password });
+      const access = response.data?.access as string | undefined;
+      const refresh = response.data?.refresh as string | undefined;
 
-    if (!access || !refresh) {
-      throw new Error("Token response missing access/refresh");
-    }
+      if (!access || !refresh) {
+        throw new Error("Token response missing access/refresh");
+      }
 
-    setTokens(access, refresh);
+      setTokens(access, refresh);
 
-    const profile = await fetchProfile();
+      const profile = await fetchProfile();
 
-    // Set default facility from profile (interceptor will pick it up from localStorage)
-    const savedFacilityId = readStoredFacilityId();
-    if (savedFacilityId && profile.facilities?.some((f) => String(f.id) === savedFacilityId)) {
-      // Keep existing
-    } else if (profile.facilities?.length) {
-      writeStoredFacilityId(String(profile.facilities[0].id));
-    }
+      // Set default facility from profile (interceptor will pick it up from localStorage)
+      const savedFacilityId = readStoredFacilityId();
+      if (savedFacilityId && profile.facilities?.some((f) => String(f.id) === savedFacilityId)) {
+        // Keep existing
+      } else if (profile.facilities?.length) {
+        writeStoredFacilityId(String(profile.facilities[0].id));
+      }
 
-    setAuthState({ user: profile, isAuthenticated: true, isLoading: false });
-  }, []);
+      setAuthState({ user: profile, isAuthenticated: true, isLoading: false });
+    },
+    []
+  );
 
   const logout = useCallback(() => {
     clearTokens();

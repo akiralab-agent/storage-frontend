@@ -69,7 +69,8 @@ export default function FacilitiesPage() {
     const normalizedQuery = searchTerm.trim().toLowerCase();
 
     return facilities.filter((facility) => {
-      const organizationName = orgMap.get(facility.organization) ?? String(facility.organization ?? "");
+      const organizationName =
+        orgMap.get(facility.organization) ?? String(facility.organization ?? "");
       const matchesOrganization =
         !organizationFilter || String(facility.organization) === organizationFilter;
 
@@ -250,7 +251,14 @@ export default function FacilitiesPage() {
         <div className="fac-header__left">
           <div className="fac-header__title-row">
             <Link to="/dashboard" className="fac-header__home" title="Go to Dashboard">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
@@ -262,7 +270,14 @@ export default function FacilitiesPage() {
           <p className="fac-subtitle">Manage facilities and their organization assignments.</p>
         </div>
         <button type="button" className="fac-primary" onClick={openCreateModal}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -288,7 +303,14 @@ export default function FacilitiesPage() {
           <div className="fac-stats">
             <div className="fac-stat">
               <div className="fac-stat__icon fac-stat__icon--total">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                   <polyline points="9 22 9 12 15 12 15 22" />
                 </svg>
@@ -301,7 +323,14 @@ export default function FacilitiesPage() {
 
             <div className="fac-stat">
               <div className="fac-stat__icon fac-stat__icon--orgs">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -418,7 +447,14 @@ export default function FacilitiesPage() {
             <div className="fac-modal__header">
               <h2 id="fac-modal-title">{editingFac ? "Edit facility" : "Add facility"}</h2>
               <button type="button" className="fac-modal__close" onClick={closeModal}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -442,7 +478,12 @@ export default function FacilitiesPage() {
 
               <label className="fac-field">
                 <span>Address</span>
-                <input type="text" {...register("address")} className="fac-input" placeholder="Enter address" />
+                <input
+                  type="text"
+                  {...register("address")}
+                  className="fac-input"
+                  placeholder="Enter address"
+                />
               </label>
 
               <label className="fac-field">

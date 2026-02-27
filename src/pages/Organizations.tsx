@@ -64,11 +64,7 @@ export default function OrganizationsPage() {
         return matchesTimezone;
       }
 
-      const searchable = [
-        organization.name,
-        organization.tax_id ?? "",
-        organization.timezone ?? ""
-      ]
+      const searchable = [organization.name, organization.tax_id ?? "", organization.timezone ?? ""]
         .join(" ")
         .toLowerCase();
 
@@ -229,7 +225,14 @@ export default function OrganizationsPage() {
         <div className="orgs-header__left">
           <div className="orgs-header__title-row">
             <Link to="/dashboard" className="orgs-header__home" title="Go to Dashboard">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
@@ -241,7 +244,14 @@ export default function OrganizationsPage() {
           <p className="orgs-subtitle">Manage organizations in the system.</p>
         </div>
         <button type="button" className="orgs-primary" onClick={openCreateModal}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -267,7 +277,14 @@ export default function OrganizationsPage() {
           <div className="orgs-stats">
             <div className="orgs-stat">
               <div className="orgs-stat__icon orgs-stat__icon--total">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M3 21h18" />
                   <path d="M5 21V7l8-4v18" />
                   <path d="M19 21V11l-6-4" />
@@ -330,9 +347,7 @@ export default function OrganizationsPage() {
                     <td>
                       <strong>{org.name}</strong>
                     </td>
-                    <td>
-                      {org.tax_id ? <code>{org.tax_id}</code> : "-"}
-                    </td>
+                    <td>{org.tax_id ? <code>{org.tax_id}</code> : "-"}</td>
                     <td>{org.timezone || "-"}</td>
                     <td>
                       <div className="orgs-actions">
@@ -368,8 +383,8 @@ export default function OrganizationsPage() {
               </tbody>
             </table>
             <div className="orgs-table-footer">
-              Showing {filteredOrganizations.length === 0 ? 0 : 1} to{" "}
-              {filteredOrganizations.length} of {organizations.length} entries
+              Showing {filteredOrganizations.length === 0 ? 0 : 1} to {filteredOrganizations.length}{" "}
+              of {organizations.length} entries
             </div>
           </div>
         </>
@@ -385,11 +400,16 @@ export default function OrganizationsPage() {
           <div className="orgs-modal__overlay" onClick={closeModal} />
           <div className="orgs-modal__panel" ref={modalPanelRef}>
             <div className="orgs-modal__header">
-              <h2 id="orgs-modal-title">
-                {editingOrg ? "Edit organization" : "Add organization"}
-              </h2>
+              <h2 id="orgs-modal-title">{editingOrg ? "Edit organization" : "Add organization"}</h2>
               <button type="button" className="orgs-modal__close" onClick={closeModal}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>

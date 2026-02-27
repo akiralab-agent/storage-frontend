@@ -76,28 +76,6 @@ function normalizeUser(profile: UserProfile): UserOption | null {
   return null;
 }
 
-function normalizeAuthUser(payload: unknown): UserOption | null {
-  if (!payload || typeof payload !== "object") {
-    return null;
-  }
-
-  const candidate = payload as {
-    id?: number | null;
-    email?: string | null;
-    user_id?: number | null;
-    user_email?: string | null;
-  };
-
-  const id = candidate.id ?? candidate.user_id ?? null;
-  const email = candidate.email ?? candidate.user_email ?? "";
-
-  if (id && email) {
-    return { id, email };
-  }
-
-  return null;
-}
-
 function normalizeFacilityId(facility: FacilityOption | number): string {
   return typeof facility === "number" ? String(facility) : String(facility.id);
 }
@@ -148,7 +126,7 @@ export default function UsersPage() {
   const [pageSuccess, setPageSuccess] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<UserProfile | null>(null);
-  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const modalPanelRef = useRef<HTMLDivElement | null>(null);
   const modalFirstInteractiveRef = useRef<HTMLSelectElement | null>(null);
 
@@ -236,7 +214,7 @@ export default function UsersPage() {
         setProfiles(profileList);
         setFacilities(facilityList);
 
-        const userMap = new Map<string, UserOption>();
+        const userMap = new Map<number, UserOption>();
 
         profileList.forEach((profile) => {
           const user = normalizeUser(profile);
@@ -279,7 +257,7 @@ export default function UsersPage() {
 
     setEditingProfile(profile);
     reset({
-      userId: user?.id ?? "",
+      userId: user?.id ? String(user.id) : "",
       role: profile.role ?? "",
       facilityIds
     });
@@ -365,7 +343,7 @@ export default function UsersPage() {
     const profileList = normalizeList<UserProfile>(response.data);
     setProfiles(profileList);
 
-    const userMap = new Map<string, UserOption>();
+    const userMap = new Map<number, UserOption>();
     profileList.forEach((profile) => {
       const user = normalizeUser(profile);
       if (user) {

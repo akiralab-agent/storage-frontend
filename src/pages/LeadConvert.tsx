@@ -32,6 +32,7 @@ type TenantFormValues = {
   document: string;
   category: string;
   address: string;
+  address_street: string;
   address_city: string;
   address_state: string;
   address_zip: string;
@@ -55,6 +56,7 @@ const DEFAULT_TENANT_VALUES: TenantFormValues = {
   document: "",
   category: "",
   address: "",
+  address_street: "",
   address_city: "",
   address_state: "",
   address_zip: ""
@@ -182,7 +184,7 @@ export default function LeadConvertPage() {
     }
   };
 
-  const handleTenantSubmit = (values: TenantFormValues) => {
+  const handleTenantSubmit = () => {
     setValidationError(null);
     setCurrentStep(STEP_UNIT);
   };
@@ -203,7 +205,7 @@ export default function LeadConvertPage() {
     setCurrentStep(STEP_CONTRACT);
   };
 
-  const handleContractSubmit = (values: ContractFormValues) => {
+  const handleContractSubmit = () => {
     setValidationError(null);
     setCurrentStep(STEP_CONFIRM);
   };
@@ -244,7 +246,9 @@ export default function LeadConvertPage() {
         move_in: contractValues.move_in,
         move_out: contractValues.move_out || null,
         monthly_rate: contractValues.monthly_rate ? parseFloat(contractValues.monthly_rate) : null,
-        deposit_amount: contractValues.deposit_amount ? parseFloat(contractValues.deposit_amount) : null,
+        deposit_amount: contractValues.deposit_amount
+          ? parseFloat(contractValues.deposit_amount)
+          : null,
         terms: contractValues.terms || null,
         notes: contractValues.notes || null
       }
@@ -273,7 +277,9 @@ export default function LeadConvertPage() {
               return `${field}: ${JSON.stringify(errors)}`;
             })
             .join("; ");
-          setSubmitError(messages || "Unable to convert lead. Please check the data and try again.");
+          setSubmitError(
+            messages || "Unable to convert lead. Please check the data and try again."
+          );
         } else {
           setSubmitError("Unable to convert lead. Please check the data and try again.");
         }
@@ -350,7 +356,9 @@ export default function LeadConvertPage() {
         ))}
       </nav>
 
-      {submitError && <div className="lead-convert-alert lead-convert-alert--error">{submitError}</div>}
+      {submitError && (
+        <div className="lead-convert-alert lead-convert-alert--error">{submitError}</div>
+      )}
       {validationError && (
         <div className="lead-convert-alert lead-convert-alert--error">
           <strong>Validation Error:</strong> {validationError}
@@ -359,7 +367,10 @@ export default function LeadConvertPage() {
 
       <div className="lead-convert-content">
         {currentStep === STEP_TENANT && (
-          <form className="lead-convert-form" onSubmit={tenantForm.handleSubmit(handleTenantSubmit, handleTenantError)}>
+          <form
+            className="lead-convert-form"
+            onSubmit={tenantForm.handleSubmit(handleTenantSubmit, handleTenantError)}
+          >
             <section className="lead-convert-section">
               <h2>Tenant Information</h2>
               <p className="lead-convert-section__description">
@@ -387,12 +398,20 @@ export default function LeadConvertPage() {
 
                 <label className="lead-convert-field">
                   <span>Email</span>
-                  <input type="email" {...tenantForm.register("email")} className="lead-convert-input" />
+                  <input
+                    type="email"
+                    {...tenantForm.register("email")}
+                    className="lead-convert-input"
+                  />
                 </label>
 
                 <label className="lead-convert-field">
                   <span>Primary Phone</span>
-                  <input type="tel" {...tenantForm.register("phone_primary")} className="lead-convert-input" />
+                  <input
+                    type="tel"
+                    {...tenantForm.register("phone_primary")}
+                    className="lead-convert-input"
+                  />
                 </label>
 
                 <label className="lead-convert-field">
@@ -439,17 +458,29 @@ export default function LeadConvertPage() {
 
                 <label className="lead-convert-field">
                   <span>City</span>
-                  <input type="text" {...tenantForm.register("address_city")} className="lead-convert-input" />
+                  <input
+                    type="text"
+                    {...tenantForm.register("address_city")}
+                    className="lead-convert-input"
+                  />
                 </label>
 
                 <label className="lead-convert-field">
                   <span>State</span>
-                  <input type="text" {...tenantForm.register("address_state")} className="lead-convert-input" />
+                  <input
+                    type="text"
+                    {...tenantForm.register("address_state")}
+                    className="lead-convert-input"
+                  />
                 </label>
 
                 <label className="lead-convert-field">
                   <span>ZIP Code</span>
-                  <input type="text" {...tenantForm.register("address_zip")} className="lead-convert-input" />
+                  <input
+                    type="text"
+                    {...tenantForm.register("address_zip")}
+                    className="lead-convert-input"
+                  />
                 </label>
               </div>
             </section>
@@ -475,7 +506,11 @@ export default function LeadConvertPage() {
             {availableUnits.length === 0 ? (
               <div className="lead-convert-empty">
                 <p>No available units found.</p>
-                <button type="button" className="lead-convert-button" onClick={() => navigate("/units")}>
+                <button
+                  type="button"
+                  className="lead-convert-button"
+                  onClick={() => navigate("/units")}
+                >
                   View Units
                 </button>
               </div>
@@ -519,7 +554,11 @@ export default function LeadConvertPage() {
             )}
 
             <div className="lead-convert-actions">
-              <button type="button" className="lead-convert-button" onClick={() => setCurrentStep(STEP_TENANT)}>
+              <button
+                type="button"
+                className="lead-convert-button"
+                onClick={() => setCurrentStep(STEP_TENANT)}
+              >
                 Back
               </button>
             </div>
@@ -527,7 +566,10 @@ export default function LeadConvertPage() {
         )}
 
         {currentStep === STEP_CONTRACT && (
-          <form className="lead-convert-form" onSubmit={contractForm.handleSubmit(handleContractSubmit, handleContractError)}>
+          <form
+            className="lead-convert-form"
+            onSubmit={contractForm.handleSubmit(handleContractSubmit, handleContractError)}
+          >
             <section className="lead-convert-section">
               <h2>Contract Terms</h2>
               <p className="lead-convert-section__description">
@@ -541,7 +583,10 @@ export default function LeadConvertPage() {
                     {selectedUnit?.unit_number}
                   </span>
                   <span className="lead-convert-unit-summary__type">
-                    {selectedUnit ? unitTypeMap.get(selectedUnit.unit_type)?.name || `Type ${selectedUnit.unit_type}` : "-"}
+                    {selectedUnit
+                      ? unitTypeMap.get(selectedUnit.unit_type)?.name ||
+                        `Type ${selectedUnit.unit_type}`
+                      : "-"}
                   </span>
                   {selectedUnit && unitTypeMap.get(selectedUnit.unit_type)?.base_price && (
                     <span className="lead-convert-unit-summary__price">
@@ -577,7 +622,11 @@ export default function LeadConvertPage() {
 
                 <label className="lead-convert-field">
                   <span>Move-out Date</span>
-                  <input type="date" {...contractForm.register("move_out")} className="lead-convert-input" />
+                  <input
+                    type="date"
+                    {...contractForm.register("move_out")}
+                    className="lead-convert-input"
+                  />
                 </label>
 
                 <label className="lead-convert-field">
@@ -585,7 +634,9 @@ export default function LeadConvertPage() {
                   <input
                     type="number"
                     step="0.01"
-                    {...contractForm.register("monthly_rate", { required: "Monthly rate is required." })}
+                    {...contractForm.register("monthly_rate", {
+                      required: "Monthly rate is required."
+                    })}
                     className="lead-convert-input"
                     placeholder="0.00"
                   />
@@ -625,7 +676,11 @@ export default function LeadConvertPage() {
             </section>
 
             <div className="lead-convert-actions">
-              <button type="button" className="lead-convert-button" onClick={() => setCurrentStep(STEP_UNIT)}>
+              <button
+                type="button"
+                className="lead-convert-button"
+                onClick={() => setCurrentStep(STEP_UNIT)}
+              >
                 Back
               </button>
               <button type="submit" className="lead-convert-primary">
@@ -670,8 +725,8 @@ export default function LeadConvertPage() {
                       {tenantForm.getValues("category") === "INDIVIDUAL"
                         ? "Individual"
                         : tenantForm.getValues("category") === "BUSINESS"
-                        ? "Business"
-                        : tenantForm.getValues("category") || "-"}
+                          ? "Business"
+                          : tenantForm.getValues("category") || "-"}
                     </dd>
                   </div>
                   <div className="lead-convert-summary__item">
@@ -703,7 +758,12 @@ export default function LeadConvertPage() {
                   </div>
                   <div className="lead-convert-summary__item">
                     <dt>Unit Type</dt>
-                    <dd>{selectedUnit ? unitTypeMap.get(selectedUnit.unit_type)?.name || `Type ${selectedUnit.unit_type}` : "-"}</dd>
+                    <dd>
+                      {selectedUnit
+                        ? unitTypeMap.get(selectedUnit.unit_type)?.name ||
+                          `Type ${selectedUnit.unit_type}`
+                        : "-"}
+                    </dd>
                   </div>
                   <div className="lead-convert-summary__item">
                     <dt>Dimensions</dt>
@@ -715,7 +775,11 @@ export default function LeadConvertPage() {
                   </div>
                   <div className="lead-convert-summary__item">
                     <dt>Base Price</dt>
-                    <dd>{selectedUnit && unitTypeMap.get(selectedUnit.unit_type)?.base_price ? formatCurrency(unitTypeMap.get(selectedUnit.unit_type)!.base_price!) : "-"}</dd>
+                    <dd>
+                      {selectedUnit && unitTypeMap.get(selectedUnit.unit_type)?.base_price
+                        ? formatCurrency(unitTypeMap.get(selectedUnit.unit_type)!.base_price!)
+                        : "-"}
+                    </dd>
                   </div>
                   <div className="lead-convert-summary__item">
                     <dt>Move-in Date</dt>
@@ -748,7 +812,11 @@ export default function LeadConvertPage() {
             </div>
 
             <div className="lead-convert-actions">
-              <button type="button" className="lead-convert-button" onClick={() => setCurrentStep(STEP_CONTRACT)}>
+              <button
+                type="button"
+                className="lead-convert-button"
+                onClick={() => setCurrentStep(STEP_CONTRACT)}
+              >
                 Back
               </button>
               <button

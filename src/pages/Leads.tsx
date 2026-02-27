@@ -313,7 +313,9 @@ export default function LeadsPage() {
     setIsSaving(true);
 
     try {
-      const successMessage = editingLead ? "Lead updated successfully." : "Lead created successfully.";
+      const successMessage = editingLead
+        ? "Lead updated successfully."
+        : "Lead created successfully.";
 
       if (editingLead) {
         await apiClient.patch(`/api/v1/leads/${editingLead.id}/`, payload);
@@ -557,8 +559,8 @@ export default function LeadsPage() {
             </tbody>
           </table>
           <div className="leads-table-footer">
-            Showing {filteredLeads.length === 0 ? 0 : 1} to {filteredLeads.length} of{" "}
-            {leads.length} entries
+            Showing {filteredLeads.length === 0 ? 0 : 1} to {filteredLeads.length} of {leads.length}{" "}
+            entries
           </div>
         </div>
       )}
@@ -619,31 +621,19 @@ export default function LeadsPage() {
               <div className="leads-form-grid">
                 <label className="leads-field">
                   <span>Email</span>
-                  <input
-                    type="email"
-                    {...register("email")}
-                    className="leads-input"
-                  />
+                  <input type="email" {...register("email")} className="leads-input" />
                 </label>
 
                 <label className="leads-field">
                   <span>Primary Phone</span>
-                  <input
-                    type="tel"
-                    {...register("phone_primary")}
-                    className="leads-input"
-                  />
+                  <input type="tel" {...register("phone_primary")} className="leads-input" />
                 </label>
               </div>
 
               <div className="leads-form-grid">
                 <label className="leads-field">
                   <span>Secondary Phone</span>
-                  <input
-                    type="tel"
-                    {...register("phone_secondary")}
-                    className="leads-input"
-                  />
+                  <input type="tel" {...register("phone_secondary")} className="leads-input" />
                 </label>
 
                 <label className="leads-field">
@@ -690,11 +680,7 @@ export default function LeadsPage() {
 
               <label className="leads-field">
                 <span>Notes</span>
-                <textarea
-                  {...register("notes")}
-                  className="leads-input leads-textarea"
-                  rows={3}
-                />
+                <textarea {...register("notes")} className="leads-input leads-textarea" rows={3} />
               </label>
 
               {formError && <div className="leads-alert leads-alert--error">{formError}</div>}

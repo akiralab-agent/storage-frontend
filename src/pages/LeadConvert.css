@@ -292,7 +292,9 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .lead-convert-unit-card:hover {

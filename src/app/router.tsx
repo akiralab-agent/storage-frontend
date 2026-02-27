@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
       {
         path: "/leads",
         element: (
-          <RequireRole roles={["admin", "admin_corporativo", "gerente", "operador"]}>
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops"]}>
             <LeadsPage />
           </RequireRole>
         )
@@ -73,7 +73,7 @@ export const router = createBrowserRouter([
       {
         path: "/leads/:id",
         element: (
-          <RequireRole roles={["admin", "admin_corporativo", "gerente", "operador"]}>
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops"]}>
             <LeadDetailPage />
           </RequireRole>
         )

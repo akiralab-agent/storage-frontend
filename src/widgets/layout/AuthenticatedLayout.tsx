@@ -18,7 +18,7 @@ const NAV_ITEMS: NavItem[] = [
     to: "/leads",
     label: "Leads",
     icon: "target",
-    roles: ["admin", "admin_corporativo", "gerente", "operador"]
+    roles: ["admin", "admin_corporativo", "gerente", "ops"]
   },
   {
     to: "/units",

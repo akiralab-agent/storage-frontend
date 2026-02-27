@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -64,11 +64,6 @@ function getStageLabel(stage: string): string {
 
 function getStageColor(stage: string): string {
   return STAGE_OPTIONS.find((s) => s.value === stage)?.color ?? "#64748b";
-}
-
-function getSourceLabel(source: string | null): string {
-  if (!source) return "-";
-  return SOURCE_OPTIONS.find((s) => s.value === source)?.label ?? source;
 }
 
 function formatDate(dateString: string | null): string {
@@ -346,7 +341,9 @@ export default function LeadDetailPage() {
         </div>
       </header>
 
-      {pageSuccess && <div className="lead-detail-alert lead-detail-alert--success">{pageSuccess}</div>}
+      {pageSuccess && (
+        <div className="lead-detail-alert lead-detail-alert--success">{pageSuccess}</div>
+      )}
       {formError && <div className="lead-detail-alert lead-detail-alert--error">{formError}</div>}
 
       <div className="lead-detail-content">
@@ -359,7 +356,11 @@ export default function LeadDetailPage() {
                 <input
                   type="text"
                   {...register("first_name", { required: "First name is required." })}
-                  className={errors.first_name ? "lead-detail-input lead-detail-input--error" : "lead-detail-input"}
+                  className={
+                    errors.first_name
+                      ? "lead-detail-input lead-detail-input--error"
+                      : "lead-detail-input"
+                  }
                 />
                 {errors.first_name && (
                   <span className="lead-detail-error">{errors.first_name.message}</span>
@@ -371,7 +372,11 @@ export default function LeadDetailPage() {
                 <input
                   type="text"
                   {...register("last_name", { required: "Last name is required." })}
-                  className={errors.last_name ? "lead-detail-input lead-detail-input--error" : "lead-detail-input"}
+                  className={
+                    errors.last_name
+                      ? "lead-detail-input lead-detail-input--error"
+                      : "lead-detail-input"
+                  }
                 />
                 {errors.last_name && (
                   <span className="lead-detail-error">{errors.last_name.message}</span>
@@ -380,29 +385,17 @@ export default function LeadDetailPage() {
 
               <label className="lead-detail-field">
                 <span>Email</span>
-                <input
-                  type="email"
-                  {...register("email")}
-                  className="lead-detail-input"
-                />
+                <input type="email" {...register("email")} className="lead-detail-input" />
               </label>
 
               <label className="lead-detail-field">
                 <span>Primary Phone</span>
-                <input
-                  type="tel"
-                  {...register("phone_primary")}
-                  className="lead-detail-input"
-                />
+                <input type="tel" {...register("phone_primary")} className="lead-detail-input" />
               </label>
 
               <label className="lead-detail-field">
                 <span>Secondary Phone</span>
-                <input
-                  type="tel"
-                  {...register("phone_secondary")}
-                  className="lead-detail-input"
-                />
+                <input type="tel" {...register("phone_secondary")} className="lead-detail-input" />
               </label>
             </div>
           </section>
@@ -426,7 +419,11 @@ export default function LeadDetailPage() {
                 <span>Stage *</span>
                 <select
                   {...register("stage", { required: "Stage is required." })}
-                  className={errors.stage ? "lead-detail-input lead-detail-input--error" : "lead-detail-input"}
+                  className={
+                    errors.stage
+                      ? "lead-detail-input lead-detail-input--error"
+                      : "lead-detail-input"
+                  }
                 >
                   {STAGE_OPTIONS.map((stageOption) => (
                     <option key={stageOption.value} value={stageOption.value}>
@@ -434,9 +431,7 @@ export default function LeadDetailPage() {
                     </option>
                   ))}
                 </select>
-                {errors.stage && (
-                  <span className="lead-detail-error">{errors.stage.message}</span>
-                )}
+                {errors.stage && <span className="lead-detail-error">{errors.stage.message}</span>}
               </label>
 
               <label className="lead-detail-field">
@@ -470,11 +465,15 @@ export default function LeadDetailPage() {
             <div className="lead-detail-meta-grid">
               <div className="lead-detail-meta-item">
                 <span className="lead-detail-meta-label">Created</span>
-                <span className="lead-detail-meta-value">{formatDate(lead?.created_at ?? null)}</span>
+                <span className="lead-detail-meta-value">
+                  {formatDate(lead?.created_at ?? null)}
+                </span>
               </div>
               <div className="lead-detail-meta-item">
                 <span className="lead-detail-meta-label">Last Updated</span>
-                <span className="lead-detail-meta-value">{formatDate(lead?.updated_at ?? null)}</span>
+                <span className="lead-detail-meta-value">
+                  {formatDate(lead?.updated_at ?? null)}
+                </span>
               </div>
             </div>
           </section>
@@ -491,11 +490,7 @@ export default function LeadDetailPage() {
               <button type="button" className="lead-detail-button" onClick={handleBack}>
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="lead-detail-primary"
-                disabled={isSaving || !isDirty}
-              >
+              <button type="submit" className="lead-detail-primary" disabled={isSaving || !isDirty}>
                 {isSaving ? "Saving..." : "Save Changes"}
               </button>
             </div>
@@ -509,8 +504,11 @@ export default function LeadDetailPage() {
           <div className="lead-detail-modal__panel" ref={modalPanelRef}>
             <h2>Delete Lead</h2>
             <p>
-              Are you sure you want to delete the lead <strong>{lead?.first_name} {lead?.last_name}</strong>?
-              This action cannot be undone.
+              Are you sure you want to delete the lead{" "}
+              <strong>
+                {lead?.first_name} {lead?.last_name}
+              </strong>
+              ? This action cannot be undone.
             </p>
             <div className="lead-detail-modal__actions">
               <button
