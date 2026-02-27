@@ -37,6 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }>(getInitialAuthState);
 
   // Load profile on mount if token exists
+  // Note: 'user' is intentionally excluded from deps - we only want to fetch once
+  // when the component mounts and a token exists but no user is loaded yet.
   useEffect(() => {
     const token = getAccessToken();
     if (token && !user) {
@@ -62,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else if (!token) {
       setAuthState((prev) => ({ ...prev, isLoading: false }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = useCallback(

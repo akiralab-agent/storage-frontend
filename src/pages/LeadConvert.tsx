@@ -174,6 +174,8 @@ export default function LeadConvertPage() {
     return () => {
       isMounted = false;
     };
+    // tenantForm.reset is stable and won't cause re-renders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleBack = () => {

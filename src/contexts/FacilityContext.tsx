@@ -60,6 +60,7 @@ export function FacilityProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useFacility() {
   const context = useContext(FacilityContext);
   if (!context) {
