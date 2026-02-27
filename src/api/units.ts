@@ -3,6 +3,13 @@ import { apiClient } from "@/api/client";
 export type UnitType = {
   id: number;
   name: string;
+  width: string | null;
+  depth: string | null;
+  height: string | null;
+  base_price: string | null;
+  min_price: string | null;
+  max_price: string | null;
+  facility: number | null;
 };
 
 export type UnitStatus = "LIVRE" | "RESERVADA" | "OCUPADA" | "BLOQUEADA" | "EM_VISTORIA";

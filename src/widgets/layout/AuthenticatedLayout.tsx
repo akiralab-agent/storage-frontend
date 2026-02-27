@@ -15,6 +15,12 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: "grid" },
   {
+    to: "/leads",
+    label: "Leads",
+    icon: "target",
+    roles: ["admin", "admin_corporativo", "gerente", "operador"]
+  },
+  {
     to: "/units",
     label: "Unidades",
     icon: "box",
@@ -51,6 +57,22 @@ const ICONS: Record<string, JSX.Element> = {
       <rect x="14" y="3" width="7" height="7" />
       <rect x="14" y="14" width="7" height="7" />
       <rect x="3" y="14" width="7" height="7" />
+    </svg>
+  ),
+  target: (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
     </svg>
   ),
   box: (

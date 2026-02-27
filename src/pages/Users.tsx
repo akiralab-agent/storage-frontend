@@ -139,6 +139,8 @@ export default function UsersPage() {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [facilities, setFacilities] = useState<FacilityOption[]>([]);
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -174,6 +176,28 @@ export default function UsersPage() {
   const roleLabelMap = useMemo(() => {
     return new Map(ROLE_OPTIONS.map((role) => [role.value, role.label]));
   }, []);
+
+  const filteredProfiles = useMemo(() => {
+    const normalizedQuery = searchTerm.trim().toLowerCase();
+
+    return profiles.filter((profile) => {
+      const role = profile.role ?? "";
+      const roleLabel = roleLabelMap.get(role) ?? role;
+      const user = normalizeUser(profile);
+      const facilitiesLabel = (profile.facilities ?? [])
+        .map((facility) => normalizeFacilityName(facility, facilityMap))
+        .join(", ");
+
+      const matchesStatus = !statusFilter || role === statusFilter;
+
+      if (!normalizedQuery) {
+        return matchesStatus;
+      }
+
+      const searchable = [user?.email ?? "", roleLabel, facilitiesLabel].join(" ").toLowerCase();
+      return matchesStatus && searchable.includes(normalizedQuery);
+    });
+  }, [facilityMap, profiles, roleLabelMap, searchTerm, statusFilter]);
 
   useEffect(() => {
     if (selectedRole === "ADMIN" && selectedFacilities.length > 0) {
@@ -466,17 +490,44 @@ export default function UsersPage() {
         <div className="users-empty">No users found. Create the first user profile.</div>
       ) : (
         <div className="users-table-wrapper">
+          <div className="users-table-toolbar">
+            <select
+              className="users-table-filter"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="">All status</option>
+              {ROLE_OPTIONS.map((roleOption) => (
+                <option key={roleOption.value} value={roleOption.value}>
+                  {roleOption.label}
+                </option>
+              ))}
+            </select>
+            <label className="users-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="16.65" y1="16.65" x2="21" y2="21" />
+              </svg>
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search"
+                aria-label="Search users"
+              />
+            </label>
+          </div>
           <table className="users-table">
             <thead>
               <tr>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Facilities</th>
-                <th aria-label="Actions" />
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {profiles.map((profile) => {
+              {filteredProfiles.map((profile) => {
                 const user = normalizeUser(profile);
                 const facilitiesLabel = (profile.facilities ?? [])
                   .map((facility) => normalizeFacilityName(facility, facilityMap))
@@ -492,18 +543,28 @@ export default function UsersPage() {
                       <div className="users-actions">
                         <button
                           type="button"
-                          className="users-button"
+                          className="users-icon-button"
                           onClick={() => openEditModal(profile)}
+                          aria-label="Edit user"
+                          title="Edit"
                         >
-                          Edit
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 21h6l12-12a2.1 2.1 0 0 0-3-3L6 18l-3 3z" />
+                          </svg>
                         </button>
                         <button
                           type="button"
-                          className="users-button users-button--danger"
+                          className="users-icon-button users-icon-button--danger"
                           onClick={() => handleDelete(profile)}
                           disabled={deletingIds.has(profile.id)}
+                          aria-label="Delete user"
+                          title="Delete"
                         >
-                          Delete
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          </svg>
                         </button>
                       </div>
                     </td>
@@ -512,6 +573,10 @@ export default function UsersPage() {
               })}
             </tbody>
           </table>
+          <div className="users-table-footer">
+            Showing {filteredProfiles.length === 0 ? 0 : 1} to {filteredProfiles.length} of{" "}
+            {profiles.length} entries
+          </div>
         </div>
       )}
 

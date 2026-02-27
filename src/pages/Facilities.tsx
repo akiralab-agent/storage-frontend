@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { facilitiesApi } from "@/api/facilities";
 import { organizationsApi } from "@/api/organizations";
 import type { FacilityRecord, FacilityPayload } from "@/api/facilities";
 import type { Organization } from "@/api/organizations";
+import { useFacility } from "@/contexts/FacilityContext";
 import "@/pages/Facilities.css";
 
 type FacFormValues = {
@@ -22,8 +24,11 @@ const DEFAULT_FORM_VALUES: FacFormValues = {
 };
 
 export default function FacilitiesPage() {
+  const { selectedFacilityId } = useFacility();
   const [facilities, setFacilities] = useState<FacilityRecord[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [organizationFilter, setOrganizationFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -31,7 +36,7 @@ export default function FacilitiesPage() {
   const [pageSuccess, setPageSuccess] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFac, setEditingFac] = useState<FacilityRecord | null>(null);
-  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const modalPanelRef = useRef<HTMLDivElement | null>(null);
   const modalFirstInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -50,6 +55,40 @@ export default function FacilitiesPage() {
     () => new Map(organizations.map((org) => [org.id, org.name])),
     [organizations]
   );
+
+  // Calculate stats
+  const stats = useMemo(() => {
+    const uniqueOrgs = new Set(facilities.map((f) => f.organization));
+    return {
+      total: facilities.length,
+      orgsCount: uniqueOrgs.size
+    };
+  }, [facilities]);
+
+  const filteredFacilities = useMemo(() => {
+    const normalizedQuery = searchTerm.trim().toLowerCase();
+
+    return facilities.filter((facility) => {
+      const organizationName = orgMap.get(facility.organization) ?? String(facility.organization ?? "");
+      const matchesOrganization =
+        !organizationFilter || String(facility.organization) === organizationFilter;
+
+      if (!normalizedQuery) {
+        return matchesOrganization;
+      }
+
+      const searchable = [
+        facility.name,
+        facility.address ?? "",
+        organizationName,
+        facility.timezone ?? ""
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return matchesOrganization && searchable.includes(normalizedQuery);
+    });
+  }, [facilities, orgMap, organizationFilter, searchTerm]);
 
   useEffect(() => {
     let isMounted = true;
@@ -84,7 +123,7 @@ export default function FacilitiesPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [selectedFacilityId]);
 
   const openCreateModal = () => {
     setEditingFac(null);
@@ -98,7 +137,7 @@ export default function FacilitiesPage() {
     reset({
       name: fac.name,
       address: fac.address,
-      organization: fac.organization,
+      organization: String(fac.organization),
       timezone: fac.timezone
     });
     setFormError(null);
@@ -144,7 +183,7 @@ export default function FacilitiesPage() {
     const payload: FacilityPayload = {
       name: values.name,
       address: values.address,
-      organization: values.organization,
+      organization: Number(values.organization),
       timezone: values.timezone
     };
 
@@ -208,11 +247,25 @@ export default function FacilitiesPage() {
   return (
     <main className="fac-page">
       <header className="fac-header">
-        <div>
-          <h1>Facilities</h1>
+        <div className="fac-header__left">
+          <div className="fac-header__title-row">
+            <Link to="/dashboard" className="fac-header__home" title="Go to Dashboard">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              <span className="fac-header__path">Workspace</span>
+            </Link>
+            <span className="fac-header__path-divider">/</span>
+            <span className="fac-header__current">Facilities</span>
+          </div>
           <p className="fac-subtitle">Manage facilities and their organization assignments.</p>
         </div>
         <button type="button" className="fac-primary" onClick={openCreateModal}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
           Add facility
         </button>
       </header>
@@ -221,52 +274,136 @@ export default function FacilitiesPage() {
       {pageSuccess && <div className="fac-alert fac-alert--success">{pageSuccess}</div>}
 
       {isLoading ? (
-        <div className="fac-empty">Loading facilities...</div>
-      ) : facilities.length === 0 ? (
-        <div className="fac-empty">No facilities found. Create the first facility.</div>
-      ) : (
-        <div className="fac-table-wrapper">
-          <table className="fac-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Organization</th>
-                <th>Timezone</th>
-                <th aria-label="Actions" />
-              </tr>
-            </thead>
-            <tbody>
-              {facilities.map((fac) => (
-                <tr key={fac.id}>
-                  <td>{fac.name}</td>
-                  <td>{fac.address || "-"}</td>
-                  <td>{orgMap.get(fac.organization) ?? fac.organization ?? "-"}</td>
-                  <td>{fac.timezone || "-"}</td>
-                  <td>
-                    <div className="fac-actions">
-                      <button
-                        type="button"
-                        className="fac-button"
-                        onClick={() => openEditModal(fac)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="fac-button fac-button--danger"
-                        onClick={() => handleDelete(fac)}
-                        disabled={deletingIds.has(fac.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="fac-loading">
+          <div className="fac-loading__spinner" />
+          Loading facilities...
         </div>
+      ) : facilities.length === 0 ? (
+        <div className="fac-empty">
+          <div className="fac-empty__icon">🏢</div>
+          <p>No facilities found. Create the first facility to get started.</p>
+        </div>
+      ) : (
+        <>
+          <div className="fac-stats">
+            <div className="fac-stat">
+              <div className="fac-stat__icon fac-stat__icon--total">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+              </div>
+              <div className="fac-stat__info">
+                <span className="fac-stat__label">Total Facilities</span>
+                <span className="fac-stat__value">{stats.total}</span>
+              </div>
+            </div>
+
+            <div className="fac-stat">
+              <div className="fac-stat__icon fac-stat__icon--orgs">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div className="fac-stat__info">
+                <span className="fac-stat__label">Organizations</span>
+                <span className="fac-stat__value">{stats.orgsCount}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="fac-table-wrapper">
+            <div className="fac-table-toolbar">
+              <span className="fac-table-title">Facilities</span>
+              <div className="fac-table-actions">
+                <select
+                  className="fac-table-filter"
+                  value={organizationFilter}
+                  onChange={(event) => setOrganizationFilter(event.target.value)}
+                >
+                  <option value="">All organizations</option>
+                  {organizations.map((organization) => (
+                    <option key={organization.id} value={organization.id}>
+                      {organization.name}
+                    </option>
+                  ))}
+                </select>
+                <label className="fac-search">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7" />
+                    <line x1="16.65" y1="16.65" x2="21" y2="21" />
+                  </svg>
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Search"
+                    aria-label="Search facilities"
+                  />
+                </label>
+              </div>
+            </div>
+            <table className="fac-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Organization</th>
+                  <th>Timezone</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredFacilities.map((fac) => (
+                  <tr key={fac.id}>
+                    <td>
+                      <strong>{fac.name}</strong>
+                    </td>
+                    <td>{fac.address || "-"}</td>
+                    <td>{orgMap.get(fac.organization) ?? fac.organization ?? "-"}</td>
+                    <td>{fac.timezone || "-"}</td>
+                    <td>
+                      <div className="fac-actions">
+                        <button
+                          type="button"
+                          className="fac-icon-button"
+                          onClick={() => openEditModal(fac)}
+                          aria-label="Edit facility"
+                          title="Edit"
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 21h6l12-12a2.1 2.1 0 0 0-3-3L6 18l-3 3z" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          className="fac-icon-button fac-icon-button--danger"
+                          onClick={() => handleDelete(fac)}
+                          disabled={deletingIds.has(fac.id)}
+                          aria-label="Delete facility"
+                          title="Delete"
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="fac-table-footer">
+              Showing {filteredFacilities.length === 0 ? 0 : 1} to {filteredFacilities.length} of{" "}
+              {facilities.length} entries
+            </div>
+          </div>
+        </>
       )}
 
       {isModalOpen && (
@@ -279,12 +416,12 @@ export default function FacilitiesPage() {
           <div className="fac-modal__overlay" onClick={closeModal} />
           <div className="fac-modal__panel" ref={modalPanelRef}>
             <div className="fac-modal__header">
-              <div>
-                <h2 id="fac-modal-title">{editingFac ? "Edit facility" : "Add facility"}</h2>
-                <p className="fac-subtitle">Set facility details.</p>
-              </div>
-              <button type="button" className="fac-button" onClick={closeModal}>
-                Close
+              <h2 id="fac-modal-title">{editingFac ? "Edit facility" : "Add facility"}</h2>
+              <button type="button" className="fac-modal__close" onClick={closeModal}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 
@@ -305,7 +442,7 @@ export default function FacilitiesPage() {
 
               <label className="fac-field">
                 <span>Address</span>
-                <input type="text" {...register("address")} className="fac-input" />
+                <input type="text" {...register("address")} className="fac-input" placeholder="Enter address" />
               </label>
 
               <label className="fac-field">

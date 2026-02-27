@@ -6,6 +6,9 @@ import UsersPage from "@/pages/Users";
 import OrganizationsPage from "@/pages/Organizations";
 import FacilitiesPage from "@/pages/Facilities";
 import UnitsPage from "@/pages/Units";
+import LeadsPage from "@/pages/Leads";
+import LeadDetailPage from "@/pages/LeadDetail";
+import LeadConvertPage from "@/pages/LeadConvert";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { RequireRole } from "@/shared/auth";
@@ -56,6 +59,30 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole roles={["admin", "admin_corporativo", "gerente", "financeiro"]}>
             <UnitsPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/leads",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "operador"]}>
+            <LeadsPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/leads/:id",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "operador"]}>
+            <LeadDetailPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/leads/:id/convert",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente"]}>
+            <LeadConvertPage />
           </RequireRole>
         )
       }
