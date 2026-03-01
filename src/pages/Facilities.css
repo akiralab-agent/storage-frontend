@@ -148,7 +148,6 @@
   letter-spacing: -0.5px;
 }
 
-
 .fac-table tbody tr {
   transition: background 0.1s ease;
 }
@@ -607,7 +606,6 @@
   }
 }
 
-
 .fac-table-filter:focus-visible {
   outline: none;
   border-color: #94a3b8;
@@ -625,4 +623,3 @@
   align-items: center;
   gap: 0.5rem;
 }
-

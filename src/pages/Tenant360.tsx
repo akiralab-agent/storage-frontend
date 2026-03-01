@@ -183,8 +183,11 @@ function renderCell(value: unknown, format?: string): JSX.Element | string {
 }
 
 function isDateField(key: string): boolean {
-  return /(_at|_date|date_|timestamp|move_in|move_out|signed_at|resolved_at)$/i.test(key) ||
-    key === "move_in" || key === "move_out";
+  return (
+    /(_at|_date|date_|timestamp|move_in|move_out|signed_at|resolved_at)$/i.test(key) ||
+    key === "move_in" ||
+    key === "move_out"
+  );
 }
 
 function isCurrencyField(key: string): boolean {
@@ -195,11 +198,7 @@ function formatDetailValue(key: string, value: unknown): JSX.Element | string {
   if (value === null || value === undefined) return "-";
 
   if (typeof value === "object") {
-    return (
-      <pre className="tenant-360-detail-json">
-        {JSON.stringify(value, null, 2)}
-      </pre>
-    );
+    return <pre className="tenant-360-detail-json">{JSON.stringify(value, null, 2)}</pre>;
   }
 
   const str = String(value);
@@ -339,9 +338,7 @@ export default function Tenant360Page() {
       ? tabs
       : DEFAULT_TABS.map((key) => ({
           key,
-          label: key
-            .replace(/_/g, " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase()),
+          label: key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
           data: {
             count: 0,
             page: 1,
@@ -372,7 +369,9 @@ export default function Tenant360Page() {
             </h1>
             <div className="tenant-360-meta">
               {tenant?.email && <span className="tenant-360-info">{tenant.email}</span>}
-              {tenant?.phone_primary && <span className="tenant-360-info">{tenant.phone_primary}</span>}
+              {tenant?.phone_primary && (
+                <span className="tenant-360-info">{tenant.phone_primary}</span>
+              )}
             </div>
           </div>
         </div>
@@ -477,9 +476,7 @@ export default function Tenant360Page() {
               {Object.entries(detailRow).map(([key, value]) => (
                 <div key={key} className="tenant-360-detail-item">
                   <span className="tenant-360-detail-label">{getFieldLabel(key)}</span>
-                  <span className="tenant-360-detail-value">
-                    {formatDetailValue(key, value)}
-                  </span>
+                  <span className="tenant-360-detail-value">{formatDetailValue(key, value)}</span>
                 </div>
               ))}
             </div>
