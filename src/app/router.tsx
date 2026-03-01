@@ -12,6 +12,8 @@ import LeadConvertPage from "@/pages/LeadConvert";
 import TenantsPage from "@/pages/Tenants";
 import TenantDetailPage from "@/pages/TenantDetail";
 import Tenant360Page from "@/pages/Tenant360";
+import InvoiceListPage from "@/pages/billing/InvoiceListPage";
+import InvoiceDetailPage from "@/pages/billing/InvoiceDetailPage";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { RequireRole } from "@/shared/auth";
@@ -118,6 +120,22 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops", "financeiro"]}>
             <Tenant360Page />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/invoices",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "financeiro"]}>
+            <InvoiceListPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/invoices/:id",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "financeiro"]}>
+            <InvoiceDetailPage />
           </RequireRole>
         )
       }

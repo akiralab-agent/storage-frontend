@@ -413,3 +413,15 @@
   border-color: #fecdd3;
   background: #fff1f2;
 }
+
+.invoice-icon-button--warning {
+  color: #d97706;
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.invoice-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
