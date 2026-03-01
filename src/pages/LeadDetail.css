@@ -39,7 +39,7 @@
 .lead-detail-back svg {
   width: 16px;
   height: 16px;
-  stroke: currentColor;
+  stroke: currentcolor;
   stroke-width: 2;
   fill: none;
 }
@@ -81,7 +81,7 @@
 .lead-detail-converted svg {
   width: 16px;
   height: 16px;
-  stroke: currentColor;
+  stroke: currentcolor;
   stroke-width: 2;
   fill: none;
 }

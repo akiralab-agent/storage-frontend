@@ -23,6 +23,8 @@ export function useFacility() {
   useEffect(() => {
     if (!isAuthenticated || !user?.facilities?.length) {
       setFacilities([]);
+      setSelectedFacilityIdState(null);
+      writeStoredFacilityId(null);
       return;
     }
 

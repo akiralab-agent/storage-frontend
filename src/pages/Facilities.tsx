@@ -124,7 +124,7 @@ export default function FacilitiesPage() {
     return () => {
       isMounted = false;
     };
-  }, [selectedFacilityId]);
+  }, []);
 
   const openCreateModal = () => {
     setEditingFac(null);
