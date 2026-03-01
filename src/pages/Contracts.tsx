@@ -96,7 +96,6 @@ export default function ContractsPage() {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors }
   } = useForm<ContractFormValues>({
     defaultValues: DEFAULT_FORM_VALUES
