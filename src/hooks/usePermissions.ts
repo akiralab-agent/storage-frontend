@@ -4,31 +4,57 @@ import type { Role } from "@/shared/auth/types";
 
 type Permission =
   | "billing.view_invoice"
-  | "billing.view_invoices"
+  | "billing.add_invoice"
+  | "billing.change_invoice"
+  | "billing.delete_invoice"
   | "billing.record_payment"
-  | "billing.void_invoice";
+  | "billing.view_invoiceitem"
+  | "billing.add_invoiceitem"
+  | "billing.change_invoiceitem"
+  | "billing.delete_invoiceitem";
 
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   admin: [
     "billing.view_invoice",
-    "billing.view_invoices",
+    "billing.add_invoice",
+    "billing.change_invoice",
+    "billing.delete_invoice",
     "billing.record_payment",
-    "billing.void_invoice"
+    "billing.view_invoiceitem",
+    "billing.add_invoiceitem",
+    "billing.change_invoiceitem",
+    "billing.delete_invoiceitem"
   ],
   admin_corporativo: [
     "billing.view_invoice",
-    "billing.view_invoices",
+    "billing.add_invoice",
+    "billing.change_invoice",
+    "billing.delete_invoice",
     "billing.record_payment",
-    "billing.void_invoice"
+    "billing.view_invoiceitem",
+    "billing.add_invoiceitem",
+    "billing.change_invoiceitem",
+    "billing.delete_invoiceitem"
   ],
-  gerente: ["billing.view_invoice", "billing.view_invoices", "billing.record_payment"],
+  gerente: [
+    "billing.view_invoice",
+    "billing.add_invoice",
+    "billing.change_invoice",
+    "billing.view_invoiceitem",
+    "billing.add_invoiceitem"
+  ],
   financeiro: [
     "billing.view_invoice",
-    "billing.view_invoices",
+    "billing.add_invoice",
+    "billing.change_invoice",
+    "billing.delete_invoice",
     "billing.record_payment",
-    "billing.void_invoice"
+    "billing.view_invoiceitem",
+    "billing.add_invoiceitem",
+    "billing.change_invoiceitem",
+    "billing.delete_invoiceitem"
   ],
-  ops: ["billing.view_invoice", "billing.view_invoices"],
+  ops: ["billing.view_invoice", "billing.view_invoiceitem"],
   viewer: []
 };
 
