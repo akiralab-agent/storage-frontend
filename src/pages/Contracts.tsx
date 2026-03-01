@@ -102,7 +102,6 @@ export default function ContractsPage() {
     defaultValues: DEFAULT_FORM_VALUES
   });
 
-  const watchStatus = watch("status");
   const currentContractStatus = editingContract?.status;
 
   const canTransitionToStatus = (newStatus: ContractStatus): boolean => {

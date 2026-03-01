@@ -36,16 +36,6 @@ function getStatusColor(status: ContractStatus): string {
   return STATUS_OPTIONS.find((s) => s.value === status)?.color ?? "#64748b";
 }
 
-function formatDate(dateString: string | null): string {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  });
-}
-
 function formatDateTime(dateString: string | null): string {
   if (!dateString) return "-";
   const date = new Date(dateString);
@@ -96,9 +86,6 @@ export default function ContractDetailPage() {
     watch,
     formState: { errors, isDirty }
   } = useForm<ContractFormValues>();
-
-  const watchStatus = watch("status");
-  const currentContractStatus = contract?.status;
 
   const canTransitionToStatus = (newStatus: ContractStatus): boolean => {
     if (!contract) return true;
