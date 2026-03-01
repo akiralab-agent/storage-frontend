@@ -1,11 +1,17 @@
 export type Role = "admin" | "admin_corporativo" | "gerente" | "financeiro" | "ops" | "viewer";
-export type Facility = "primary" | "secondary";
+
+export interface FacilityInfo {
+  id: number;
+  name: string;
+}
 
 export interface User {
-  id: string;
+  id: number;
+  email: string;
   name: string;
+  role: string;
   roles: Role[];
-  facilities: Facility[];
+  facilities: FacilityInfo[];
 }
 
 export interface LoginCredentials {
@@ -16,6 +22,7 @@ export interface LoginCredentials {
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
 }

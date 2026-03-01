@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { useAuth } from "@/shared/auth";
+import { useFacility } from "@/contexts/FacilityContext";
 import { unitsApi } from "@/api/units";
 import type { UnitRecord } from "@/api/units";
 import { facilitiesApi } from "@/api/facilities";
@@ -61,6 +62,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { selectedFacilityId } = useFacility();
   const [units, setUnits] = useState<UnitRecord[]>([]);
   const [facilityCount, setFacilityCount] = useState(0);
   const [orgCount, setOrgCount] = useState(0);
@@ -88,7 +90,7 @@ export default function DashboardPage() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [selectedFacilityId]);
 
   const statusCounts = units.reduce<Record<string, number>>((acc, u) => {
     acc[u.status] = (acc[u.status] || 0) + 1;

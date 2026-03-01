@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { apiClient } from "@/api/client";
-import { useFacility } from "@/shared/facility/useFacility";
+import { useEffect, useRef, useState } from "react";
+import { useFacility } from "@/contexts/FacilityContext";
 import "./FacilitySelector.css";
 
 export default function FacilitySelector() {
@@ -32,7 +31,6 @@ export default function FacilitySelector() {
 
   const handleSelect = (id: string) => {
     setSelectedFacilityId(id);
-    apiClient.defaults.headers.common["X-Facility-ID"] = id;
     setOpen(false);
   };
 

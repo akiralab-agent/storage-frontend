@@ -115,6 +115,19 @@ export default function InvoiceListPage() {
     return Math.max(1, Math.ceil(pagination.count / pagination.pageSize));
   }, [pagination.count, pagination.pageSize]);
 
+  const visiblePages = useMemo(() => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const start = Math.max(1, Math.min(pagination.page - 2, totalPages - 4));
+    return Array.from({ length: 5 }, (_, index) => start + index);
+  }, [pagination.page, totalPages]);
+
+  const showingFrom = pagination.count === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
+  const showingTo =
+    pagination.count === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, pagination.count);
+
   const fetchInvoices = async ({ page = 1 } = {}) => {
     if (!selectedFacilityId || !canView) {
       return;
@@ -367,22 +380,41 @@ export default function InvoiceListPage() {
                   </td>
                   <td>
                     <div className="invoice-actions">
-                      <button className="invoice-button" onClick={() => handleView(invoice)}>
-                        View
+                      <button
+                        className="invoice-icon-button"
+                        onClick={() => handleView(invoice)}
+                        aria-label={`View invoice ${invoice.id}`}
+                        title="View"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
                       </button>
                       <button
-                        className="invoice-button"
+                        className="invoice-icon-button"
                         onClick={() => openPaymentModal(invoice)}
                         disabled={!canRecordPayment}
+                        aria-label={`Record payment for invoice ${invoice.id}`}
+                        title="Record payment"
                       >
-                        Record Payment
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <line x1="12" y1="1" x2="12" y2="23" />
+                          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
                       </button>
                       {canVoid && (
                         <button
-                          className="invoice-button invoice-button--danger"
+                          className="invoice-icon-button invoice-icon-button--danger"
                           onClick={() => handleVoid(invoice)}
+                          aria-label={`Void invoice ${invoice.id}`}
+                          title="Void"
                         >
-                          Void
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          </svg>
                         </button>
                       )}
                     </div>
@@ -392,27 +424,58 @@ export default function InvoiceListPage() {
             )}
           </tbody>
         </table>
-      </div>
-
-      <div className="invoice-pagination">
-        <span>
-          Page {pagination.page} of {totalPages}
-        </span>
-        <div className="invoice-pagination__controls">
-          <button
-            className="invoice-button"
-            onClick={() => handlePageChange(pagination.page - 1)}
-            disabled={pagination.page <= 1}
-          >
-            Previous
-          </button>
-          <button
-            className="invoice-button"
-            onClick={() => handlePageChange(pagination.page + 1)}
-            disabled={pagination.page >= totalPages && !pagination.next}
-          >
-            Next
-          </button>
+        <div className="invoice-pagination">
+          <span>
+            Showing {showingFrom} to {showingTo} of {pagination.count} entries
+          </span>
+          <div className="invoice-pagination__controls">
+            <button
+              className="invoice-pagination__page"
+              onClick={() => handlePageChange(1)}
+              disabled={pagination.page <= 1}
+              aria-label="First page"
+            >
+              {"<<"}
+            </button>
+            <button
+              className="invoice-pagination__page"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1}
+              aria-label="Previous page"
+            >
+              {"<"}
+            </button>
+            {visiblePages.map((pageNumber) => (
+              <button
+                key={pageNumber}
+                className={
+                  pageNumber === pagination.page
+                    ? "invoice-pagination__page invoice-pagination__page--active"
+                    : "invoice-pagination__page"
+                }
+                onClick={() => handlePageChange(pageNumber)}
+                aria-label={`Page ${pageNumber}`}
+              >
+                {pageNumber}
+              </button>
+            ))}
+            <button
+              className="invoice-pagination__page"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= totalPages && !pagination.next}
+              aria-label="Next page"
+            >
+              {">"}
+            </button>
+            <button
+              className="invoice-pagination__page"
+              onClick={() => handlePageChange(totalPages)}
+              disabled={pagination.page >= totalPages && !pagination.next}
+              aria-label="Last page"
+            >
+              {">>"}
+            </button>
+          </div>
         </div>
       </div>
 

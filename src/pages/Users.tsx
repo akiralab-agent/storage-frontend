@@ -13,22 +13,22 @@ const ROLE_OPTIONS = [
 ];
 
 type FacilityOption = {
-  id: string;
+  id: number;
   name: string;
 };
 
 type UserOption = {
-  id: string;
+  id: number;
   email: string;
 };
 
 type UserProfile = {
-  id: string;
-  user?: UserOption | string | null;
-  user_id?: string | null;
+  id: number;
+  user?: UserOption | number | null;
+  user_id?: number | null;
   user_email?: string | null;
   role?: string | null;
-  facilities?: Array<FacilityOption | string> | null;
+  facilities?: Array<FacilityOption | number> | null;
 };
 
 type UserFormValues = {
@@ -66,7 +66,7 @@ function normalizeUser(profile: UserProfile): UserOption | null {
     }
   }
 
-  const id = profile.user_id ?? (typeof profile.user === "string" ? profile.user : "");
+  const id = profile.user_id ?? (typeof profile.user === "number" ? profile.user : null);
   const email = profile.user_email ?? (profile as { email?: string }).email ?? "";
 
   if (id && email) {
@@ -76,41 +76,19 @@ function normalizeUser(profile: UserProfile): UserOption | null {
   return null;
 }
 
-function normalizeAuthUser(payload: unknown): UserOption | null {
-  if (!payload || typeof payload !== "object") {
-    return null;
-  }
-
-  const candidate = payload as {
-    id?: string | null;
-    email?: string | null;
-    user_id?: string | null;
-    user_email?: string | null;
-  };
-
-  const id = candidate.id ?? candidate.user_id ?? "";
-  const email = candidate.email ?? candidate.user_email ?? "";
-
-  if (id && email) {
-    return { id, email };
-  }
-
-  return null;
-}
-
-function normalizeFacilityId(facility: FacilityOption | string): string {
-  return typeof facility === "string" ? facility : facility.id;
+function normalizeFacilityId(facility: FacilityOption | number): string {
+  return typeof facility === "number" ? String(facility) : String(facility.id);
 }
 
 function normalizeFacilityName(
-  facility: FacilityOption | string,
+  facility: FacilityOption | number,
   facilityMap: Map<string, string>
 ): string {
-  if (typeof facility === "string") {
-    return facilityMap.get(facility) ?? facility;
+  if (typeof facility === "number") {
+    return facilityMap.get(String(facility)) ?? String(facility);
   }
 
-  return facility.name ?? facilityMap.get(facility.id) ?? facility.id;
+  return facility.name ?? facilityMap.get(String(facility.id)) ?? String(facility.id);
 }
 
 function getFacilityValidationMessage(role: string, facilityIds: string[]): string | null {
@@ -139,6 +117,8 @@ export default function UsersPage() {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [facilities, setFacilities] = useState<FacilityOption[]>([]);
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -146,7 +126,7 @@ export default function UsersPage() {
   const [pageSuccess, setPageSuccess] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<UserProfile | null>(null);
-  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const modalPanelRef = useRef<HTMLDivElement | null>(null);
   const modalFirstInteractiveRef = useRef<HTMLSelectElement | null>(null);
 
@@ -167,13 +147,35 @@ export default function UsersPage() {
   const selectedRole = watch("role");
   const selectedFacilities = watch("facilityIds");
   const facilityMap = useMemo(
-    () => new Map(facilities.map((facility) => [facility.id, facility.name])),
+    () => new Map(facilities.map((facility) => [String(facility.id), facility.name])),
     [facilities]
   );
 
   const roleLabelMap = useMemo(() => {
     return new Map(ROLE_OPTIONS.map((role) => [role.value, role.label]));
   }, []);
+
+  const filteredProfiles = useMemo(() => {
+    const normalizedQuery = searchTerm.trim().toLowerCase();
+
+    return profiles.filter((profile) => {
+      const role = profile.role ?? "";
+      const roleLabel = roleLabelMap.get(role) ?? role;
+      const user = normalizeUser(profile);
+      const facilitiesLabel = (profile.facilities ?? [])
+        .map((facility) => normalizeFacilityName(facility, facilityMap))
+        .join(", ");
+
+      const matchesStatus = !statusFilter || role === statusFilter;
+
+      if (!normalizedQuery) {
+        return matchesStatus;
+      }
+
+      const searchable = [user?.email ?? "", roleLabel, facilitiesLabel].join(" ").toLowerCase();
+      return matchesStatus && searchable.includes(normalizedQuery);
+    });
+  }, [facilityMap, profiles, roleLabelMap, searchTerm, statusFilter]);
 
   useEffect(() => {
     if (selectedRole === "ADMIN" && selectedFacilities.length > 0) {
@@ -198,10 +200,9 @@ export default function UsersPage() {
       setLoadError(null);
 
       try {
-        const [profilesResponse, usersResponse, facilitiesResponse] = await Promise.all([
-          apiClient.get("/api/users/"),
-          apiClient.get("/api/auth/users/"),
-          apiClient.get("/api/facilities/")
+        const [profilesResponse, facilitiesResponse] = await Promise.all([
+          apiClient.get("/api/v1/users/"),
+          apiClient.get("/api/v1/organizations/facilities/")
         ]);
 
         if (!isMounted) {
@@ -209,18 +210,11 @@ export default function UsersPage() {
         }
 
         const profileList = normalizeList<UserProfile>(profilesResponse.data);
-        const userList = normalizeList<unknown>(usersResponse.data);
         const facilityList = normalizeList<FacilityOption>(facilitiesResponse.data);
         setProfiles(profileList);
         setFacilities(facilityList);
 
-        const userMap = new Map<string, UserOption>();
-        userList.forEach((entry) => {
-          const user = normalizeAuthUser(entry);
-          if (user) {
-            userMap.set(user.id, user);
-          }
-        });
+        const userMap = new Map<number, UserOption>();
 
         profileList.forEach((profile) => {
           const user = normalizeUser(profile);
@@ -263,7 +257,7 @@ export default function UsersPage() {
 
     setEditingProfile(profile);
     reset({
-      userId: user?.id ?? "",
+      userId: user?.id ? String(user.id) : "",
       role: profile.role ?? "",
       facilityIds
     });
@@ -345,11 +339,11 @@ export default function UsersPage() {
   }, [closeModal, isModalOpen]);
 
   const refreshProfiles = async () => {
-    const response = await apiClient.get("/api/users/");
+    const response = await apiClient.get("/api/v1/users/");
     const profileList = normalizeList<UserProfile>(response.data);
     setProfiles(profileList);
 
-    const userMap = new Map<string, UserOption>();
+    const userMap = new Map<number, UserOption>();
     profileList.forEach((profile) => {
       const user = normalizeUser(profile);
       if (user) {
@@ -398,9 +392,9 @@ export default function UsersPage() {
         : "User created successfully.";
 
       if (editingProfile) {
-        await apiClient.put(`/api/users/${editingProfile.id}/`, payload);
+        await apiClient.put(`/api/v1/users/${editingProfile.id}/`, payload);
       } else {
-        await apiClient.post("/api/users/", payload);
+        await apiClient.post("/api/v1/users/", payload);
       }
 
       await refreshProfiles();
@@ -435,7 +429,7 @@ export default function UsersPage() {
         next.add(profile.id);
         return next;
       });
-      await apiClient.delete(`/api/users/${profile.id}/`);
+      await apiClient.delete(`/api/v1/users/${profile.id}/`);
       await refreshProfiles();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -474,17 +468,44 @@ export default function UsersPage() {
         <div className="users-empty">No users found. Create the first user profile.</div>
       ) : (
         <div className="users-table-wrapper">
+          <div className="users-table-toolbar">
+            <select
+              className="users-table-filter"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="">All status</option>
+              {ROLE_OPTIONS.map((roleOption) => (
+                <option key={roleOption.value} value={roleOption.value}>
+                  {roleOption.label}
+                </option>
+              ))}
+            </select>
+            <label className="users-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="16.65" y1="16.65" x2="21" y2="21" />
+              </svg>
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search"
+                aria-label="Search users"
+              />
+            </label>
+          </div>
           <table className="users-table">
             <thead>
               <tr>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Facilities</th>
-                <th aria-label="Actions" />
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {profiles.map((profile) => {
+              {filteredProfiles.map((profile) => {
                 const user = normalizeUser(profile);
                 const facilitiesLabel = (profile.facilities ?? [])
                   .map((facility) => normalizeFacilityName(facility, facilityMap))
@@ -500,18 +521,28 @@ export default function UsersPage() {
                       <div className="users-actions">
                         <button
                           type="button"
-                          className="users-button"
+                          className="users-icon-button"
                           onClick={() => openEditModal(profile)}
+                          aria-label="Edit user"
+                          title="Edit"
                         >
-                          Edit
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 21h6l12-12a2.1 2.1 0 0 0-3-3L6 18l-3 3z" />
+                          </svg>
                         </button>
                         <button
                           type="button"
-                          className="users-button users-button--danger"
+                          className="users-icon-button users-icon-button--danger"
                           onClick={() => handleDelete(profile)}
                           disabled={deletingIds.has(profile.id)}
+                          aria-label="Delete user"
+                          title="Delete"
                         >
-                          Delete
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          </svg>
                         </button>
                       </div>
                     </td>
@@ -520,6 +551,10 @@ export default function UsersPage() {
               })}
             </tbody>
           </table>
+          <div className="users-table-footer">
+            Showing {filteredProfiles.length === 0 ? 0 : 1} to {filteredProfiles.length} of{" "}
+            {profiles.length} entries
+          </div>
         </div>
       )}
 

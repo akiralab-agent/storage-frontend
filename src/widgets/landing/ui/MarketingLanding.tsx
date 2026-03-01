@@ -311,10 +311,10 @@ export default function MarketingLanding() {
           </nav>
 
           <div className="lp-navbar__actions">
-            <a className="lp-btn lp-btn--ghost" href="/status">
+            <a className="lp-btn lp-btn--ghost" href="/login">
               Sign In
             </a>
-            <a className="lp-btn lp-btn--primary" href="/status">
+            <a className="lp-btn lp-btn--primary" href="/login">
               Start Free Trial
             </a>
           </div>
@@ -342,10 +342,10 @@ export default function MarketingLanding() {
                 {link.label}
               </button>
             ))}
-            <a className="lp-btn lp-btn--ghost" href="/status">
+            <a className="lp-btn lp-btn--ghost" href="/login">
               Sign In
             </a>
-            <a className="lp-btn lp-btn--primary" href="/status">
+            <a className="lp-btn lp-btn--primary" href="/login">
               Start Free Trial
             </a>
           </div>
@@ -371,7 +371,7 @@ export default function MarketingLanding() {
                 real-time occupancy insights for US operators.
               </p>
               <div className="lp-scroll-animate lp-hero__cta" style={{ transitionDelay: "240ms" }}>
-                <a className="lp-btn lp-btn--primary lp-btn--large" href="/status">
+                <a className="lp-btn lp-btn--primary lp-btn--large" href="/login">
                   Start Free Trial
                 </a>
                 <button type="button" className="lp-btn lp-btn--outline lp-btn--large">
@@ -688,7 +688,7 @@ export default function MarketingLanding() {
                   </ul>
                   <a
                     className={`lp-btn ${plan.popular ? "lp-btn--primary" : "lp-btn--dark"}`}
-                    href="/status"
+                    href="/login"
                   >
                     {plan.cta}
                   </a>
@@ -718,7 +718,7 @@ export default function MarketingLanding() {
               className="lp-scroll-animate lp-final-cta__actions"
               style={{ transitionDelay: "240ms" }}
             >
-              <a className="lp-btn lp-btn--primary lp-btn--large" href="/status">
+              <a className="lp-btn lp-btn--primary lp-btn--large" href="/login">
                 Start 14-Day Free Trial
               </a>
               <button type="button" className="lp-btn lp-btn--outline lp-btn--large">

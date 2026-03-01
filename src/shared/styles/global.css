@@ -12,6 +12,7 @@
 
   /* ── Cores da marca (whitelabel: troque aqui) ── */
   --brand-primary: #027368; /* cor principal */
+  --brand-primary-dark: #01584f; /* hover da primária */
   --brand-primary-light: #f2f2f2; /* tom claro da primária */
   --brand-secondary: #191726; /* cor secundária */
   --brand-dark: #191726; /* tom escuro / texto */
@@ -41,6 +42,18 @@
   --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
   --shadow-md: 0 18px 42px rgba(15, 23, 42, 0.12);
   --shadow-lg: 0 24px 64px rgba(15, 23, 42, 0.2);
+
+  --table-shell-bg: #ffffff;
+  --table-shell-border: #e5e9f1;
+  --table-head-bg: #f3f5f9;
+  --table-head-ink: #1e293b;
+  --table-row-ink: #334155;
+  --table-row-border: #edf0f5;
+  --table-row-hover: #f9fbff;
+  --table-action-bg: #f6f8fc;
+  --table-action-bg-hover: #edf1f8;
+  --table-action-border: #e2e7f0;
+  --table-action-ink: #475569;
 }
 
 * {

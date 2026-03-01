@@ -1,0 +1,410 @@
+.tenant-360-page {
+  padding: 3rem 1.75rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tenant-360-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.tenant-360-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tenant-360-header__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.tenant-360-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.tenant-360-back svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.tenant-360-back:hover {
+  color: var(--ink);
+}
+
+.tenant-360-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.tenant-360-subtitle {
+  color: var(--ink-soft);
+  margin-top: 0.35rem;
+}
+
+.tenant-360-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tenant-360-info {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.tenant-360-secondary {
+  border: none;
+  border-radius: 8px;
+  background: var(--brand-primary);
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tenant-360-secondary:hover {
+  background: var(--brand-primary-dark);
+  transform: translateY(-1px);
+}
+
+.tenant-360-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+.tenant-360-table-wrapper {
+  background: var(--surface);
+  border-radius: 14px;
+  border: 1px solid var(--table-shell-border);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+}
+
+.tenant-360-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--table-row-border);
+  padding: 0 1rem;
+}
+
+.tenant-360-tab {
+  padding: 0.75rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tenant-360-tab:hover {
+  color: var(--ink);
+}
+
+.tenant-360-tab--active {
+  color: var(--brand-primary);
+  border-bottom-color: var(--brand-primary);
+}
+
+.tenant-360-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.tenant-360-table th,
+.tenant-360-table td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--table-row-ink);
+  border-bottom: 1px solid var(--table-row-border);
+}
+
+.tenant-360-table th {
+  background: var(--table-head-bg);
+  color: var(--table-head-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.tenant-360-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tenant-360-table tbody tr:hover {
+  background: var(--table-row-hover);
+}
+
+.tenant-360-table th:last-child,
+.tenant-360-table td:last-child {
+  width: 80px;
+  text-align: center;
+}
+
+.tenant-360-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tenant-360-icon-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--table-action-border);
+  background: var(--table-action-bg);
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 0;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.tenant-360-icon-button svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tenant-360-icon-button:hover {
+  background: var(--table-action-bg-hover);
+}
+
+.tenant-360-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tenant-360-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 46px;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--table-row-border);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.tenant-360-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--ink-faint);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.tenant-360-loading {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+.tenant-360-error {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--ink-faint);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tenant-360-button {
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--ink);
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tenant-360-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-secondary);
+}
+
+.tenant-360-alert--error {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  background: #fff1f2;
+  color: var(--status-error-dark);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+.tenant-360-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tenant-360-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+}
+
+.tenant-360-modal__panel {
+  position: relative;
+  width: min(640px, calc(100% - 2rem));
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.tenant-360-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tenant-360-modal__header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tenant-360-modal__close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--ink-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.tenant-360-modal__close svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tenant-360-modal__close:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.tenant-360-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.tenant-360-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tenant-360-detail-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tenant-360-detail-value {
+  font-size: 0.9rem;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.tenant-360-detail-json {
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.tenant-360-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 700px) {
+  .tenant-360-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tenant-360-header__actions {
+    flex-direction: column;
+  }
+
+  .tenant-360-tab {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  .tenant-360-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}

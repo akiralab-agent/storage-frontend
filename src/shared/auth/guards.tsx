@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
-import type { Facility, Role } from "@/shared/auth/types";
+import type { FacilityInfo, Role } from "@/shared/auth/types";
 import { useAuth } from "@/shared/auth/useAuth";
 
 interface GuardProps {
@@ -8,8 +8,14 @@ interface GuardProps {
 }
 
 export function RequireRole({ roles, children }: GuardProps & { roles: Role[] }) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const location = useLocation();
+
+  // Show nothing while loading - let the app finish initialization
+  if (isLoading) {
+    return null;
+  }
+
   const authorized = !!user && roles.some((role) => user.roles.includes(role));
 
   if (!authorized) {
@@ -19,7 +25,10 @@ export function RequireRole({ roles, children }: GuardProps & { roles: Role[] })
   return <>{children}</>;
 }
 
-export function RequireFacility({ facilities, children }: GuardProps & { facilities: Facility[] }) {
+export function RequireFacility({
+  facilities,
+  children
+}: GuardProps & { facilities: FacilityInfo[] }) {
   const { user } = useAuth();
   const location = useLocation();
   const authorized = !!user && facilities.some((facility) => user.facilities.includes(facility));

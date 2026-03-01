@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, Navigate } from "react-router-dom";
 import FacilitySelector from "@/components/FacilitySelector";
 import { useAuth } from "@/shared/auth";
 import type { Role } from "@/shared/auth";
@@ -14,6 +14,18 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: "grid" },
+  {
+    to: "/leads",
+    label: "Leads",
+    icon: "target",
+    roles: ["admin", "admin_corporativo", "gerente", "ops"]
+  },
+  {
+    to: "/tenants",
+    label: "Inquilinos",
+    icon: "user",
+    roles: ["admin", "admin_corporativo", "gerente", "ops", "financeiro"]
+  },
   {
     to: "/units",
     label: "Unidades",
@@ -32,8 +44,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: "briefcase",
     roles: ["admin", "admin_corporativo"]
   },
-  { to: "/users", label: "Usuários", icon: "users", roles: ["admin"] },
-  { to: "/status", label: "Status", icon: "activity" }
+  { to: "/users", label: "Usuários", icon: "users", roles: ["admin"] }
 ];
 
 const ICONS: Record<string, JSX.Element> = {
@@ -52,6 +63,22 @@ const ICONS: Record<string, JSX.Element> = {
       <rect x="14" y="3" width="7" height="7" />
       <rect x="14" y="14" width="7" height="7" />
       <rect x="3" y="14" width="7" height="7" />
+    </svg>
+  ),
+  target: (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
     </svg>
   ),
   box: (
@@ -106,6 +133,21 @@ const ICONS: Record<string, JSX.Element> = {
       <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
     </svg>
   ),
+  user: (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  ),
   users: (
     <svg
       width="18"
@@ -122,27 +164,17 @@ const ICONS: Record<string, JSX.Element> = {
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
-  ),
-  activity: (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
   )
 };
 
 export default function AuthenticatedLayout() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => !item.roles || (user && item.roles.some((r) => user.roles.includes(r)))
