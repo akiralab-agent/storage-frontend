@@ -129,8 +129,7 @@ export default function InvoiceListPage() {
     return Array.from({ length: 5 }, (_, i) => start + i);
   }, [pagination.page, totalPages]);
 
-  const showingFrom =
-    pagination.count === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
+  const showingFrom = pagination.count === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
   const showingTo =
     pagination.count === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, pagination.count);
 

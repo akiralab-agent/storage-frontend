@@ -136,9 +136,7 @@ export const invoiceAPI = {
   },
 
   delete: async (facilityId: string | number, invoiceId: string | number): Promise<void> => {
-    await apiClient.delete(
-      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/`
-    );
+    await apiClient.delete(`${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/`);
   },
 
   voidInvoice: async (
@@ -172,10 +170,7 @@ export const invoiceAPI = {
 // ── Invoice Items API ──────────────────────────────────────────────────────
 
 export const invoiceItemsAPI = {
-  list: async (
-    facilityId: string | number,
-    invoiceId: string | number
-  ): Promise<InvoiceItem[]> => {
+  list: async (facilityId: string | number, invoiceId: string | number): Promise<InvoiceItem[]> => {
     const response = await apiClient.get(
       `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/items/`
     );

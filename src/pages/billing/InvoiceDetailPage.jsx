@@ -133,15 +133,14 @@ export default function InvoiceDetailPage() {
   const isVoid = String(invoice?.status ?? "").toUpperCase() === "VOID";
 
   const normalizedItems = useMemo(() => {
-    const raw = items.length > 0 ? items : invoice?.items ?? [];
+    const raw = items.length > 0 ? items : (invoice?.items ?? []);
     return raw.map((item, i) => ({
       id: item.id ?? i,
       description: item.description ?? `Item ${i + 1}`,
       quantity: item.quantity ?? 1,
       unit_price: item.unit_price ?? 0,
       total_amount:
-        item.total_amount ??
-        String(Number(item.quantity ?? 1) * Number(item.unit_price ?? 0))
+        item.total_amount ?? String(Number(item.quantity ?? 1) * Number(item.unit_price ?? 0))
     }));
   }, [items, invoice]);
 
@@ -184,7 +183,9 @@ export default function InvoiceDetailPage() {
     if (!invoice) return;
     setEditForm({
       tenant:
-        typeof invoice.tenant === "object" ? String(invoice.tenant?.id ?? "") : String(invoice.tenant ?? ""),
+        typeof invoice.tenant === "object"
+          ? String(invoice.tenant?.id ?? "")
+          : String(invoice.tenant ?? ""),
       contract: invoice.contract ? String(invoice.contract) : "",
       issue_date: invoice.issue_date ?? "",
       due_date: invoice.due_date ?? "",
@@ -203,7 +204,10 @@ export default function InvoiceDetailPage() {
     if (!isEditOpen) return;
     editModalRef.current?.focus();
     const handleKey = (e) => {
-      if (e.key === "Escape") { e.preventDefault(); closeEdit(); }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeEdit();
+      }
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
@@ -238,14 +242,20 @@ export default function InvoiceDetailPage() {
 
   // ── Void modal ────────────────────────────────────────────────────────
 
-  const openVoid = () => { setVoidReason(""); setIsVoidOpen(true); };
+  const openVoid = () => {
+    setVoidReason("");
+    setIsVoidOpen(true);
+  };
   const closeVoid = () => setIsVoidOpen(false);
 
   useEffect(() => {
     if (!isVoidOpen) return;
     voidModalRef.current?.focus();
     const handleKey = (e) => {
-      if (e.key === "Escape") { e.preventDefault(); closeVoid(); }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeVoid();
+      }
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
@@ -323,7 +333,10 @@ export default function InvoiceDetailPage() {
     if (!isAddItemOpen) return;
     itemModalRef.current?.focus();
     const handleKey = (e) => {
-      if (e.key === "Escape") { e.preventDefault(); closeAddItem(); }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeAddItem();
+      }
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
@@ -374,7 +387,10 @@ export default function InvoiceDetailPage() {
     if (!editingItem) return;
     editItemModalRef.current?.focus();
     const handleKey = (e) => {
-      if (e.key === "Escape") { e.preventDefault(); closeEditItem(); }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeEditItem();
+      }
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
@@ -440,9 +456,7 @@ export default function InvoiceDetailPage() {
     );
   }
 
-  const pdfHref = invoiceId
-    ? invoiceAPI.downloadPdfUrl(facilityId, invoiceId)
-    : "#";
+  const pdfHref = invoiceId ? invoiceAPI.downloadPdfUrl(facilityId, invoiceId) : "#";
 
   return (
     <div className="invoice-page">
@@ -514,7 +528,9 @@ export default function InvoiceDetailPage() {
                 </div>
                 <div className="invoice-detail-row">
                   <span className="invoice-detail-label">Status</span>
-                  <span className={`invoice-status invoice-status--${getStatusClass(invoice?.status)}`}>
+                  <span
+                    className={`invoice-status invoice-status--${getStatusClass(invoice?.status)}`}
+                  >
                     {getStatusLabel(invoice?.status)}
                   </span>
                 </div>
@@ -557,7 +573,9 @@ export default function InvoiceDetailPage() {
                     <th>Qtd</th>
                     <th>Preço Unitário</th>
                     <th>Total</th>
-                    {(canChangeItem || canDeleteItem) && <th className="invoice-actions-header">Ações</th>}
+                    {(canChangeItem || canDeleteItem) && (
+                      <th className="invoice-actions-header">Ações</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -740,9 +758,7 @@ export default function InvoiceDetailPage() {
                     className="invoice-input"
                     type="date"
                     value={editForm.due_date}
-                    onChange={(e) =>
-                      setEditForm((prev) => ({ ...prev, due_date: e.target.value }))
-                    }
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, due_date: e.target.value }))}
                     required
                   />
                 </label>
@@ -822,12 +838,7 @@ export default function InvoiceDetailPage() {
 
       {/* ── Add Item Modal ── */}
       {isAddItemOpen && (
-        <div
-          className="invoice-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Adicionar item"
-        >
+        <div className="invoice-modal" role="dialog" aria-modal="true" aria-label="Adicionar item">
           <div className="invoice-modal__overlay" onClick={closeAddItem} />
           <div className="invoice-modal__panel" ref={itemModalRef} tabIndex={-1}>
             <div className="invoice-modal__header">
@@ -862,9 +873,7 @@ export default function InvoiceDetailPage() {
                     min="1"
                     step="1"
                     value={itemForm.quantity}
-                    onChange={(e) =>
-                      setItemForm((prev) => ({ ...prev, quantity: e.target.value }))
-                    }
+                    onChange={(e) => setItemForm((prev) => ({ ...prev, quantity: e.target.value }))}
                     required
                   />
                 </label>
@@ -903,12 +912,7 @@ export default function InvoiceDetailPage() {
 
       {/* ── Edit Item Modal ── */}
       {editingItem && (
-        <div
-          className="invoice-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Editar item"
-        >
+        <div className="invoice-modal" role="dialog" aria-modal="true" aria-label="Editar item">
           <div className="invoice-modal__overlay" onClick={closeEditItem} />
           <div className="invoice-modal__panel" ref={editItemModalRef} tabIndex={-1}>
             <div className="invoice-modal__header">
