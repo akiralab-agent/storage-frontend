@@ -586,7 +586,7 @@ export default function ContractsPage() {
                   }
                 >
                   {STATUS_OPTIONS.map((opt) => {
-                    const disabled = editingContract && !canTransitionToStatus(opt.value);
+                    const disabled = !!(editingContract && !canTransitionToStatus(opt.value));
                     return (
                       <option key={opt.value} value={opt.value} disabled={disabled}>
                         {opt.label}
