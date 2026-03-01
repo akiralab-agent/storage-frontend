@@ -3,28 +3,40 @@ import { useNavigate } from "react-router-dom";
 import { useFacility } from "@/contexts/FacilityContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { invoiceAPI } from "@/services/billing";
+import { STATUS_OPTIONS, STATUS_LABELS, PAYMENT_METHODS } from "@/pages/billing/billingConstants";
 import "@/pages/billing/InvoiceListPage.css";
 
-const STATUS_OPTIONS = [
-  { value: "", label: "All statuses" },
-  { value: "draft", label: "Draft" },
-  { value: "open", label: "Open" },
-  { value: "past_due", label: "Past Due" },
-  { value: "paid", label: "Paid" },
-  { value: "void", label: "Void" }
-];
+const FILTER_STATUS_OPTIONS = [{ value: "", label: "Todos os status" }, ...STATUS_OPTIONS];
 
 const PAGE_SIZE = 10;
 
+function getLocalDateString() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+const EMPTY_INVOICE_FORM = {
+  tenant: "",
+  contract: "",
+  issue_date: getLocalDateString(),
+  due_date: "",
+  status: "DRAFT"
+};
+
 function formatDate(value) {
-  if (!value) {
-    return "—";
+  if (!value) return "—";
+  let date;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    const [year, month, day] = String(value).split("-").map(Number);
+    date = new Date(year, month - 1, day);
+  } else {
+    date = new Date(value);
   }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat("en-US", {
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("pt-BR", {
     year: "numeric",
     month: "short",
     day: "numeric"
@@ -32,45 +44,27 @@ function formatDate(value) {
 }
 
 function formatCurrency(value) {
-  const numberValue = typeof value === "string" ? Number(value) : value;
-  if (numberValue == null || Number.isNaN(numberValue)) {
-    return "—";
-  }
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-  }).format(numberValue);
+  const num = typeof value === "string" ? Number(value) : value;
+  if (num == null || Number.isNaN(num)) return "—";
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
 }
 
 function getTenantName(invoice) {
-  if (invoice.tenant_name) {
-    return invoice.tenant_name;
-  }
-  if (invoice.tenant?.name) {
-    return invoice.tenant.name;
-  }
+  if (invoice.tenant_name) return invoice.tenant_name;
+  if (invoice.tenant?.name) return invoice.tenant.name;
   return "—";
 }
 
 function getInvoiceTotal(invoice) {
-  return invoice.total ?? invoice.amount_total ?? "—";
+  return invoice.total_amount ?? invoice.total ?? invoice.amount_total ?? "—";
 }
 
-function getInvoiceStatus(invoice) {
-  return invoice.status ?? invoice.state ?? "unknown";
+function getStatusLabel(status) {
+  return STATUS_LABELS[status] ?? String(status ?? "").replace(/_/g, " ");
 }
 
-function formatStatusLabel(status) {
-  if (!status) {
-    return "Unknown";
-  }
-  return String(status).replace(/_/g, " ");
-}
-
-function formatStatusClass(status) {
-  return String(status || "unknown")
-    .toLowerCase()
-    .replace(/\\s+/g, "_");
+function getStatusClass(status) {
+  return String(status || "unknown").toLowerCase();
 }
 
 export default function InvoiceListPage() {
@@ -80,8 +74,6 @@ export default function InvoiceListPage() {
 
   const [statusFilter, setStatusFilter] = useState("");
   const [tenantFilter, setTenantFilter] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
 
   const [invoices, setInvoices] = useState([]);
   const [pagination, setPagination] = useState({
@@ -95,33 +87,39 @@ export default function InvoiceListPage() {
   const [loadError, setLoadError] = useState(null);
   const [pageSuccess, setPageSuccess] = useState(null);
 
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  // Create modal
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [invoiceForm, setInvoiceForm] = useState(EMPTY_INVOICE_FORM);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const createModalRef = useRef(null);
+
+  // Record payment modal
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [activeInvoice, setActiveInvoice] = useState(null);
   const [paymentForm, setPaymentForm] = useState({
     amount: "",
-    paidOn: new Date().toISOString().slice(0, 10),
-    note: ""
+    method: "CASH",
+    transaction_id: ""
   });
-  const modalPanelRef = useRef(null);
+  const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
+  const paymentModalRef = useRef(null);
 
-  const canView = hasPermission("billing.view_invoice") || hasPermission("billing.view_invoices");
+  const canView = hasPermission("billing.view_invoice");
+  const canAdd = hasPermission("billing.add_invoice");
+  const canDelete = hasPermission("billing.delete_invoice");
   const canRecordPayment = hasPermission("billing.record_payment");
-  const canVoid = hasPermission("billing.void_invoice");
+  const canVoid = hasPermission("billing.change_invoice");
 
   const totalPages = useMemo(() => {
-    if (!pagination.count || !pagination.pageSize) {
-      return 1;
-    }
+    if (!pagination.count || !pagination.pageSize) return 1;
     return Math.max(1, Math.ceil(pagination.count / pagination.pageSize));
   }, [pagination.count, pagination.pageSize]);
 
   const visiblePages = useMemo(() => {
-    if (totalPages <= 5) {
-      return Array.from({ length: totalPages }, (_, index) => index + 1);
-    }
-
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
     const start = Math.max(1, Math.min(pagination.page - 2, totalPages - 4));
-    return Array.from({ length: 5 }, (_, index) => start + index);
+    return Array.from({ length: 5 }, (_, i) => start + i);
   }, [pagination.page, totalPages]);
 
   const showingFrom = pagination.count === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
@@ -129,24 +127,17 @@ export default function InvoiceListPage() {
     pagination.count === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, pagination.count);
 
   const fetchInvoices = async ({ page = 1 } = {}) => {
-    if (!selectedFacilityId || !canView) {
-      return;
-    }
-
+    if (!selectedFacilityId || !canView) return;
     setIsLoading(true);
     setLoadError(null);
     setPageSuccess(null);
-
     try {
       const response = await invoiceAPI.list(selectedFacilityId, {
         status: statusFilter || undefined,
         tenant_id: tenantFilter || undefined,
-        date_from: startDate || undefined,
-        date_to: endDate || undefined,
         page,
         page_size: PAGE_SIZE
       });
-
       setInvoices(response.results);
       setPagination({
         count: response.count,
@@ -156,7 +147,7 @@ export default function InvoiceListPage() {
         previous: response.previous
       });
     } catch {
-      setLoadError("Unable to load invoices. Please try again.");
+      setLoadError("Não foi possível carregar as faturas. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -164,101 +155,164 @@ export default function InvoiceListPage() {
 
   useEffect(() => {
     fetchInvoices({ page: 1 });
-  }, [selectedFacilityId, statusFilter, tenantFilter, startDate, endDate, canView]);
+  }, [selectedFacilityId, statusFilter, tenantFilter, canView]);
 
-  const closePaymentModal = () => {
-    setIsPaymentModalOpen(false);
-    setActiveInvoice(null);
-    setPaymentForm({
-      amount: "",
-      paidOn: new Date().toISOString().slice(0, 10),
-      note: ""
-    });
+  // ── Create modal ──────────────────────────────────────────────────────
+
+  const openCreate = () => {
+    setInvoiceForm(EMPTY_INVOICE_FORM);
+    setFormError(null);
+    setIsCreateOpen(true);
+  };
+
+  const closeCreate = () => {
+    setIsCreateOpen(false);
+    setFormError(null);
   };
 
   useEffect(() => {
-    if (!isPaymentModalOpen) {
-      return;
-    }
-
-    modalPanelRef.current?.focus();
-
-    const handleKeydown = (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closePaymentModal();
+    if (!isCreateOpen) return;
+    createModalRef.current?.focus();
+    const handleKey = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeCreate();
       }
     };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isCreateOpen]);
 
-    document.addEventListener("keydown", handleKeydown);
-    return () => {
-      document.removeEventListener("keydown", handleKeydown);
-    };
-  }, [isPaymentModalOpen]);
+  const handleInvoiceFormChange = (field) => (e) => {
+    setInvoiceForm((prev) => ({ ...prev, [field]: e.target.value }));
+  };
 
-  const openPaymentModal = (invoice) => {
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedFacilityId || !canAdd) return;
+    setIsSaving(true);
+    setFormError(null);
+    try {
+      const payload = {
+        tenant: Number(invoiceForm.tenant),
+        issue_date: invoiceForm.issue_date,
+        due_date: invoiceForm.due_date,
+        status: invoiceForm.status
+      };
+      if (invoiceForm.contract) {
+        payload.contract = Number(invoiceForm.contract);
+      }
+      await invoiceAPI.create(selectedFacilityId, payload);
+      setPageSuccess("Fatura criada com sucesso.");
+      closeCreate();
+      await fetchInvoices({ page: 1 });
+    } catch (err) {
+      const msg = err?.response?.data
+        ? Object.values(err.response.data).flat().join(" ")
+        : "Erro ao criar fatura.";
+      setFormError(msg);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // ── Payment modal ─────────────────────────────────────────────────────
+
+  const openPayment = (invoice) => {
     setActiveInvoice(invoice);
-    setIsPaymentModalOpen(true);
+    setPaymentForm({
+      amount: String(getInvoiceTotal(invoice) !== "—" ? getInvoiceTotal(invoice) : ""),
+      method: "CASH",
+      transaction_id: ""
+    });
+    setIsPaymentOpen(true);
   };
 
-  const handlePageChange = (nextPage) => {
-    const targetPage = Math.min(Math.max(1, nextPage), totalPages);
-    fetchInvoices({ page: targetPage });
+  const closePayment = () => {
+    setIsPaymentOpen(false);
+    setActiveInvoice(null);
   };
+
+  useEffect(() => {
+    if (!isPaymentOpen) return;
+    paymentModalRef.current?.focus();
+    const handleKey = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closePayment();
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isPaymentOpen]);
+
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedFacilityId || !activeInvoice || isSubmittingPayment || !canRecordPayment) return;
+    setIsSubmittingPayment(true);
+    try {
+      await invoiceAPI.recordPayment(selectedFacilityId, {
+        invoice: activeInvoice.id,
+        amount: paymentForm.amount,
+        method: paymentForm.method,
+        transaction_id: paymentForm.transaction_id || undefined
+      });
+      setPageSuccess(`Pagamento registrado para fatura #${activeInvoice.id}.`);
+      closePayment();
+      await fetchInvoices({ page: pagination.page });
+    } catch {
+      setLoadError("Não foi possível registrar o pagamento.");
+    } finally {
+      setIsSubmittingPayment(false);
+    }
+  };
+
+  // ── Actions ───────────────────────────────────────────────────────────
 
   const handleView = (invoice) => {
-    if (!selectedFacilityId) {
-      return;
-    }
-    navigate(`/admin/facilities/${selectedFacilityId}/invoices/${invoice.id}`);
+    navigate(`/invoices/${invoice.id}`);
   };
 
   const handleVoid = async (invoice) => {
-    if (!selectedFacilityId || !canVoid) {
-      return;
-    }
-
-    if (!window.confirm(`Void invoice ${invoice.id}?`)) {
-      return;
-    }
-
+    if (!selectedFacilityId || !canVoid) return;
+    if (!window.confirm(`Anular fatura #${invoice.id}?`)) return;
+    const reason = window.prompt("Motivo da anulação (obrigatório):") ?? "";
+    if (!reason.trim()) return;
     try {
-      await invoiceAPI.voidInvoice(selectedFacilityId, invoice.id);
-      setPageSuccess(`Invoice ${invoice.id} voided.`);
+      await invoiceAPI.voidInvoice(selectedFacilityId, invoice.id, { void_reason: reason });
+      setPageSuccess(`Fatura #${invoice.id} anulada.`);
       await fetchInvoices({ page: pagination.page });
     } catch {
-      setLoadError("Unable to void invoice. Please try again.");
+      setLoadError("Não foi possível anular a fatura.");
     }
   };
 
-  const handlePaymentSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!selectedFacilityId || !activeInvoice) {
-      return;
-    }
-
+  const handleDelete = async (invoice) => {
+    if (!selectedFacilityId || !canDelete) return;
+    if (!window.confirm(`Excluir fatura #${invoice.id}? Esta ação não pode ser desfeita.`)) return;
     try {
-      await invoiceAPI.recordPayment(selectedFacilityId, activeInvoice.id, {
-        amount: paymentForm.amount,
-        paid_on: paymentForm.paidOn,
-        note: paymentForm.note
-      });
-      setPageSuccess(`Payment recorded for invoice ${activeInvoice.id}.`);
-      closePaymentModal();
+      await invoiceAPI.delete(selectedFacilityId, invoice.id);
+      setPageSuccess(`Fatura #${invoice.id} excluída.`);
       await fetchInvoices({ page: pagination.page });
     } catch {
-      setLoadError("Unable to record payment. Please try again.");
+      setLoadError("Não foi possível excluir a fatura.");
     }
   };
+
+  const handlePageChange = (nextPage) => {
+    const target = Math.min(Math.max(1, nextPage), totalPages);
+    fetchInvoices({ page: target });
+  };
+
+  // ── Guards ────────────────────────────────────────────────────────────
 
   if (!selectedFacilityId) {
     return (
       <div className="invoice-page">
         <div className="invoice-header">
           <div>
-            <h1>Invoices</h1>
-            <p className="invoice-subtitle">Select a facility to view invoices.</p>
+            <h1>Faturas</h1>
+            <p className="invoice-subtitle">Selecione uma filial para ver as faturas.</p>
           </div>
         </div>
       </div>
@@ -270,8 +324,8 @@ export default function InvoiceListPage() {
       <div className="invoice-page">
         <div className="invoice-header">
           <div>
-            <h1>Invoices</h1>
-            <p className="invoice-subtitle">You do not have billing access.</p>
+            <h1>Faturas</h1>
+            <p className="invoice-subtitle">Você não tem permissão de acesso ao faturamento.</p>
           </div>
         </div>
       </div>
@@ -282,9 +336,14 @@ export default function InvoiceListPage() {
     <div className="invoice-page">
       <div className="invoice-header">
         <div>
-          <h1>Invoices</h1>
-          <p className="invoice-subtitle">Track invoices, payments, and statuses.</p>
+          <h1>Faturas</h1>
+          <p className="invoice-subtitle">Gerencie faturas, pagamentos e status.</p>
         </div>
+        {canAdd && (
+          <button className="invoice-button invoice-button--primary" onClick={openCreate}>
+            + Nova Fatura
+          </button>
+        )}
       </div>
 
       <div className="invoice-filters">
@@ -293,41 +352,23 @@ export default function InvoiceListPage() {
           <select
             className="invoice-input"
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
+            onChange={(e) => setStatusFilter(e.target.value)}
           >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            {FILTER_STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
               </option>
             ))}
           </select>
         </label>
         <label className="invoice-field">
-          Tenant search
+          Inquilino
           <input
             className="invoice-input"
             type="text"
-            placeholder="Tenant name or ID"
+            placeholder="Nome ou ID"
             value={tenantFilter}
-            onChange={(event) => setTenantFilter(event.target.value)}
-          />
-        </label>
-        <label className="invoice-field">
-          Issue date from
-          <input
-            className="invoice-input"
-            type="date"
-            value={startDate}
-            onChange={(event) => setStartDate(event.target.value)}
-          />
-        </label>
-        <label className="invoice-field">
-          Issue date to
-          <input
-            className="invoice-input"
-            type="date"
-            value={endDate}
-            onChange={(event) => setEndDate(event.target.value)}
+            onChange={(e) => setTenantFilter(e.target.value)}
           />
         </label>
       </div>
@@ -339,26 +380,26 @@ export default function InvoiceListPage() {
         <table className="invoice-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Tenant</th>
-              <th>Issue Date</th>
-              <th>Due Date</th>
+              <th>#</th>
+              <th>Inquilino</th>
+              <th>Emissão</th>
+              <th>Vencimento</th>
               <th>Total</th>
               <th>Status</th>
-              <th className="invoice-actions-header">Actions</th>
+              <th className="invoice-actions-header">Ações</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
                 <td colSpan={7} className="invoice-empty">
-                  Loading invoices...
+                  Carregando faturas…
                 </td>
               </tr>
             ) : invoices.length === 0 ? (
               <tr>
                 <td colSpan={7} className="invoice-empty">
-                  No invoices match the current filters.
+                  Nenhuma fatura encontrada.
                 </td>
               </tr>
             ) : (
@@ -371,44 +412,61 @@ export default function InvoiceListPage() {
                   <td>{formatCurrency(getInvoiceTotal(invoice))}</td>
                   <td>
                     <span
-                      className={`invoice-status invoice-status--${formatStatusClass(
-                        getInvoiceStatus(invoice)
-                      )}`}
+                      className={`invoice-status invoice-status--${getStatusClass(invoice.status)}`}
                     >
-                      {formatStatusLabel(getInvoiceStatus(invoice))}
+                      {getStatusLabel(invoice.status)}
                     </span>
                   </td>
                   <td>
                     <div className="invoice-actions">
+                      {/* View */}
                       <button
                         className="invoice-icon-button"
                         onClick={() => handleView(invoice)}
-                        aria-label={`View invoice ${invoice.id}`}
-                        title="View"
+                        title="Ver detalhe"
+                        aria-label={`Ver fatura ${invoice.id}`}
                       >
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
                           <circle cx="12" cy="12" r="3" />
                         </svg>
                       </button>
-                      <button
-                        className="invoice-icon-button"
-                        onClick={() => openPaymentModal(invoice)}
-                        disabled={!canRecordPayment}
-                        aria-label={`Record payment for invoice ${invoice.id}`}
-                        title="Record payment"
-                      >
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <line x1="12" y1="1" x2="12" y2="23" />
-                          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H6" />
-                        </svg>
-                      </button>
-                      {canVoid && (
+                      {/* Record payment */}
+                      {canRecordPayment && (
+                        <button
+                          className="invoice-icon-button"
+                          onClick={() => openPayment(invoice)}
+                          title="Registrar pagamento"
+                          aria-label={`Registrar pagamento da fatura ${invoice.id}`}
+                          disabled={invoice.status === "VOID" || invoice.status === "PAID"}
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <line x1="12" y1="1" x2="12" y2="23" />
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H6" />
+                          </svg>
+                        </button>
+                      )}
+                      {/* Void */}
+                      {canVoid && invoice.status !== "VOID" && (
+                        <button
+                          className="invoice-icon-button invoice-icon-button--warning"
+                          onClick={() => handleVoid(invoice)}
+                          title="Anular fatura"
+                          aria-label={`Anular fatura ${invoice.id}`}
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                          </svg>
+                        </button>
+                      )}
+                      {/* Delete */}
+                      {canDelete && (
                         <button
                           className="invoice-icon-button invoice-icon-button--danger"
-                          onClick={() => handleVoid(invoice)}
-                          aria-label={`Void invoice ${invoice.id}`}
-                          title="Void"
+                          onClick={() => handleDelete(invoice)}
+                          title="Excluir fatura"
+                          aria-label={`Excluir fatura ${invoice.id}`}
                         >
                           <svg viewBox="0 0 24 24" aria-hidden="true">
                             <polyline points="3 6 5 6 21 6" />
@@ -424,16 +482,17 @@ export default function InvoiceListPage() {
             )}
           </tbody>
         </table>
+
         <div className="invoice-pagination">
           <span>
-            Showing {showingFrom} to {showingTo} of {pagination.count} entries
+            Exibindo {showingFrom}–{showingTo} de {pagination.count}
           </span>
           <div className="invoice-pagination__controls">
             <button
               className="invoice-pagination__page"
               onClick={() => handlePageChange(1)}
               disabled={pagination.page <= 1}
-              aria-label="First page"
+              aria-label="Primeira página"
             >
               {"<<"}
             </button>
@@ -441,29 +500,25 @@ export default function InvoiceListPage() {
               className="invoice-pagination__page"
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              aria-label="Previous page"
+              aria-label="Página anterior"
             >
               {"<"}
             </button>
-            {visiblePages.map((pageNumber) => (
+            {visiblePages.map((p) => (
               <button
-                key={pageNumber}
-                className={
-                  pageNumber === pagination.page
-                    ? "invoice-pagination__page invoice-pagination__page--active"
-                    : "invoice-pagination__page"
-                }
-                onClick={() => handlePageChange(pageNumber)}
-                aria-label={`Page ${pageNumber}`}
+                key={p}
+                className={`invoice-pagination__page${p === pagination.page ? " invoice-pagination__page--active" : ""}`}
+                onClick={() => handlePageChange(p)}
+                aria-label={`Página ${p}`}
               >
-                {pageNumber}
+                {p}
               </button>
             ))}
             <button
               className="invoice-pagination__page"
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page >= totalPages && !pagination.next}
-              aria-label="Next page"
+              aria-label="Próxima página"
             >
               {">"}
             </button>
@@ -471,7 +526,7 @@ export default function InvoiceListPage() {
               className="invoice-pagination__page"
               onClick={() => handlePageChange(totalPages)}
               disabled={pagination.page >= totalPages && !pagination.next}
-              aria-label="Last page"
+              aria-label="Última página"
             >
               {">>"}
             </button>
@@ -479,65 +534,177 @@ export default function InvoiceListPage() {
         </div>
       </div>
 
-      {isPaymentModalOpen && (
-        <div className="invoice-modal" role="dialog" aria-modal="true">
-          <div className="invoice-modal__overlay" onClick={closePaymentModal} />
-          <div className="invoice-modal__panel" ref={modalPanelRef} tabIndex={-1}>
+      {/* ── Create Invoice Modal ── */}
+      {isCreateOpen && (
+        <div className="invoice-modal" role="dialog" aria-modal="true" aria-label="Nova fatura">
+          <div className="invoice-modal__overlay" onClick={closeCreate} />
+          <div className="invoice-modal__panel" ref={createModalRef} tabIndex={-1}>
             <div className="invoice-modal__header">
               <div>
-                <h2>Record Payment</h2>
+                <h2>Nova Fatura</h2>
+                <p className="invoice-subtitle">Preencha os dados para criar uma fatura.</p>
+              </div>
+              <button className="invoice-button" onClick={closeCreate}>
+                Fechar
+              </button>
+            </div>
+            {formError && <div className="invoice-alert invoice-alert--error">{formError}</div>}
+            <form className="invoice-form" onSubmit={handleCreateSubmit}>
+              <div className="invoice-form-grid">
+                <label className="invoice-field">
+                  ID do Inquilino *
+                  <input
+                    className="invoice-input"
+                    type="number"
+                    min="1"
+                    value={invoiceForm.tenant}
+                    onChange={handleInvoiceFormChange("tenant")}
+                    required
+                    placeholder="Ex: 1"
+                  />
+                </label>
+                <label className="invoice-field">
+                  ID do Contrato
+                  <input
+                    className="invoice-input"
+                    type="number"
+                    min="1"
+                    value={invoiceForm.contract}
+                    onChange={handleInvoiceFormChange("contract")}
+                    placeholder="Opcional"
+                  />
+                </label>
+                <label className="invoice-field">
+                  Data de Emissão *
+                  <input
+                    className="invoice-input"
+                    type="date"
+                    value={invoiceForm.issue_date}
+                    onChange={handleInvoiceFormChange("issue_date")}
+                    required
+                  />
+                </label>
+                <label className="invoice-field">
+                  Data de Vencimento *
+                  <input
+                    className="invoice-input"
+                    type="date"
+                    value={invoiceForm.due_date}
+                    onChange={handleInvoiceFormChange("due_date")}
+                    required
+                  />
+                </label>
+                <label className="invoice-field">
+                  Status
+                  <select
+                    className="invoice-input"
+                    value={invoiceForm.status}
+                    onChange={handleInvoiceFormChange("status")}
+                  >
+                    {STATUS_OPTIONS.filter((o) => o.value).map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <p className="invoice-subtitle" style={{ fontSize: "0.85rem" }}>
+                Para adicionar itens à fatura, acesse o detalhe após criá-la.
+              </p>
+              <div className="invoice-actions">
+                <button className="invoice-button" type="button" onClick={closeCreate}>
+                  Cancelar
+                </button>
+                <button
+                  className="invoice-button invoice-button--primary"
+                  type="submit"
+                  disabled={isSaving}
+                >
+                  {isSaving ? "Salvando…" : "Criar Fatura"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Record Payment Modal ── */}
+      {isPaymentOpen && (
+        <div
+          className="invoice-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Registrar pagamento"
+        >
+          <div className="invoice-modal__overlay" onClick={closePayment} />
+          <div className="invoice-modal__panel" ref={paymentModalRef} tabIndex={-1}>
+            <div className="invoice-modal__header">
+              <div>
+                <h2>Registrar Pagamento</h2>
                 <p className="invoice-subtitle">
-                  Invoice {activeInvoice?.id} for {getTenantName(activeInvoice || {})}
+                  Fatura #{activeInvoice?.id} — {getTenantName(activeInvoice ?? {})}
                 </p>
               </div>
-              <button className="invoice-button" onClick={closePaymentModal}>
-                Close
+              <button className="invoice-button" onClick={closePayment}>
+                Fechar
               </button>
             </div>
             <form className="invoice-form" onSubmit={handlePaymentSubmit}>
-              <label className="invoice-field">
-                Amount
-                <input
-                  className="invoice-input"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={paymentForm.amount}
-                  onChange={(event) =>
-                    setPaymentForm((prev) => ({ ...prev, amount: event.target.value }))
-                  }
-                  required
-                />
-              </label>
-              <label className="invoice-field">
-                Paid on
-                <input
-                  className="invoice-input"
-                  type="date"
-                  value={paymentForm.paidOn}
-                  onChange={(event) =>
-                    setPaymentForm((prev) => ({ ...prev, paidOn: event.target.value }))
-                  }
-                  required
-                />
-              </label>
-              <label className="invoice-field">
-                Note
-                <textarea
-                  className="invoice-input invoice-textarea"
-                  value={paymentForm.note}
-                  onChange={(event) =>
-                    setPaymentForm((prev) => ({ ...prev, note: event.target.value }))
-                  }
-                  rows={3}
-                />
-              </label>
+              <div className="invoice-form-grid">
+                <label className="invoice-field">
+                  Valor *
+                  <input
+                    className="invoice-input"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={paymentForm.amount}
+                    onChange={(e) =>
+                      setPaymentForm((prev) => ({ ...prev, amount: e.target.value }))
+                    }
+                    required
+                  />
+                </label>
+                <label className="invoice-field">
+                  Método *
+                  <select
+                    className="invoice-input"
+                    value={paymentForm.method}
+                    onChange={(e) =>
+                      setPaymentForm((prev) => ({ ...prev, method: e.target.value }))
+                    }
+                  >
+                    {PAYMENT_METHODS.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="invoice-field">
+                  ID da Transação
+                  <input
+                    className="invoice-input"
+                    type="text"
+                    placeholder="Opcional"
+                    value={paymentForm.transaction_id}
+                    onChange={(e) =>
+                      setPaymentForm((prev) => ({ ...prev, transaction_id: e.target.value }))
+                    }
+                  />
+                </label>
+              </div>
               <div className="invoice-actions">
-                <button className="invoice-button" type="button" onClick={closePaymentModal}>
-                  Cancel
+                <button className="invoice-button" type="button" onClick={closePayment}>
+                  Cancelar
                 </button>
-                <button className="invoice-button invoice-button--primary" type="submit">
-                  Save Payment
+                <button
+                  className="invoice-button invoice-button--primary"
+                  type="submit"
+                  disabled={isSubmittingPayment}
+                >
+                  {isSubmittingPayment ? "Salvando…" : "Registrar Pagamento"}
                 </button>
               </div>
             </form>

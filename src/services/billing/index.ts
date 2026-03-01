@@ -1,29 +1,61 @@
 import { apiClient } from "@/api/client";
 
-export type InvoiceRecord = {
-  id: string | number;
+// ── Types ──────────────────────────────────────────────────────────────────
+
+export type InvoiceStatus = "DRAFT" | "ISSUED" | "PAID" | "OVERDUE" | "VOID";
+
+export type InvoiceItem = {
+  id: number;
+  description: string;
+  quantity: number;
+  unit_price: string;
+  total_amount?: string;
+};
+
+export type Invoice = {
+  id: number;
+  contract?: number | null;
+  tenant: number | { id: number; name?: string | null } | null;
   tenant_name?: string | null;
-  tenant?: { id?: string | number; name?: string | null } | null;
-  tenant_id?: string | number | null;
-  issue_date?: string | null;
-  due_date?: string | null;
-  total?: number | string | null;
-  amount_total?: number | string | null;
-  status?: string | null;
-  state?: string | null;
+  issue_date: string;
+  due_date: string;
+  status: InvoiceStatus;
+  total_amount?: string | null;
+  void_reason?: string | null;
+  items?: InvoiceItem[];
+};
+
+export type InvoicePayload = {
+  contract?: number | null;
+  tenant: number;
+  issue_date: string;
+  due_date: string;
+  status: InvoiceStatus;
+  items?: { description: string; quantity: number; unit_price: string }[];
+};
+
+export type InvoiceItemPayload = {
+  description: string;
+  quantity: number;
+  unit_price: string;
+};
+
+export type RecordPaymentPayload = {
+  invoice: number;
+  amount: string;
+  method: "CASH" | "CARD" | "TRANSFER" | "OTHER";
+  transaction_id?: string;
 };
 
 export type InvoiceListParams = {
   status?: string;
   tenant_id?: string;
-  date_from?: string;
-  date_to?: string;
   page?: number;
   page_size?: number;
 };
 
 export type InvoiceListResponse = {
-  results: InvoiceRecord[];
+  results: Invoice[];
   count: number;
   next: string | null;
   previous: string | null;
@@ -31,52 +63,44 @@ export type InvoiceListResponse = {
   pageSize: number;
 };
 
-function normalizeList(payload: unknown): { results: InvoiceRecord[]; count: number } {
-  if (Array.isArray(payload)) {
-    return { results: payload as InvoiceRecord[], count: payload.length };
-  }
+// ── Helpers ────────────────────────────────────────────────────────────────
 
+export const encodePathSegment = (id: string | number) => encodeURIComponent(String(id));
+
+function billingBase(facilityId: string | number) {
+  return `/api/v1/billing/facilities/${encodePathSegment(facilityId)}`;
+}
+
+function normalizeList(payload: unknown): { results: Invoice[]; count: number } {
+  if (Array.isArray(payload)) {
+    return { results: payload as Invoice[], count: payload.length };
+  }
   if (payload && typeof payload === "object" && "results" in payload) {
-    const results = (payload as { results?: InvoiceRecord[] }).results;
+    const results = (payload as { results?: Invoice[] }).results;
     const count =
       (payload as { count?: number }).count ?? (Array.isArray(results) ? results.length : 0);
     return { results: Array.isArray(results) ? results : [], count };
   }
-
   return { results: [], count: 0 };
 }
 
-export const encodePathSegment = (id: string | number) => encodeURIComponent(String(id));
+// ── Invoice API ────────────────────────────────────────────────────────────
 
 export const invoiceAPI = {
-  get: async (facilityId: string, invoiceId: string | number) => {
-    const response = await apiClient.get(
-      `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(invoiceId)}/`
-    );
-    return response.data;
-  },
-
   list: async (
-    facilityId: string,
+    facilityId: string | number,
     params: InvoiceListParams = {}
   ): Promise<InvoiceListResponse> => {
-    const response = await apiClient.get(
-      `/api/facilities/${encodePathSegment(facilityId)}/invoices/`,
-      {
-        params
-      }
-    );
+    const response = await apiClient.get(`${billingBase(facilityId)}/invoices/`, { params });
     const data = response.data as {
-      results?: InvoiceRecord[];
+      results?: Invoice[];
       count?: number;
       next?: string | null;
       previous?: string | null;
       page_size?: number;
     };
-
     const normalized = normalizeList(data);
     const pageSize = data?.page_size ?? params.page_size ?? normalized.results.length;
-
     return {
       results: normalized.results,
       count: normalized.count,
@@ -87,39 +111,118 @@ export const invoiceAPI = {
     };
   },
 
-  recordPayment: async (
-    facilityId: string,
+  get: async (facilityId: string | number, invoiceId: string | number): Promise<Invoice> => {
+    const response = await apiClient.get(
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/`
+    );
+    return response.data;
+  },
+
+  create: async (facilityId: string | number, payload: InvoicePayload): Promise<Invoice> => {
+    const response = await apiClient.post(`${billingBase(facilityId)}/invoices/`, payload);
+    return response.data;
+  },
+
+  update: async (
+    facilityId: string | number,
     invoiceId: string | number,
-    payload: Record<string, unknown>
-  ) => {
-    const response = await apiClient.post(
-      `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(invoiceId)}/payments/`,
+    payload: Partial<InvoicePayload>
+  ): Promise<Invoice> => {
+    const response = await apiClient.patch(
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/`,
       payload
     );
     return response.data;
   },
 
+  delete: async (facilityId: string | number, invoiceId: string | number): Promise<void> => {
+    await apiClient.delete(`${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/`);
+  },
+
   voidInvoice: async (
-    facilityId: string,
+    facilityId: string | number,
     invoiceId: string | number,
-    payload: Record<string, unknown> = {}
-  ) => {
+    payload: { void_reason: string }
+  ): Promise<Invoice> => {
     const response = await apiClient.patch(
-      `/api/facilities/${encodePathSegment(facilityId)}/invoices/${encodePathSegment(
-        invoiceId
-      )}/void/`,
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/void/`,
       payload
     );
     return response.data;
+  },
+
+  recordPayment: async (
+    facilityId: string | number,
+    payload: RecordPaymentPayload
+  ): Promise<unknown> => {
+    const response = await apiClient.post(
+      `${billingBase(facilityId)}/invoices/record-payment/`,
+      payload
+    );
+    return response.data;
+  },
+
+  downloadPdfUrl: (facilityId: string | number, invoiceId: string | number): string => {
+    return `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/pdf/`;
+  },
+
+  fetchInvoicePdf: async (
+    facilityId: string | number,
+    invoiceId: string | number
+  ): Promise<string> => {
+    const response = await apiClient.get(
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/pdf/`,
+      { responseType: "blob" }
+    );
+    return URL.createObjectURL(response.data as Blob);
   }
 };
 
-export const paymentAPI = {
-  create: async (facilityId: string, payload: Record<string, unknown>) => {
+// ── Invoice Items API ──────────────────────────────────────────────────────
+
+export const invoiceItemsAPI = {
+  list: async (facilityId: string | number, invoiceId: string | number): Promise<InvoiceItem[]> => {
+    const response = await apiClient.get(
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/items/`
+    );
+    const data = response.data;
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.results)) return data.results;
+    return [];
+  },
+
+  create: async (
+    facilityId: string | number,
+    invoiceId: string | number,
+    payload: InvoiceItemPayload
+  ): Promise<InvoiceItem> => {
     const response = await apiClient.post(
-      `/api/facilities/${encodePathSegment(facilityId)}/payments/`,
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/items/`,
       payload
     );
     return response.data;
+  },
+
+  update: async (
+    facilityId: string | number,
+    invoiceId: string | number,
+    itemId: string | number,
+    payload: Partial<InvoiceItemPayload>
+  ): Promise<InvoiceItem> => {
+    const response = await apiClient.patch(
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/items/${encodePathSegment(itemId)}/`,
+      payload
+    );
+    return response.data;
+  },
+
+  delete: async (
+    facilityId: string | number,
+    invoiceId: string | number,
+    itemId: string | number
+  ): Promise<void> => {
+    await apiClient.delete(
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/items/${encodePathSegment(itemId)}/`
+    );
   }
 };
