@@ -2,38 +2,22 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFacility } from "@/contexts/FacilityContext";
 import { usePermissions } from "@/hooks/usePermissions";
-import { encodePathSegment, invoiceAPI, invoiceItemsAPI } from "@/services/billing";
+import { invoiceAPI, invoiceItemsAPI } from "@/services/billing";
+import { STATUS_OPTIONS, STATUS_LABELS, PAYMENT_METHODS } from "@/pages/billing/billingConstants";
 import "@/pages/billing/InvoiceListPage.css";
 import "@/pages/billing/InvoiceDetailPage.css";
-
-const STATUS_OPTIONS = [
-  { value: "DRAFT", label: "Rascunho" },
-  { value: "ISSUED", label: "Emitida" },
-  { value: "PAID", label: "Paga" },
-  { value: "OVERDUE", label: "Vencida" },
-  { value: "VOID", label: "Anulada" }
-];
-
-const STATUS_LABELS = {
-  DRAFT: "Rascunho",
-  ISSUED: "Emitida",
-  PAID: "Paga",
-  OVERDUE: "Vencida",
-  VOID: "Anulada"
-};
-
-const PAYMENT_METHODS = [
-  { value: "CASH", label: "Dinheiro" },
-  { value: "CARD", label: "Cartão" },
-  { value: "TRANSFER", label: "Transferência" },
-  { value: "OTHER", label: "Outro" }
-];
 
 const EMPTY_ITEM_FORM = { description: "", quantity: "1", unit_price: "" };
 
 function formatDate(value) {
   if (!value) return "—";
-  const date = new Date(value);
+  let date;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    const [year, month, day] = String(value).split("-").map(Number);
+    date = new Date(year, month - 1, day);
+  } else {
+    date = new Date(value);
+  }
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat("pt-BR", {
     year: "numeric",
@@ -108,6 +92,7 @@ export default function InvoiceDetailPage() {
     transaction_id: ""
   });
   const [isPaymentSubmitting, setIsPaymentSubmitting] = useState(false);
+  const [isPdfDownloading, setIsPdfDownloading] = useState(false);
 
   // Invoice items
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
@@ -130,7 +115,9 @@ export default function InvoiceDetailPage() {
   const canChangeItem = hasPermission("billing.change_invoiceitem");
   const canDeleteItem = hasPermission("billing.delete_invoiceitem");
 
-  const isVoid = String(invoice?.status ?? "").toUpperCase() === "VOID";
+  const isFinalPaymentState =
+    String(invoice?.status ?? "").toUpperCase() === "VOID" ||
+    String(invoice?.status ?? "").toUpperCase() === "PAID";
 
   const normalizedItems = useMemo(() => {
     const raw = items.length > 0 ? items : (invoice?.items ?? []);
@@ -432,6 +419,27 @@ export default function InvoiceDetailPage() {
     }
   };
 
+  // ── Download PDF ──────────────────────────────────────────────────────
+
+  const handleDownloadPdf = async () => {
+    if (!facilityId || !invoiceId || isPdfDownloading) return;
+    setIsPdfDownloading(true);
+    try {
+      const objectUrl = await invoiceAPI.fetchInvoicePdf(facilityId, invoiceId);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `fatura-${invoiceId}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      setLoadError("Não foi possível baixar o PDF.");
+    } finally {
+      setIsPdfDownloading(false);
+    }
+  };
+
   // ── Guards ────────────────────────────────────────────────────────────
 
   if (!facilityId) {
@@ -455,8 +463,6 @@ export default function InvoiceDetailPage() {
       </div>
     );
   }
-
-  const pdfHref = invoiceId ? invoiceAPI.downloadPdfUrl(facilityId, invoiceId) : "#";
 
   return (
     <div className="invoice-page">
@@ -484,20 +490,19 @@ export default function InvoiceDetailPage() {
           )}
         </div>
         <div className="invoice-actions">
-          <a
+          <button
             className="invoice-button invoice-button--primary"
-            href={pdfHref}
-            target="_blank"
-            rel="noreferrer"
+            onClick={handleDownloadPdf}
+            disabled={isPdfDownloading}
           >
-            Baixar PDF
-          </a>
-          {canChange && !isVoid && (
+            {isPdfDownloading ? "Baixando…" : "Baixar PDF"}
+          </button>
+          {canChange && !isFinalPaymentState && (
             <button className="invoice-button" onClick={openEdit}>
               Editar
             </button>
           )}
-          {canChange && !isVoid && (
+          {canChange && !isFinalPaymentState && (
             <button className="invoice-button invoice-button--warning" onClick={openVoid}>
               Anular
             </button>
@@ -559,7 +564,7 @@ export default function InvoiceDetailPage() {
           <section className="invoice-section">
             <div className="invoice-section__header">
               <h2>Itens da Fatura</h2>
-              {canAddItem && !isVoid && (
+              {canAddItem && !isFinalPaymentState && (
                 <button className="invoice-button invoice-button--primary" onClick={openAddItem}>
                   + Adicionar Item
                 </button>
@@ -581,7 +586,10 @@ export default function InvoiceDetailPage() {
                 <tbody>
                   {normalizedItems.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="invoice-empty">
+                      <td
+                        colSpan={canChangeItem || canDeleteItem ? 5 : 4}
+                        className="invoice-empty"
+                      >
                         Nenhum item cadastrado.
                       </td>
                     </tr>
@@ -595,7 +603,7 @@ export default function InvoiceDetailPage() {
                         {(canChangeItem || canDeleteItem) && (
                           <td>
                             <div className="invoice-actions">
-                              {canChangeItem && !isVoid && (
+                              {canChangeItem && !isFinalPaymentState && (
                                 <button
                                   className="invoice-icon-button"
                                   onClick={() => openEditItem(item)}
@@ -607,7 +615,7 @@ export default function InvoiceDetailPage() {
                                   </svg>
                                 </button>
                               )}
-                              {canDeleteItem && !isVoid && (
+                              {canDeleteItem && !isFinalPaymentState && (
                                 <button
                                   className="invoice-icon-button invoice-icon-button--danger"
                                   onClick={() => handleDeleteItem(item)}
@@ -692,7 +700,7 @@ export default function InvoiceDetailPage() {
                   <button
                     className="invoice-button invoice-button--primary"
                     type="submit"
-                    disabled={isVoid || isPaymentSubmitting}
+                    disabled={isFinalPaymentState || isPaymentSubmitting}
                   >
                     {isPaymentSubmitting ? "Salvando…" : "Registrar Pagamento"}
                   </button>

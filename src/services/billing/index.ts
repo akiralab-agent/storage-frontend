@@ -164,6 +164,17 @@ export const invoiceAPI = {
 
   downloadPdfUrl: (facilityId: string | number, invoiceId: string | number): string => {
     return `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/pdf/`;
+  },
+
+  fetchInvoicePdf: async (
+    facilityId: string | number,
+    invoiceId: string | number
+  ): Promise<string> => {
+    const response = await apiClient.get(
+      `${billingBase(facilityId)}/invoices/${encodePathSegment(invoiceId)}/pdf/`,
+      { responseType: "blob" }
+    );
+    return URL.createObjectURL(response.data as Blob);
   }
 };
 

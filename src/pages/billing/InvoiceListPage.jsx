@@ -3,45 +3,38 @@ import { useNavigate } from "react-router-dom";
 import { useFacility } from "@/contexts/FacilityContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { invoiceAPI } from "@/services/billing";
+import { STATUS_OPTIONS, STATUS_LABELS, PAYMENT_METHODS } from "@/pages/billing/billingConstants";
 import "@/pages/billing/InvoiceListPage.css";
 
-const STATUS_OPTIONS = [
-  { value: "", label: "Todos os status" },
-  { value: "DRAFT", label: "Rascunho" },
-  { value: "ISSUED", label: "Emitida" },
-  { value: "PAID", label: "Paga" },
-  { value: "OVERDUE", label: "Vencida" },
-  { value: "VOID", label: "Anulada" }
-];
-
-const STATUS_LABELS = {
-  DRAFT: "Rascunho",
-  ISSUED: "Emitida",
-  PAID: "Paga",
-  OVERDUE: "Vencida",
-  VOID: "Anulada"
-};
-
-const PAYMENT_METHODS = [
-  { value: "CASH", label: "Dinheiro" },
-  { value: "CARD", label: "Cartão" },
-  { value: "TRANSFER", label: "Transferência" },
-  { value: "OTHER", label: "Outro" }
-];
+const FILTER_STATUS_OPTIONS = [{ value: "", label: "Todos os status" }, ...STATUS_OPTIONS];
 
 const PAGE_SIZE = 10;
+
+function getLocalDateString() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 const EMPTY_INVOICE_FORM = {
   tenant: "",
   contract: "",
-  issue_date: new Date().toISOString().slice(0, 10),
+  issue_date: getLocalDateString(),
   due_date: "",
   status: "DRAFT"
 };
 
 function formatDate(value) {
   if (!value) return "—";
-  const date = new Date(value);
+  let date;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    const [year, month, day] = String(value).split("-").map(Number);
+    date = new Date(year, month - 1, day);
+  } else {
+    date = new Date(value);
+  }
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat("pt-BR", {
     year: "numeric",
@@ -255,7 +248,7 @@ export default function InvoiceListPage() {
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedFacilityId || !activeInvoice) return;
+    if (!selectedFacilityId || !activeInvoice || isSubmittingPayment || !canRecordPayment) return;
     setIsSubmittingPayment(true);
     try {
       await invoiceAPI.recordPayment(selectedFacilityId, {
@@ -361,7 +354,7 @@ export default function InvoiceListPage() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            {STATUS_OPTIONS.map((o) => (
+            {FILTER_STATUS_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>
