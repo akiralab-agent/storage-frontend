@@ -230,7 +230,11 @@ export default function ContractsPage() {
       const activeElement = document.activeElement as HTMLElement | null;
 
       if (event.shiftKey) {
-        if (!activeElement || activeElement === first || !modalPanelRef.current?.contains(activeElement)) {
+        if (
+          !activeElement ||
+          activeElement === first ||
+          !modalPanelRef.current?.contains(activeElement)
+        ) {
           event.preventDefault();
           last.focus();
         }
@@ -485,7 +489,9 @@ export default function ContractsPage() {
                   {editingContract ? "Edit Contract" : "New Contract"}
                 </h2>
                 <p className="contracts-subtitle">
-                  {editingContract ? "Update contract information." : "Create a new lease contract."}
+                  {editingContract
+                    ? "Update contract information."
+                    : "Create a new lease contract."}
                 </p>
               </div>
               <button type="button" className="contracts-button" onClick={closeModal}>
@@ -580,8 +586,7 @@ export default function ContractsPage() {
                   }
                 >
                   {STATUS_OPTIONS.map((opt) => {
-                    const disabled =
-                      editingContract && !canTransitionToStatus(opt.value);
+                    const disabled = editingContract && !canTransitionToStatus(opt.value);
                     return (
                       <option key={opt.value} value={opt.value} disabled={disabled}>
                         {opt.label}
@@ -590,38 +595,45 @@ export default function ContractsPage() {
                     );
                   })}
                 </select>
-                {editingContract && (currentContractStatus === "CLOSED" || currentContractStatus === "CANCELED") && (
-                  <span className="contracts-hint">
-                    Terminal status - no transitions allowed.
-                  </span>
-                )}
+                {editingContract &&
+                  (currentContractStatus === "CLOSED" || currentContractStatus === "CANCELED") && (
+                    <span className="contracts-hint">
+                      Terminal status - no transitions allowed.
+                    </span>
+                  )}
                 {errors.status && <span className="contracts-error">{errors.status.message}</span>}
               </label>
 
               <div className="contracts-form-grid">
                 <label className="contracts-field">
                   <span>Audit Reference ID</span>
-                  <input type="text" {...register("audit_reference_id")} className="contracts-input" />
+                  <input
+                    type="text"
+                    {...register("audit_reference_id")}
+                    className="contracts-input"
+                  />
                 </label>
 
                 <label className="contracts-field">
                   <span>Billing Reference ID</span>
-                  <input type="text" {...register("billing_reference_id")} className="contracts-input" />
+                  <input
+                    type="text"
+                    {...register("billing_reference_id")}
+                    className="contracts-input"
+                  />
                 </label>
               </div>
 
-              {formError && <div className="contracts-alert contracts-alert--error">{formError}</div>}
+              {formError && (
+                <div className="contracts-alert contracts-alert--error">{formError}</div>
+              )}
 
               <div className="contracts-form__actions">
                 <button type="button" className="contracts-button" onClick={closeModal}>
                   Cancel
                 </button>
                 <button type="submit" className="contracts-primary" disabled={isSaving}>
-                  {isSaving
-                    ? "Saving..."
-                    : editingContract
-                      ? "Update Contract"
-                      : "Create Contract"}
+                  {isSaving ? "Saving..." : editingContract ? "Update Contract" : "Create Contract"}
                 </button>
               </div>
             </form>

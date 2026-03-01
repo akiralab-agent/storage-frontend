@@ -132,9 +132,9 @@ export default function ContractDetailPage() {
             tenantsApi.get(contractData.tenant),
             unitsApi.list()
           ]);
-          
+
           if (!isMounted) return;
-          
+
           setTenant(tenantData);
           const unitRecord = unitData.find((u) => u.id === contractData.unit);
           setUnit(unitRecord || null);
@@ -329,7 +329,9 @@ export default function ContractDetailPage() {
               <div className="contract-detail-field contract-detail-field--readonly">
                 <span>Tenant</span>
                 <div className="contract-detail-readonly-value">
-                  {tenant ? `${tenant.first_name} ${tenant.last_name}` : `Tenant #${contract?.tenant}`}
+                  {tenant
+                    ? `${tenant.first_name} ${tenant.last_name}`
+                    : `Tenant #${contract?.tenant}`}
                 </div>
               </div>
 

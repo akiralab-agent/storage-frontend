@@ -59,7 +59,7 @@ export const contractsApi = {
     if (filters?.status) params.append("status", filters.status);
     if (filters?.tenant_id) params.append("tenant_id", String(filters.tenant_id));
     if (filters?.unit_id) params.append("unit_id", String(filters.unit_id));
-    
+
     const query = params.toString();
     const url = query ? `/api/v1/contracts/?${query}` : "/api/v1/contracts/";
     const response = await apiClient.get(url);
