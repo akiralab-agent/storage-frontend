@@ -600,9 +600,7 @@ export default function LeadsPage() {
                     className={errors.first_name ? "leads-input leads-input--error" : "leads-input"}
                     ref={(node) => {
                       firstNameRegisterRef(node);
-                      if (!editingLead) {
-                        modalFirstInputRef.current = node;
-                      }
+                      modalFirstInputRef.current = node;
                     }}
                   />
                   {errors.first_name && (
