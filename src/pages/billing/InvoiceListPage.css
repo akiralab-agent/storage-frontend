@@ -394,7 +394,7 @@
 .invoice-icon-button svg {
   width: 14px;
   height: 14px;
-  stroke: currentColor;
+  stroke: currentcolor;
   stroke-width: 2;
   fill: none;
 }

@@ -348,7 +348,9 @@ export default function TenantsPage() {
       {isLoading ? (
         <div className="tenants-empty">Loading tenants...</div>
       ) : tenants.length === 0 ? (
-        <div className="tenants-empty">No tenants found. Create the first tenant to get started.</div>
+        <div className="tenants-empty">
+          No tenants found. Create the first tenant to get started.
+        </div>
       ) : (
         <div className="tenants-table-wrapper">
           <div className="tenants-table-toolbar">
@@ -496,7 +498,9 @@ export default function TenantsPage() {
                   <input
                     type="text"
                     {...register("first_name", { required: "First name is required." })}
-                    className={errors.first_name ? "tenants-input tenants-input--error" : "tenants-input"}
+                    className={
+                      errors.first_name ? "tenants-input tenants-input--error" : "tenants-input"
+                    }
                     ref={(node) => {
                       if (!editingTenant) {
                         modalFirstInputRef.current = node;
@@ -513,7 +517,9 @@ export default function TenantsPage() {
                   <input
                     type="text"
                     {...register("last_name", { required: "Last name is required." })}
-                    className={errors.last_name ? "tenants-input tenants-input--error" : "tenants-input"}
+                    className={
+                      errors.last_name ? "tenants-input tenants-input--error" : "tenants-input"
+                    }
                   />
                   {errors.last_name && (
                     <span className="tenants-error">{errors.last_name.message}</span>

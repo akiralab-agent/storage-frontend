@@ -58,7 +58,7 @@ export default function OrganizationsPage() {
     const normalizedQuery = searchTerm.trim().toLowerCase();
 
     return organizations.filter((organization) => {
-      const matchesTimezone = !timezoneFilter || organization.timezone === timezoneFilter;
+      const matchesTimezone = !timezoneFilter || organization.timezone?.trim() === timezoneFilter;
 
       if (!normalizedQuery) {
         return matchesTimezone;

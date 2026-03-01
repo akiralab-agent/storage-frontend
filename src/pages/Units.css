@@ -251,7 +251,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: currentColor;
+  background: currentcolor;
 }
 
 .units-actions {
@@ -649,7 +649,7 @@
 .units-icon-button svg {
   width: 14px;
   height: 14px;
-  stroke: currentColor;
+  stroke: currentcolor;
   stroke-width: 2;
   fill: none;
 }

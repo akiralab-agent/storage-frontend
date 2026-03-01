@@ -275,7 +275,9 @@ export default function TenantDetailPage() {
       {pageSuccess && (
         <div className="tenant-detail-alert tenant-detail-alert--success">{pageSuccess}</div>
       )}
-      {formError && <div className="tenant-detail-alert tenant-detail-alert--error">{formError}</div>}
+      {formError && (
+        <div className="tenant-detail-alert tenant-detail-alert--error">{formError}</div>
+      )}
 
       <div className="tenant-detail-content">
         <form className="tenant-detail-form" onSubmit={handleSubmit(onSubmit)}>
@@ -326,7 +328,11 @@ export default function TenantDetailPage() {
 
               <label className="tenant-detail-field">
                 <span>Secondary Phone</span>
-                <input type="tel" {...register("phone_secondary")} className="tenant-detail-input" />
+                <input
+                  type="tel"
+                  {...register("phone_secondary")}
+                  className="tenant-detail-input"
+                />
               </label>
 
               <label className="tenant-detail-field">
@@ -381,7 +387,11 @@ export default function TenantDetailPage() {
               <button type="button" className="tenant-detail-button" onClick={handleBack}>
                 Cancel
               </button>
-              <button type="submit" className="tenant-detail-primary" disabled={isSaving || !isDirty}>
+              <button
+                type="submit"
+                className="tenant-detail-primary"
+                disabled={isSaving || !isDirty}
+              >
                 {isSaving ? "Saving..." : "Save Changes"}
               </button>
             </div>
@@ -391,7 +401,10 @@ export default function TenantDetailPage() {
 
       {showDeleteConfirm && (
         <div className="tenant-detail-modal" role="dialog" aria-modal="true">
-          <div className="tenant-detail-modal__overlay" onClick={() => setShowDeleteConfirm(false)} />
+          <div
+            className="tenant-detail-modal__overlay"
+            onClick={() => setShowDeleteConfirm(false)}
+          />
           <div className="tenant-detail-modal__panel" ref={modalPanelRef}>
             <h2>Delete Tenant</h2>
             <p>

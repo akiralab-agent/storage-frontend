@@ -31,7 +31,8 @@ export function RequireFacility({
 }: GuardProps & { facilities: FacilityInfo[] }) {
   const { user } = useAuth();
   const location = useLocation();
-  const authorized = !!user && facilities.some((facility) => user.facilities.includes(facility));
+  const userFacilityIds = new Set(user?.facilities.map((f) => f.id) ?? []);
+  const authorized = !!user && facilities.some((facility) => userFacilityIds.has(facility.id));
 
   if (!authorized) {
     return <Navigate to="/unauthorized" replace state={{ from: location }} />;

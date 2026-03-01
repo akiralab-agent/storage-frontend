@@ -125,6 +125,10 @@ export default function LeadsPage() {
     defaultValues: DEFAULT_FORM_VALUES
   });
 
+  const { ref: firstNameRegisterRef, ...firstNameRegister } = register("first_name", {
+    required: "First name is required."
+  });
+
   const stageLabelMap = useMemo(() => {
     return new Map(STAGE_OPTIONS.map((stage) => [stage.value, stage.label]));
   }, []);
@@ -136,7 +140,7 @@ export default function LeadsPage() {
       const fullName = `${lead.first_name} ${lead.last_name}`.toLowerCase();
       const email = (lead.email ?? "").toLowerCase();
       const phone = (lead.phone_primary ?? "").toLowerCase();
-      const stageLabel = stageLabelMap.get(lead.stage) ?? lead.stage;
+      const stageLabel = (stageLabelMap.get(lead.stage) ?? lead.stage).toLowerCase();
 
       const matchesStage = !stageFilter || lead.stage === stageFilter;
       const matchesOwner = !ownerFilter || String(lead.owner_id) === ownerFilter;
@@ -592,12 +596,11 @@ export default function LeadsPage() {
                   <span>First Name *</span>
                   <input
                     type="text"
-                    {...register("first_name", { required: "First name is required." })}
+                    {...firstNameRegister}
                     className={errors.first_name ? "leads-input leads-input--error" : "leads-input"}
                     ref={(node) => {
-                      if (!editingLead) {
-                        modalFirstInputRef.current = node;
-                      }
+                      firstNameRegisterRef(node);
+                      modalFirstInputRef.current = node;
                     }}
                   />
                   {errors.first_name && (

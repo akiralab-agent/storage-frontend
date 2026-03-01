@@ -6,7 +6,6 @@ import { facilitiesApi } from "@/api/facilities";
 import { organizationsApi } from "@/api/organizations";
 import type { FacilityRecord, FacilityPayload } from "@/api/facilities";
 import type { Organization } from "@/api/organizations";
-import { useFacility } from "@/contexts/FacilityContext";
 import "@/pages/Facilities.css";
 
 type FacFormValues = {
@@ -24,7 +23,6 @@ const DEFAULT_FORM_VALUES: FacFormValues = {
 };
 
 export default function FacilitiesPage() {
-  const { selectedFacilityId } = useFacility();
   const [facilities, setFacilities] = useState<FacilityRecord[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -124,7 +122,7 @@ export default function FacilitiesPage() {
     return () => {
       isMounted = false;
     };
-  }, [selectedFacilityId]);
+  }, []);
 
   const openCreateModal = () => {
     setEditingFac(null);
