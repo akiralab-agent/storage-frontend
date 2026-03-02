@@ -28,8 +28,8 @@ export type ContractPayload = {
   status?: ContractStatus;
   signed_metadata?: Record<string, unknown>;
   signed_at?: string | null;
-  audit_reference_id?: string;
-  billing_reference_id?: string;
+  audit_reference_id?: string | null;
+  billing_reference_id?: string | null;
 };
 
 export type ContractFilters = {

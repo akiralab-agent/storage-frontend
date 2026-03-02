@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/shared/auth";
 import { contractsApi } from "@/api/contracts";
 import type { Contract, ContractStatus, ContractPayload } from "@/api/contracts";
 import { tenantsApi } from "@/api/tenants";
@@ -59,22 +60,10 @@ function formatDate(dateString: string | null): string {
   });
 }
 
-function useUserRoles(): string[] {
-  const stored = localStorage.getItem("user");
-  if (stored) {
-    try {
-      const user = JSON.parse(stored);
-      return user.roles || [];
-    } catch {
-      return [];
-    }
-  }
-  return [];
-}
-
 export default function ContractsPage() {
   const navigate = useNavigate();
-  const userRoles = useUserRoles();
+  const { user } = useAuth();
+  const userRoles = user?.roles ?? [];
   const canWrite = userRoles.some((role) => WRITE_ROLES.includes(role));
 
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -258,8 +247,8 @@ export default function ContractsPage() {
     }
 
     const payload: ContractPayload = {
-      tenant: parseInt(values.tenant, 10),
-      unit: parseInt(values.unit, 10),
+      tenant: editingContract ? editingContract.tenant : parseInt(values.tenant, 10),
+      unit: editingContract ? editingContract.unit : parseInt(values.unit, 10),
       move_in: values.move_in,
       move_out: values.move_out || null,
       terms: values.terms || null,
@@ -509,6 +498,7 @@ export default function ContractsPage() {
                       errors.tenant ? "contracts-input contracts-input--error" : "contracts-input"
                     }
                     ref={(node) => {
+                      register("tenant", { required: "Tenant is required." }).ref(node);
                       if (!editingContract) {
                         modalFirstInputRef.current = node;
                       }

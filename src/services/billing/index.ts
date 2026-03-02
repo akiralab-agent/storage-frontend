@@ -178,6 +178,114 @@ export const invoiceAPI = {
   }
 };
 
+// ── Payment Types ──────────────────────────────────────────────────────────
+
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED";
+
+export type PaymentMethod = "CARD" | "CASH" | "BANK_TRANSFER" | "CHECK" | "OTHER";
+
+export type PaymentRecord = {
+  id: string | number;
+  invoice: string | number;
+  amount: string;
+  method: PaymentMethod;
+  transaction_id: string | null;
+  status: PaymentStatus;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type PaymentPayload = {
+  invoice: string | number;
+  amount: string;
+  method: PaymentMethod;
+  transaction_id?: string | null;
+  status?: PaymentStatus;
+};
+
+export type PaymentListParams = {
+  invoice?: string | number;
+  status?: PaymentStatus;
+  page?: number;
+  page_size?: number;
+};
+
+export type PaymentListResponse = {
+  results: PaymentRecord[];
+  count: number;
+  next: string | null;
+  previous: string | null;
+  page: number;
+  pageSize: number;
+};
+
+// ── Payment API ─────────────────────────────────────────────────────────────
+
+export const paymentAPI = {
+  list: async (
+    facilityId: string,
+    params: PaymentListParams = {}
+  ): Promise<PaymentListResponse> => {
+    const response = await apiClient.get(
+      `/api/v1/billing/facilities/${encodePathSegment(facilityId)}/payments/`,
+      { params }
+    );
+    const data = response.data as {
+      results?: PaymentRecord[];
+      count?: number;
+      next?: string | null;
+      previous?: string | null;
+      page_size?: number;
+    };
+
+    const results = Array.isArray(data?.results) ? data.results : [];
+    const count = data?.count ?? results.length;
+    const pageSize = data?.page_size ?? params.page_size ?? results.length;
+
+    return {
+      results,
+      count,
+      next: data?.next ?? null,
+      previous: data?.previous ?? null,
+      page: params.page ?? 1,
+      pageSize
+    };
+  },
+
+  get: async (facilityId: string, paymentId: string | number): Promise<PaymentRecord> => {
+    const response = await apiClient.get(
+      `/api/v1/billing/facilities/${encodePathSegment(facilityId)}/payments/${encodePathSegment(paymentId)}/`
+    );
+    return response.data as PaymentRecord;
+  },
+
+  create: async (facilityId: string, payload: PaymentPayload): Promise<PaymentRecord> => {
+    const response = await apiClient.post(
+      `/api/v1/billing/facilities/${encodePathSegment(facilityId)}/payments/`,
+      payload
+    );
+    return response.data as PaymentRecord;
+  },
+
+  patch: async (
+    facilityId: string,
+    paymentId: string | number,
+    payload: Partial<PaymentPayload>
+  ): Promise<PaymentRecord> => {
+    const response = await apiClient.patch(
+      `/api/v1/billing/facilities/${encodePathSegment(facilityId)}/payments/${encodePathSegment(paymentId)}/`,
+      payload
+    );
+    return response.data as PaymentRecord;
+  },
+
+  delete: async (facilityId: string, paymentId: string | number): Promise<void> => {
+    await apiClient.delete(
+      `/api/v1/billing/facilities/${encodePathSegment(facilityId)}/payments/${encodePathSegment(paymentId)}/`
+    );
+  }
+};
+
 // ── Invoice Items API ──────────────────────────────────────────────────────
 
 export const invoiceItemsAPI = {

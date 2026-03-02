@@ -1,10 +1,10 @@
-.contracts-page {
+.payments-page {
   padding: 3rem 1.75rem 4rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.contracts-header {
+.payments-header {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -13,12 +13,12 @@
   margin-bottom: 2rem;
 }
 
-.contracts-subtitle {
+.payments-subtitle {
   color: var(--ink-soft);
   margin-top: 0.35rem;
 }
 
-.contracts-primary {
+.payments-primary {
   border: none;
   border-radius: 8px;
   background: var(--brand-primary);
@@ -33,27 +33,27 @@
   gap: 0.5rem;
 }
 
-.contracts-primary:hover {
+.payments-primary:hover {
   background: var(--brand-primary-dark);
   transform: translateY(-1px);
 }
 
-.contracts-primary:focus-visible {
+.payments-primary:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
 }
 
-.contracts-primary:disabled {
+.payments-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.contracts-primary:disabled:focus-visible {
+.payments-primary:disabled:focus-visible {
   box-shadow: none;
 }
 
-.contracts-table-wrapper {
+.payments-table-wrapper {
   background: var(--surface);
   border-radius: 14px;
   border: 1px solid var(--table-shell-border);
@@ -62,15 +62,15 @@
   overflow-y: hidden;
 }
 
-.contracts-table {
+.payments-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 800px;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-.contracts-table th,
-.contracts-table td {
+.payments-table th,
+.payments-table td {
   padding: 0.85rem 1rem;
   text-align: left;
   font-size: 0.9rem;
@@ -78,43 +78,43 @@
   border-bottom: 1px solid var(--table-row-border);
 }
 
-.contracts-table th {
+.payments-table th {
   background: var(--table-head-bg);
   color: var(--table-head-ink);
   font-size: 0.82rem;
   font-weight: 600;
 }
 
-.contracts-table th:first-child {
+.payments-table th:first-child {
   border-top-left-radius: 10px;
 }
 
-.contracts-table th:last-child {
+.payments-table th:last-child {
   border-top-right-radius: 10px;
 }
 
-.contracts-table tbody tr:last-child td {
+.payments-table tbody tr:last-child td {
   border-bottom: 0;
 }
 
-.contracts-table tbody tr:hover {
+.payments-table tbody tr:hover {
   background: var(--table-row-hover);
 }
 
-.contracts-table th:last-child,
-.contracts-table td:last-child {
+.payments-table th:last-child,
+.payments-table td:last-child {
   width: 140px;
   text-align: center;
 }
 
-.contracts-actions {
+.payments-actions {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
 }
 
-.contracts-button {
+.payments-button {
   border: 1px solid var(--border);
   background: var(--surface-muted);
   color: var(--ink);
@@ -124,21 +124,21 @@
   font-weight: 600;
 }
 
-.contracts-button:focus-visible {
+.payments-button:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--brand-secondary);
 }
 
-.contracts-button:disabled {
+.payments-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.contracts-button:disabled:focus-visible {
+.payments-button:disabled:focus-visible {
   box-shadow: none;
 }
 
-.contracts-icon-button {
+.payments-icon-button {
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -153,38 +153,38 @@
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
 }
 
-.contracts-icon-button svg {
+.payments-icon-button svg {
   width: 14px;
   height: 14px;
-  stroke: currentcolor;
+  stroke: currentColor;
   stroke-width: 2;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.contracts-icon-button:hover {
+.payments-icon-button:hover {
   background: var(--table-action-bg-hover);
 }
 
-.contracts-icon-button--danger {
+.payments-icon-button--danger {
   color: #dc2626;
   border-color: #fecdd3;
   background: #fff1f2;
 }
 
-.contracts-icon-button--info {
+.payments-icon-button--info {
   color: #2563eb;
   border-color: #bfdbfe;
   background: #eff6ff;
 }
 
-.contracts-icon-button:disabled {
+.payments-icon-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.contracts-empty {
+.payments-empty {
   padding: 2.5rem 1rem;
   text-align: center;
   color: var(--ink-faint);
@@ -193,26 +193,26 @@
   background: var(--surface);
 }
 
-.contracts-alert {
+.payments-alert {
   padding: 0.85rem 1rem;
   border-radius: 12px;
   margin: 1rem 0;
   font-weight: 600;
 }
 
-.contracts-alert--error {
+.payments-alert--error {
   background: #fff1f2;
   color: var(--status-error-dark);
   border: 1px solid rgba(244, 63, 94, 0.4);
 }
 
-.contracts-alert--success {
+.payments-alert--success {
   background: var(--status-success-light);
   color: var(--status-success-dark);
   border: 1px solid rgba(16, 185, 129, 0.35);
 }
 
-.contracts-modal {
+.payments-modal {
   position: fixed;
   inset: 0;
   z-index: 50;
@@ -221,13 +221,13 @@
   justify-content: center;
 }
 
-.contracts-modal__overlay {
+.payments-modal__overlay {
   position: absolute;
   inset: 0;
   background: var(--overlay);
 }
 
-.contracts-modal__panel {
+.payments-modal__panel {
   position: relative;
   width: min(720px, calc(100% - 2rem));
   max-height: calc(100vh - 3rem);
@@ -238,7 +238,7 @@
   box-shadow: var(--shadow-lg);
 }
 
-.contracts-modal__header {
+.payments-modal__header {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -246,24 +246,24 @@
   margin-bottom: 1.5rem;
 }
 
-.contracts-form {
+.payments-form {
   display: grid;
   gap: 1.25rem;
 }
 
-.contracts-form-grid {
+.payments-form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
-.contracts-field {
+.payments-field {
   display: grid;
   gap: 0.6rem;
   font-weight: 600;
 }
 
-.contracts-input {
+.payments-input {
   padding: 0.6rem 0.75rem;
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -271,50 +271,44 @@
   font-size: 0.95rem;
 }
 
-.contracts-input:focus-visible {
+.payments-input:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--brand-secondary);
 }
 
-.contracts-input:disabled {
+.payments-input:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.contracts-input:disabled:focus-visible {
+.payments-input:disabled:focus-visible {
   box-shadow: none;
 }
 
-.contracts-input--error {
+.payments-input--error {
   border-color: rgba(244, 63, 94, 0.65);
   background: var(--status-error-light);
 }
 
-.contracts-textarea {
+.payments-textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-.contracts-error {
+.payments-error {
   color: var(--status-error-dark);
   font-weight: 600;
   font-size: 0.9rem;
 }
 
-.contracts-hint {
-  color: var(--ink-soft);
-  font-weight: 500;
-  font-size: 0.85rem;
-}
-
-.contracts-form__actions {
+.payments-form__actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 0.5rem;
 }
 
-.contracts-table-toolbar {
+.payments-table-toolbar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -322,7 +316,7 @@
   padding: 0.9rem 1rem 0.75rem;
 }
 
-.contracts-table-filter {
+.payments-table-filter {
   height: 38px;
   border-radius: 10px;
   border: 1px solid var(--table-action-border);
@@ -338,24 +332,89 @@
   background-size: 12px;
 }
 
-.contracts-table-filter:focus-visible {
+.payments-table-filter:focus-visible {
   outline: none;
   border-color: #94a3b8;
   box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2);
 }
 
-.contracts-table-footer {
-  display: flex;
+.payments-search {
+  height: 38px;
+  min-width: 220px;
+  border-radius: 10px;
+  border: 1px solid var(--table-action-border);
+  background: #fff;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: 0.45rem;
+  padding: 0 0.7rem;
+}
+
+.payments-search svg {
+  width: 14px;
+  height: 14px;
+  stroke: #64748b;
+  stroke-width: 2;
+  fill: none;
+}
+
+.payments-search input {
+  border: 0;
+  outline: 0;
+  width: 100%;
+  color: var(--ink);
+}
+
+.payments-table-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
   min-height: 46px;
   padding: 0.7rem 1rem;
   border-top: 1px solid var(--table-row-border);
+}
+
+.payments-pagination-info {
   color: var(--ink-soft);
   font-size: 0.9rem;
 }
 
-.contracts-status-badge {
+.payments-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.payments-pagination__page {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--table-action-border);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.payments-pagination__page:hover:not(:disabled) {
+  background: var(--table-action-bg-hover);
+}
+
+.payments-pagination__page--active {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #fff;
+}
+
+.payments-pagination__page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.payments-status-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
@@ -363,7 +422,7 @@
   font-weight: 600;
 }
 
-.contracts-name-link {
+.payments-name-link {
   background: none;
   border: none;
   padding: 0;
@@ -373,30 +432,44 @@
   text-align: left;
 }
 
-.contracts-name-link:hover {
+.payments-name-link:hover {
   text-decoration: underline;
 }
 
 @media (max-width: 700px) {
-  .contracts-header {
+  .payments-header {
     align-items: stretch;
   }
 
-  .contracts-table-toolbar {
+  .payments-table-toolbar {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .contracts-form-grid {
+  .payments-search {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .payments-form-grid {
     grid-template-columns: 1fr;
   }
 
-  .contracts-form__actions {
+  .payments-form__actions {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .contracts-actions {
+  .payments-actions {
     flex-direction: column;
+  }
+
+  .payments-table-footer {
+    align-items: center;
+  }
+
+  .payments-pagination {
+    width: 100%;
+    justify-content: center;
   }
 }
