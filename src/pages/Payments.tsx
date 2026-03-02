@@ -134,6 +134,12 @@ export default function PaymentsPage() {
     });
   }, [payments, searchTerm, statusFilter]);
 
+  const filteredCount = filteredPayments.length;
+
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, [statusFilter, searchTerm]);
+
   const totalPages = useMemo(() => {
     if (!pagination.count || !pagination.pageSize) return 1;
     return Math.max(1, Math.ceil(pagination.count / pagination.pageSize));
@@ -287,9 +293,14 @@ export default function PaymentsPage() {
     setFormError(null);
     setPageSuccess(null);
 
+    const invoiceIdValue = values.invoice_id?.trim();
+    const invoice = invoiceIdValue && /^\d+$/.test(invoiceIdValue)
+      ? parseInt(invoiceIdValue, 10)
+      : null;
+
     const payload = {
       tenant: values.tenant_id ? parseInt(values.tenant_id, 10) : null,
-      invoice: values.invoice_id ? parseInt(values.invoice_id, 10) : null,
+      invoice,
       amount: values.amount,
       payment_method: values.payment_method || null,
       payment_date: values.payment_date,
@@ -306,7 +317,7 @@ export default function PaymentsPage() {
         : "Payment created successfully.";
 
       if (editingPayment) {
-        await paymentsApi.update(editingPayment.id, payload);
+        await paymentsApi.patch(editingPayment.id, payload);
       } else {
         await paymentsApi.create(payload);
       }
@@ -374,9 +385,9 @@ export default function PaymentsPage() {
     setPagination((prev) => ({ ...prev, page }));
   };
 
-  const showingFrom = pagination.count === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
+  const showingFrom = filteredCount === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
   const showingTo =
-    pagination.count === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, pagination.count);
+    filteredCount === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, filteredCount);
 
   return (
     <main className="payments-page">
@@ -501,7 +512,7 @@ export default function PaymentsPage() {
           </table>
           <div className="payments-table-footer">
             <div className="payments-pagination-info">
-              Showing {showingFrom} to {showingTo} of {pagination.count} entries
+              Showing {showingFrom} to {showingTo} of {filteredCount} entries
             </div>
             {totalPages > 1 && (
               <div className="payments-pagination">
@@ -615,6 +626,10 @@ export default function PaymentsPage() {
                       errors.amount ? "payments-input payments-input--error" : "payments-input"
                     }
                     ref={(node) => {
+                      const amountRef = register("amount", { required: "Amount is required." }).ref;
+                      if (amountRef) {
+                        amountRef(node);
+                      }
                       if (!editingPayment) {
                         modalFirstInputRef.current = node;
                       }

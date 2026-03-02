@@ -188,7 +188,7 @@ export type PaymentRecord = {
   id: string | number;
   invoice: string | number;
   amount: string;
-  method: string;
+  method: PaymentMethod;
   transaction_id: string | null;
   status: PaymentStatus;
   created_at?: string;
@@ -198,7 +198,7 @@ export type PaymentRecord = {
 export type PaymentPayload = {
   invoice: string | number;
   amount: string;
-  method: string;
+  method: PaymentMethod;
   transaction_id?: string | null;
   status?: PaymentStatus;
 };
@@ -262,18 +262,6 @@ export const paymentAPI = {
   create: async (facilityId: string, payload: PaymentPayload): Promise<PaymentRecord> => {
     const response = await apiClient.post(
       `/api/v1/billing/facilities/${encodePathSegment(facilityId)}/payments/`,
-      payload
-    );
-    return response.data as PaymentRecord;
-  },
-
-  update: async (
-    facilityId: string,
-    paymentId: string | number,
-    payload: Partial<PaymentPayload>
-  ): Promise<PaymentRecord> => {
-    const response = await apiClient.put(
-      `/api/v1/billing/facilities/${encodePathSegment(facilityId)}/payments/${encodePathSegment(paymentId)}/`,
       payload
     );
     return response.data as PaymentRecord;

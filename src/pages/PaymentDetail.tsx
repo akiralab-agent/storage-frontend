@@ -103,6 +103,12 @@ export default function PaymentDetailPage() {
         return;
       }
 
+      if (!/^\d+$/.test(id)) {
+        setLoadError("Payment ID must be a valid numeric value.");
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       setLoadError(null);
 
@@ -167,9 +173,14 @@ export default function PaymentDetailPage() {
     setFormError(null);
     setPageSuccess(null);
 
+    const invoiceIdValue = values.invoice_id?.trim();
+    const invoice = invoiceIdValue && /^\d+$/.test(invoiceIdValue)
+      ? parseInt(invoiceIdValue, 10)
+      : null;
+
     const payload = {
       tenant: values.tenant_id ? parseInt(values.tenant_id, 10) : null,
-      invoice: values.invoice_id ? parseInt(values.invoice_id, 10) : null,
+      invoice,
       amount: values.amount,
       payment_method: values.payment_method || null,
       payment_date: values.payment_date,
@@ -181,7 +192,7 @@ export default function PaymentDetailPage() {
     setIsSaving(true);
 
     try {
-      await paymentsApi.update(payment.id, payload);
+      await paymentsApi.patch(payment.id, payload);
       const updatedPayment = await paymentsApi.get(payment.id);
       setPayment(updatedPayment);
       reset(values);

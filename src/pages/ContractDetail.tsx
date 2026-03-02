@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@/shared/auth";
 import { contractsApi } from "@/api/contracts";
 import type { Contract, ContractStatus, ContractPayload } from "@/api/contracts";
 import { tenantsApi } from "@/api/tenants";
@@ -48,23 +49,11 @@ function formatDateTime(dateString: string | null): string {
   });
 }
 
-function useUserRoles(): string[] {
-  const stored = localStorage.getItem("user");
-  if (stored) {
-    try {
-      const user = JSON.parse(stored);
-      return user.roles || [];
-    } catch {
-      return [];
-    }
-  }
-  return [];
-}
-
 export default function ContractDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const userRoles = useUserRoles();
+  const { user } = useAuth();
+  const userRoles = user?.roles ?? [];
   const canWrite = userRoles.some((role) => WRITE_ROLES.includes(role));
 
   const [contract, setContract] = useState<Contract | null>(null);
@@ -78,6 +67,8 @@ export default function ContractDetailPage() {
   const [pageSuccess, setPageSuccess] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const modalPanelRef = useRef<HTMLDivElement | null>(null);
+  const deleteDialogTitleId = "delete-dialog-title";
+  const deleteDialogDescId = "delete-dialog-description";
 
   const {
     register,
@@ -163,6 +154,8 @@ export default function ContractDetailPage() {
 
   useEffect(() => {
     if (!showDeleteConfirm) return;
+
+    modalPanelRef.current?.focus();
 
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -503,14 +496,20 @@ export default function ContractDetailPage() {
       </div>
 
       {showDeleteConfirm && (
-        <div className="contract-detail-modal" role="dialog" aria-modal="true">
+        <div
+          className="contract-detail-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={deleteDialogTitleId}
+          aria-describedby={deleteDialogDescId}
+        >
           <div
             className="contract-detail-modal__overlay"
             onClick={() => setShowDeleteConfirm(false)}
           />
-          <div className="contract-detail-modal__panel" ref={modalPanelRef}>
-            <h2>Delete Contract</h2>
-            <p>
+          <div className="contract-detail-modal__panel" ref={modalPanelRef} tabIndex={-1}>
+            <h2 id={deleteDialogTitleId}>Delete Contract</h2>
+            <p id={deleteDialogDescId}>
               Are you sure you want to delete contract <strong>#{contract?.id}</strong>? This action
               cannot be undone.
             </p>

@@ -251,10 +251,16 @@ export default function InvoiceDetailPage() {
   const handleVoidSubmit = async (e) => {
     e.preventDefault();
     if (!facilityId || !invoiceId || !canChange || isVoiding) return;
+    const trimmedReason = voidReason.trim();
+    if (!trimmedReason) {
+      setLoadError("Motivo da anulação é obrigatório.");
+      setIsVoiding(false);
+      return;
+    }
     setIsVoiding(true);
     setLoadError(null);
     try {
-      await invoiceAPI.voidInvoice(facilityId, invoiceId, { void_reason: voidReason });
+      await invoiceAPI.voidInvoice(facilityId, invoiceId, { void_reason: trimmedReason });
       setPageSuccess(`Fatura #${invoiceId} anulada.`);
       closeVoid();
       await fetchInvoice();

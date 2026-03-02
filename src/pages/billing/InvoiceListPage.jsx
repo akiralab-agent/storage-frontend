@@ -18,13 +18,15 @@ function getLocalDateString() {
   return `${year}-${month}-${day}`;
 }
 
-const EMPTY_INVOICE_FORM = {
-  tenant: "",
-  contract: "",
-  issue_date: getLocalDateString(),
-  due_date: "",
-  status: "DRAFT"
-};
+function createEmptyInvoiceForm() {
+  return {
+    tenant: "",
+    contract: "",
+    issue_date: getLocalDateString(),
+    due_date: "",
+    status: "DRAFT"
+  };
+}
 
 function formatDate(value) {
   if (!value) return "—";
@@ -89,7 +91,7 @@ export default function InvoiceListPage() {
 
   // Create modal
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [invoiceForm, setInvoiceForm] = useState(EMPTY_INVOICE_FORM);
+  const [invoiceForm, setInvoiceForm] = useState(createEmptyInvoiceForm);
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState(null);
   const createModalRef = useRef(null);
@@ -126,11 +128,11 @@ export default function InvoiceListPage() {
   const showingTo =
     pagination.count === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, pagination.count);
 
-  const fetchInvoices = async ({ page = 1 } = {}) => {
+  const fetchInvoices = async ({ page = 1, clearSuccess = false } = {}) => {
     if (!selectedFacilityId || !canView) return;
     setIsLoading(true);
     setLoadError(null);
-    setPageSuccess(null);
+    if (clearSuccess) setPageSuccess(null);
     try {
       const response = await invoiceAPI.list(selectedFacilityId, {
         status: statusFilter || undefined,
@@ -154,13 +156,14 @@ export default function InvoiceListPage() {
   };
 
   useEffect(() => {
-    fetchInvoices({ page: 1 });
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    fetchInvoices({ page: 1, clearSuccess: true });
   }, [selectedFacilityId, statusFilter, tenantFilter, canView]);
 
   // ── Create modal ──────────────────────────────────────────────────────
 
   const openCreate = () => {
-    setInvoiceForm(EMPTY_INVOICE_FORM);
+    setInvoiceForm(createEmptyInvoiceForm());
     setFormError(null);
     setIsCreateOpen(true);
   };
@@ -431,14 +434,13 @@ export default function InvoiceListPage() {
                           <circle cx="12" cy="12" r="3" />
                         </svg>
                       </button>
-                      {/* Record payment */}
                       {canRecordPayment && (
                         <button
                           className="invoice-icon-button"
                           onClick={() => openPayment(invoice)}
                           title="Registrar pagamento"
                           aria-label={`Registrar pagamento da fatura ${invoice.id}`}
-                          disabled={invoice.status === "VOID" || invoice.status === "PAID"}
+                          disabled={String(invoice.status).toUpperCase() === "VOID" || String(invoice.status).toUpperCase() === "PAID"}
                         >
                           <svg viewBox="0 0 24 24" aria-hidden="true">
                             <line x1="12" y1="1" x2="12" y2="23" />
@@ -446,8 +448,7 @@ export default function InvoiceListPage() {
                           </svg>
                         </button>
                       )}
-                      {/* Void */}
-                      {canVoid && invoice.status !== "VOID" && (
+                      {canVoid && String(invoice.status).toUpperCase() !== "VOID" && String(invoice.status).toUpperCase() !== "PAID" && (
                         <button
                           className="invoice-icon-button invoice-icon-button--warning"
                           onClick={() => handleVoid(invoice)}
