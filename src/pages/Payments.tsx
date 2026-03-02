@@ -265,7 +265,11 @@ export default function PaymentsPage() {
       const activeElement = document.activeElement as HTMLElement | null;
 
       if (event.shiftKey) {
-        if (!activeElement || activeElement === first || !modalPanelRef.current?.contains(activeElement)) {
+        if (
+          !activeElement ||
+          activeElement === first ||
+          !modalPanelRef.current?.contains(activeElement)
+        ) {
           event.preventDefault();
           last.focus();
         }
@@ -371,7 +375,8 @@ export default function PaymentsPage() {
   };
 
   const showingFrom = pagination.count === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
-  const showingTo = pagination.count === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, pagination.count);
+  const showingTo =
+    pagination.count === 0 ? 0 : Math.min(pagination.page * pagination.pageSize, pagination.count);
 
   return (
     <main className="payments-page">
@@ -606,7 +611,9 @@ export default function PaymentsPage() {
                     step="0.01"
                     min="0"
                     {...register("amount", { required: "Amount is required." })}
-                    className={errors.amount ? "payments-input payments-input--error" : "payments-input"}
+                    className={
+                      errors.amount ? "payments-input payments-input--error" : "payments-input"
+                    }
                     ref={(node) => {
                       if (!editingPayment) {
                         modalFirstInputRef.current = node;
@@ -635,9 +642,15 @@ export default function PaymentsPage() {
                   <input
                     type="date"
                     {...register("payment_date", { required: "Payment date is required." })}
-                    className={errors.payment_date ? "payments-input payments-input--error" : "payments-input"}
+                    className={
+                      errors.payment_date
+                        ? "payments-input payments-input--error"
+                        : "payments-input"
+                    }
                   />
-                  {errors.payment_date && <span className="payments-error">{errors.payment_date.message}</span>}
+                  {errors.payment_date && (
+                    <span className="payments-error">{errors.payment_date.message}</span>
+                  )}
                 </label>
 
                 <label className="payments-field">

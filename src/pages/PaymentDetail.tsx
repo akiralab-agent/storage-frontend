@@ -279,7 +279,9 @@ export default function PaymentDetailPage() {
               >
                 {getStatusLabel(payment?.status ?? null)}
               </span>
-              <span className="payment-detail-amount">{formatCurrency(payment?.amount ?? null)}</span>
+              <span className="payment-detail-amount">
+                {formatCurrency(payment?.amount ?? null)}
+              </span>
             </div>
           </div>
         </div>
@@ -417,9 +419,7 @@ export default function PaymentDetailPage() {
               </div>
               <div className="payment-detail-meta-item">
                 <span className="payment-detail-meta-label">Tenant</span>
-                <span className="payment-detail-meta-value">
-                  {payment?.tenant_name || "-"}
-                </span>
+                <span className="payment-detail-meta-value">{payment?.tenant_name || "-"}</span>
               </div>
               <div className="payment-detail-meta-item">
                 <span className="payment-detail-meta-label">Invoice</span>
