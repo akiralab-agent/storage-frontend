@@ -87,6 +87,22 @@
   justify-content: flex-start;
 }
 
+.invoice-button--warning {
+  color: #d97706;
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.invoice-status--issued {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.invoice-status--overdue {
+  background: #fff1f2;
+  color: #b91c1c;
+}
+
 @media (max-width: 720px) {
   .invoice-detail-row {
     flex-direction: column;
