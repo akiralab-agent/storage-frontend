@@ -281,9 +281,17 @@
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--ink-faint);
+  color: var(--brand-primary);
   font-weight: 700;
-  padding: 0.75rem 0.15rem 0.4rem;
+  padding: 1rem 0.15rem 0.35rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.sidebar__nav > .sidebar__section-title:first-child {
+  border-top: none;
+  padding-top: 0.25rem;
+  margin-top: 0;
 }
 
 /* ── Facility selector area ── */

@@ -14,6 +14,9 @@ import TenantDetailPage from "@/pages/TenantDetail";
 import Tenant360Page from "@/pages/Tenant360";
 import InvoiceListPage from "@/pages/billing/InvoiceListPage";
 import InvoiceDetailPage from "@/pages/billing/InvoiceDetailPage";
+import PaymentListPage from "@/pages/billing/PaymentListPage";
+import ContractsPage from "@/pages/Contracts";
+import ContractDetailPage from "@/pages/ContractDetail";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { RequireRole } from "@/shared/auth";
@@ -38,7 +41,7 @@ export const router = createBrowserRouter([
       {
         path: "/users",
         element: (
-          <RequireRole roles={["admin"]}>
+          <RequireRole roles={["admin", "admin_corporativo"]}>
             <UsersPage />
           </RequireRole>
         )
@@ -136,6 +139,30 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole roles={["admin", "admin_corporativo", "gerente", "financeiro"]}>
             <InvoiceDetailPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/payments",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "financeiro"]}>
+            <PaymentListPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/contracts",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops", "financeiro"]}>
+            <ContractsPage />
+          </RequireRole>
+        )
+      },
+      {
+        path: "/contracts/:id",
+        element: (
+          <RequireRole roles={["admin", "admin_corporativo", "gerente", "ops", "financeiro"]}>
+            <ContractDetailPage />
           </RequireRole>
         )
       }

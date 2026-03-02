@@ -12,14 +12,25 @@ type NavItem = {
   roles?: Role[];
 };
 
-const NAV_ITEMS: NavItem[] = [
+type NavSection = {
+  type: "section";
+  label: string;
+};
+
+type NavEntry = NavItem | NavSection;
+
+const NAV_ITEMS: NavEntry[] = [
   { to: "/dashboard", label: "Dashboard", icon: "grid" },
+
+  { type: "section", label: "CRM" },
   {
     to: "/leads",
     label: "Leads",
     icon: "target",
     roles: ["admin", "admin_corporativo", "gerente", "ops"]
   },
+
+  { type: "section", label: "Operações" },
   {
     to: "/tenants",
     label: "Inquilinos",
@@ -33,11 +44,27 @@ const NAV_ITEMS: NavItem[] = [
     roles: ["admin", "admin_corporativo", "gerente", "financeiro"]
   },
   {
+    to: "/contracts",
+    label: "Contratos",
+    icon: "contract",
+    roles: ["admin", "admin_corporativo", "gerente", "ops", "financeiro"]
+  },
+
+  { type: "section", label: "Financeiro" },
+  {
     to: "/invoices",
     label: "Faturas",
     icon: "receipt",
     roles: ["admin", "admin_corporativo", "gerente", "financeiro"]
   },
+  {
+    to: "/payments",
+    label: "Pagamentos",
+    icon: "payment",
+    roles: ["admin", "admin_corporativo", "gerente", "financeiro"]
+  },
+
+  { type: "section", label: "Administração" },
   {
     to: "/facilities",
     label: "Filiais",
@@ -50,7 +77,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: "briefcase",
     roles: ["admin", "admin_corporativo"]
   },
-  { to: "/users", label: "Usuários", icon: "users", roles: ["admin"] }
+  { to: "/users", label: "Usuários", icon: "users", roles: ["admin", "admin_corporativo"] }
 ];
 
 const ICONS: Record<string, JSX.Element> = {
@@ -188,6 +215,39 @@ const ICONS: Record<string, JSX.Element> = {
       <line x1="16" y1="17" x2="8" y2="17" />
       <polyline points="10 9 9 9 8 9" />
     </svg>
+  ),
+  contract: (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <path d="M10 9l1 1 2-2" />
+    </svg>
+  ),
+  payment: (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+      <line x1="1" y1="10" x2="23" y2="10" />
+    </svg>
   )
 };
 
@@ -200,9 +260,30 @@ export default function AuthenticatedLayout() {
     return <Navigate to="/login" replace />;
   }
 
-  const visibleItems = NAV_ITEMS.filter(
-    (item) => !item.roles || (user && item.roles.some((r) => user.roles.includes(r)))
-  );
+  // Build visible entries: include sections only if they have at least one visible item
+  const visibleEntries = (() => {
+    const result: NavEntry[] = [];
+    let pendingSection: NavSection | null = null;
+
+    for (const entry of NAV_ITEMS) {
+      if ("type" in entry) {
+        pendingSection = entry;
+      } else {
+        const isVisible = !entry.roles || (user && entry.roles.some((r) => user.roles.includes(r)));
+        if (isVisible) {
+          if (pendingSection) {
+            result.push(pendingSection);
+            pendingSection = null;
+          }
+          result.push(entry);
+        }
+      }
+    }
+
+    return result;
+  })();
+
+  const visibleItems = visibleEntries.filter((e): e is NavItem => "to" in e && "icon" in e);
 
   const toggleCollapse = () => setSidebarCollapsed((prev) => !prev);
 
@@ -246,19 +327,21 @@ export default function AuthenticatedLayout() {
           </button>
 
           <nav className="sidebar__rail-nav">
-            {visibleItems.map((item) => (
-              <NavLink
-                key={`rail-${item.to}`}
-                to={item.to}
-                className={({ isActive }) =>
-                  `sidebar__rail-link ${isActive ? "sidebar__rail-link--active" : ""}`
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                {ICONS[item.icon]}
-                <span className="sidebar__rail-tooltip">{item.label}</span>
-              </NavLink>
-            ))}
+            {visibleItems.map((item) =>
+              ICONS[item.icon] ? (
+                <NavLink
+                  key={`rail-${item.to}`}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `sidebar__rail-link ${isActive ? "sidebar__rail-link--active" : ""}`
+                  }
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  {ICONS[item.icon]}
+                  <span className="sidebar__rail-tooltip">{item.label}</span>
+                </NavLink>
+              ) : null
+            )}
           </nav>
 
           <button type="button" className="sidebar__logout" onClick={logout} title="Sair">
@@ -337,22 +420,29 @@ export default function AuthenticatedLayout() {
             <FacilitySelector />
           </div>
 
-          <span className="sidebar__section-title">Menu</span>
-
           <nav className="sidebar__nav">
-            {visibleItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `sidebar__link ${isActive ? "sidebar__link--active" : ""}`
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <span className="sidebar__link-icon">{ICONS[item.icon]}</span>
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
+            {visibleEntries.map((entry) => {
+              if ("type" in entry) {
+                return (
+                  <span key={`section-${entry.label}`} className="sidebar__section-title">
+                    {entry.label}
+                  </span>
+                );
+              }
+              return (
+                <NavLink
+                  key={entry.to}
+                  to={entry.to}
+                  className={({ isActive }) =>
+                    `sidebar__link ${isActive ? "sidebar__link--active" : ""}`
+                  }
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <span className="sidebar__link-icon">{ICONS[entry.icon]}</span>
+                  <span>{entry.label}</span>
+                </NavLink>
+              );
+            })}
           </nav>
 
           <div className="sidebar__footer">

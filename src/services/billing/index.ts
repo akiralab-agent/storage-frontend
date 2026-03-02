@@ -180,6 +180,82 @@ export const invoiceAPI = {
 
 // ── Invoice Items API ──────────────────────────────────────────────────────
 
+// ── Payments API ───────────────────────────────────────────────────────────
+
+export type Payment = {
+  id: number;
+  invoice: number;
+  amount: string;
+  method: "CASH" | "CARD" | "TRANSFER" | "OTHER";
+  transaction_id?: string | null;
+  payment_date?: string | null;
+  created_at?: string | null;
+  status?: string | null;
+};
+
+export type PaymentListParams = {
+  method?: string;
+  invoice?: number;
+  page?: number;
+  page_size?: number;
+};
+
+export type PaymentListResponse = {
+  results: Payment[];
+  count: number;
+  next: string | null;
+  previous: string | null;
+  page: number;
+  pageSize: number;
+};
+
+function normalizePaymentList(payload: unknown): { results: Payment[]; count: number } {
+  if (Array.isArray(payload)) {
+    return { results: payload as Payment[], count: payload.length };
+  }
+  if (payload && typeof payload === "object" && "results" in payload) {
+    const results = (payload as { results?: Payment[] }).results;
+    const count =
+      (payload as { count?: number }).count ?? (Array.isArray(results) ? results.length : 0);
+    return { results: Array.isArray(results) ? results : [], count };
+  }
+  return { results: [], count: 0 };
+}
+
+export const paymentsAPI = {
+  list: async (
+    facilityId: string | number,
+    params: PaymentListParams = {}
+  ): Promise<PaymentListResponse> => {
+    const response = await apiClient.get(`${billingBase(facilityId)}/payments/`, { params });
+    const data = response.data as {
+      results?: Payment[];
+      count?: number;
+      next?: string | null;
+      previous?: string | null;
+      page_size?: number;
+    };
+    const normalized = normalizePaymentList(data);
+    const pageSize = data?.page_size ?? params.page_size ?? normalized.results.length;
+    return {
+      results: normalized.results,
+      count: normalized.count,
+      next: data?.next ?? null,
+      previous: data?.previous ?? null,
+      page: params.page ?? 1,
+      pageSize
+    };
+  },
+
+  delete: async (facilityId: string | number, paymentId: string | number): Promise<void> => {
+    await apiClient.delete(
+      `${billingBase(facilityId)}/payments/${encodePathSegment(paymentId)}/`
+    );
+  }
+};
+
+// ── Invoice Items API ──────────────────────────────────────────────────────
+
 export const invoiceItemsAPI = {
   list: async (facilityId: string | number, invoiceId: string | number): Promise<InvoiceItem[]> => {
     const response = await apiClient.get(

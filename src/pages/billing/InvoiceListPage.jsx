@@ -5,6 +5,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { invoiceAPI } from "@/services/billing";
 import { STATUS_OPTIONS, STATUS_LABELS, PAYMENT_METHODS } from "@/pages/billing/billingConstants";
 import "@/pages/billing/InvoiceListPage.css";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const FILTER_STATUS_OPTIONS = [{ value: "", label: "Todos os status" }, ...STATUS_OPTIONS];
 
@@ -308,35 +309,35 @@ export default function InvoiceListPage() {
 
   if (!selectedFacilityId) {
     return (
-      <div className="invoice-page">
-        <div className="invoice-header">
+      <main className="invoice-page">
+        <header className="invoice-header">
           <div>
-            <h1>Faturas</h1>
+            <Breadcrumb items={[{ label: "Faturas" }]} />
             <p className="invoice-subtitle">Selecione uma filial para ver as faturas.</p>
           </div>
-        </div>
-      </div>
+        </header>
+      </main>
     );
   }
 
   if (!canView) {
     return (
-      <div className="invoice-page">
-        <div className="invoice-header">
+      <main className="invoice-page">
+        <header className="invoice-header">
           <div>
-            <h1>Faturas</h1>
+            <Breadcrumb items={[{ label: "Faturas" }]} />
             <p className="invoice-subtitle">Você não tem permissão de acesso ao faturamento.</p>
           </div>
-        </div>
-      </div>
+        </header>
+      </main>
     );
   }
 
   return (
-    <div className="invoice-page">
-      <div className="invoice-header">
+    <main className="invoice-page">
+      <header className="invoice-header">
         <div>
-          <h1>Faturas</h1>
+          <Breadcrumb items={[{ label: "Faturas" }]} />
           <p className="invoice-subtitle">Gerencie faturas, pagamentos e status.</p>
         </div>
         {canAdd && (
@@ -344,39 +345,41 @@ export default function InvoiceListPage() {
             + Nova Fatura
           </button>
         )}
-      </div>
-
-      <div className="invoice-filters">
-        <label className="invoice-field">
-          Status
-          <select
-            className="invoice-input"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            {FILTER_STATUS_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="invoice-field">
-          Inquilino
-          <input
-            className="invoice-input"
-            type="text"
-            placeholder="Nome ou ID"
-            value={tenantFilter}
-            onChange={(e) => setTenantFilter(e.target.value)}
-          />
-        </label>
-      </div>
+      </header>
 
       {loadError && <div className="invoice-alert invoice-alert--error">{loadError}</div>}
       {pageSuccess && <div className="invoice-alert invoice-alert--success">{pageSuccess}</div>}
 
       <div className="invoice-table-wrapper">
+        <div className="invoice-table-toolbar">
+          <span className="invoice-table-title">Faturas</span>
+          <div className="invoice-table-actions">
+            <select
+              className="invoice-table-filter"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              {FILTER_STATUS_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            <label className="invoice-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="16.65" y1="16.65" x2="21" y2="21" />
+              </svg>
+              <input
+                type="search"
+                placeholder="Inquilino..."
+                value={tenantFilter}
+                onChange={(e) => setTenantFilter(e.target.value)}
+                aria-label="Filtrar por inquilino"
+              />
+            </label>
+          </div>
+        </div>
         <table className="invoice-table">
           <thead>
             <tr>
@@ -711,6 +714,6 @@ export default function InvoiceListPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

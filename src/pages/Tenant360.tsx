@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { tenantsApi } from "@/api/tenants";
 import type { Tenant360 } from "@/api/tenants";
 import "@/pages/Tenant360.css";
@@ -356,17 +357,17 @@ export default function Tenant360Page() {
     <main className="tenant-360-page">
       <header className="tenant-360-header">
         <div className="tenant-360-header__left">
-          <button type="button" className="tenant-360-back" onClick={handleBack}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back
-          </button>
           <div>
-            <h1>
-              {tenant?.first_name} {tenant?.last_name}
-            </h1>
+            <Breadcrumb
+              items={[
+                { label: "Inquilinos", to: "/tenants" },
+                {
+                  label: tenant ? `${tenant.first_name} ${tenant.last_name}` : `#${id}`,
+                  to: id ? `/tenants/${id}` : undefined
+                },
+                { label: "Visão 360°" }
+              ]}
+            />
             <div className="tenant-360-meta">
               {tenant?.email && <span className="tenant-360-info">{tenant.email}</span>}
               {tenant?.phone_primary && (

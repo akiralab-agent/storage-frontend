@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { apiClient } from "@/api/client";
 import "@/pages/Leads.css";
 
@@ -401,7 +402,7 @@ export default function LeadsPage() {
     <main className="leads-page">
       <header className="leads-header">
         <div>
-          <h1>Leads</h1>
+          <Breadcrumb items={[{ label: "Leads" }]} />
           <p className="leads-subtitle">Manage your sales pipeline and track opportunities.</p>
         </div>
         <button type="button" className="leads-primary" onClick={openCreateModal}>
@@ -419,43 +420,46 @@ export default function LeadsPage() {
       ) : (
         <div className="leads-table-wrapper">
           <div className="leads-table-toolbar">
-            <select
-              className="leads-table-filter"
-              value={stageFilter}
-              onChange={(event) => setStageFilter(event.target.value)}
-            >
-              <option value="">All stages</option>
-              {STAGE_OPTIONS.map((stageOption) => (
-                <option key={stageOption.value} value={stageOption.value}>
-                  {stageOption.label}
-                </option>
-              ))}
-            </select>
-            <select
-              className="leads-table-filter"
-              value={ownerFilter}
-              onChange={(event) => setOwnerFilter(event.target.value)}
-            >
-              <option value="">All owners</option>
-              {owners.map((owner) => (
-                <option key={owner.id} value={owner.id}>
-                  {owner.name || owner.email}
-                </option>
-              ))}
-            </select>
-            <label className="leads-search">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="11" cy="11" r="7" />
-                <line x1="16.65" y1="16.65" x2="21" y2="21" />
-              </svg>
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search leads..."
-                aria-label="Search leads"
-              />
-            </label>
+            <span className="leads-table-title">Leads</span>
+            <div className="leads-table-actions">
+              <select
+                className="leads-table-filter"
+                value={stageFilter}
+                onChange={(event) => setStageFilter(event.target.value)}
+              >
+                <option value="">All stages</option>
+                {STAGE_OPTIONS.map((stageOption) => (
+                  <option key={stageOption.value} value={stageOption.value}>
+                    {stageOption.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="leads-table-filter"
+                value={ownerFilter}
+                onChange={(event) => setOwnerFilter(event.target.value)}
+              >
+                <option value="">All owners</option>
+                {owners.map((owner) => (
+                  <option key={owner.id} value={owner.id}>
+                    {owner.name || owner.email}
+                  </option>
+                ))}
+              </select>
+              <label className="leads-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="16.65" y1="16.65" x2="21" y2="21" />
+                </svg>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search leads..."
+                  aria-label="Search leads"
+                />
+              </label>
+            </div>
           </div>
           <table className="leads-table">
             <thead>

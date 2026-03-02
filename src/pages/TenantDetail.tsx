@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { tenantsApi } from "@/api/tenants";
 import type { Tenant } from "@/api/tenants";
 import "@/pages/TenantDetail.css";
@@ -241,17 +242,19 @@ export default function TenantDetailPage() {
     <main className="tenant-detail-page">
       <header className="tenant-detail-header">
         <div className="tenant-detail-header__left">
-          <button type="button" className="tenant-detail-back" onClick={handleBack}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back
-          </button>
           <div>
-            <h1>
-              {tenant?.first_name} {tenant?.last_name}
-            </h1>
+            <Breadcrumb
+              items={[
+                { label: "Inquilinos", to: "/tenants" },
+                {
+                  label: tenant
+                    ? `${tenant.first_name} ${tenant.last_name}`
+                    : id
+                      ? `#${id}`
+                      : "Novo"
+                }
+              ]}
+            />
             <div className="tenant-detail-meta">
               <span
                 className="tenant-detail-status"

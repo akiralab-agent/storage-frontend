@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { apiClient } from "@/api/client";
+import Breadcrumb from "@/components/Breadcrumb";
 import "@/pages/Users.css";
 
 const ROLE_OPTIONS = [
@@ -451,7 +452,7 @@ export default function UsersPage() {
     <main className="users-page">
       <header className="users-header">
         <div>
-          <h1>Users</h1>
+          <Breadcrumb items={[{ label: "Usuários" }]} />
           <p className="users-subtitle">Manage roles and facility access for your team.</p>
         </div>
         <button type="button" className="users-primary" onClick={openCreateModal}>
@@ -469,31 +470,34 @@ export default function UsersPage() {
       ) : (
         <div className="users-table-wrapper">
           <div className="users-table-toolbar">
-            <select
-              className="users-table-filter"
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
-            >
-              <option value="">All status</option>
-              {ROLE_OPTIONS.map((roleOption) => (
-                <option key={roleOption.value} value={roleOption.value}>
-                  {roleOption.label}
-                </option>
-              ))}
-            </select>
-            <label className="users-search">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="11" cy="11" r="7" />
-                <line x1="16.65" y1="16.65" x2="21" y2="21" />
-              </svg>
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search"
-                aria-label="Search users"
-              />
-            </label>
+            <span className="users-table-title">Usuários</span>
+            <div className="users-table-actions">
+              <select
+                className="users-table-filter"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
+                <option value="">All status</option>
+                {ROLE_OPTIONS.map((roleOption) => (
+                  <option key={roleOption.value} value={roleOption.value}>
+                    {roleOption.label}
+                  </option>
+                ))}
+              </select>
+              <label className="users-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="16.65" y1="16.65" x2="21" y2="21" />
+                </svg>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search"
+                  aria-label="Search users"
+                />
+              </label>
+            </div>
           </div>
           <table className="users-table">
             <thead>

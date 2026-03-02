@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { contractsApi } from "@/api/contracts";
 import type { Contract, ContractStatus, ContractPayload } from "@/api/contracts";
 import { tenantsApi } from "@/api/tenants";
@@ -283,15 +284,13 @@ export default function ContractDetailPage() {
     <main className="contract-detail-page">
       <header className="contract-detail-header">
         <div className="contract-detail-header__left">
-          <button type="button" className="contract-detail-back" onClick={handleBack}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back
-          </button>
           <div>
-            <h1>Contract #{contract?.id}</h1>
+            <Breadcrumb
+              items={[
+                { label: "Contratos", to: "/contracts" },
+                { label: contract ? `#${contract.id}` : `#${id}` }
+              ]}
+            />
             <div className="contract-detail-meta">
               <span
                 className="contract-detail-status"

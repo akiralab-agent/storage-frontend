@@ -6,6 +6,7 @@ import { invoiceAPI, invoiceItemsAPI } from "@/services/billing";
 import { STATUS_OPTIONS, STATUS_LABELS, PAYMENT_METHODS } from "@/pages/billing/billingConstants";
 import "@/pages/billing/InvoiceListPage.css";
 import "@/pages/billing/InvoiceDetailPage.css";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const EMPTY_ITEM_FORM = { description: "", quantity: "1", unit_price: "" };
 
@@ -444,39 +445,41 @@ export default function InvoiceDetailPage() {
 
   if (!facilityId) {
     return (
-      <div className="invoice-page">
-        <div className="invoice-header">
-          <h1>Detalhe da Fatura</h1>
-          <p className="invoice-subtitle">Selecione uma filial.</p>
-        </div>
-      </div>
+      <main className="invoice-page">
+        <header className="invoice-header">
+          <div>
+            <Breadcrumb items={[{ label: "Faturas", to: "/invoices" }, { label: "Detalhe" }]} />
+            <p className="invoice-subtitle">Selecione uma filial.</p>
+          </div>
+        </header>
+      </main>
     );
   }
 
   if (!canView) {
     return (
-      <div className="invoice-page">
-        <div className="invoice-header">
-          <h1>Detalhe da Fatura</h1>
-          <p className="invoice-subtitle">Acesso negado.</p>
-        </div>
-      </div>
+      <main className="invoice-page">
+        <header className="invoice-header">
+          <div>
+            <Breadcrumb items={[{ label: "Faturas", to: "/invoices" }, { label: "Detalhe" }]} />
+            <p className="invoice-subtitle">Acesso negado.</p>
+          </div>
+        </header>
+      </main>
     );
   }
 
   return (
-    <div className="invoice-page">
+    <main className="invoice-page">
       {/* ── Header ── */}
-      <div className="invoice-header">
+      <header className="invoice-header">
         <div>
-          <button
-            className="invoice-button"
-            style={{ marginBottom: "0.75rem" }}
-            onClick={() => navigate("/invoices")}
-          >
-            ← Voltar
-          </button>
-          <h1>Fatura #{invoice?.id ?? invoiceId}</h1>
+          <Breadcrumb
+            items={[
+              { label: "Faturas", to: "/invoices" },
+              { label: `#${invoice?.id ?? invoiceId}` }
+            ]}
+          />
           <p className="invoice-subtitle">{getTenantName(invoice)}</p>
           {invoice && (
             <div className="invoice-header-meta">
@@ -513,7 +516,7 @@ export default function InvoiceDetailPage() {
             </button>
           )}
         </div>
-      </div>
+      </header>
 
       {loadError && <div className="invoice-alert invoice-alert--error">{loadError}</div>}
       {pageSuccess && <div className="invoice-alert invoice-alert--success">{pageSuccess}</div>}
@@ -993,6 +996,6 @@ export default function InvoiceDetailPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { contractsApi } from "@/api/contracts";
 import type { Contract, ContractStatus, ContractPayload } from "@/api/contracts";
 import { tenantsApi } from "@/api/tenants";
@@ -354,7 +355,7 @@ export default function ContractsPage() {
     <main className="contracts-page">
       <header className="contracts-header">
         <div>
-          <h1>Contracts</h1>
+          <Breadcrumb items={[{ label: "Contratos" }]} />
           <p className="contracts-subtitle">Manage lease contracts for the facility.</p>
         </div>
         {canWrite && (
@@ -376,18 +377,21 @@ export default function ContractsPage() {
       ) : (
         <div className="contracts-table-wrapper">
           <div className="contracts-table-toolbar">
-            <select
-              className="contracts-table-filter"
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value as ContractStatus | "")}
-            >
-              <option value="">All statuses</option>
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            <span className="contracts-table-title">Contratos</span>
+            <div className="contracts-table-actions">
+              <select
+                className="contracts-table-filter"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value as ContractStatus | "")}
+              >
+                <option value="">All statuses</option>
+                {STATUS_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <table className="contracts-table">
             <thead>

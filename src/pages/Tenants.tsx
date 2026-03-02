@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { tenantsApi } from "@/api/tenants";
 import type { Tenant } from "@/api/tenants";
 import "@/pages/Tenants.css";
@@ -334,7 +335,7 @@ export default function TenantsPage() {
     <main className="tenants-page">
       <header className="tenants-header">
         <div>
-          <h1>Inquilinos</h1>
+          <Breadcrumb items={[{ label: "Inquilinos" }]} />
           <p className="tenants-subtitle">Manage tenants and their information.</p>
         </div>
         <button type="button" className="tenants-primary" onClick={openCreateModal}>
@@ -354,31 +355,34 @@ export default function TenantsPage() {
       ) : (
         <div className="tenants-table-wrapper">
           <div className="tenants-table-toolbar">
-            <select
-              className="tenants-table-filter"
-              value={categoryFilter}
-              onChange={(event) => setCategoryFilter(event.target.value)}
-            >
-              <option value="">All categories</option>
-              {CATEGORY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <label className="tenants-search">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="11" cy="11" r="7" />
-                <line x1="16.65" y1="16.65" x2="21" y2="21" />
-              </svg>
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search tenants..."
-                aria-label="Search tenants"
-              />
-            </label>
+            <span className="tenants-table-title">Inquilinos</span>
+            <div className="tenants-table-actions">
+              <select
+                className="tenants-table-filter"
+                value={categoryFilter}
+                onChange={(event) => setCategoryFilter(event.target.value)}
+              >
+                <option value="">All categories</option>
+                {CATEGORY_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              <label className="tenants-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="16.65" y1="16.65" x2="21" y2="21" />
+                </svg>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search tenants..."
+                  aria-label="Search tenants"
+                />
+              </label>
+            </div>
           </div>
           <table className="tenants-table">
             <thead>

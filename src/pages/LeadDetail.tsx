@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { apiClient } from "@/api/client";
 import "@/pages/LeadDetail.css";
 
@@ -294,17 +295,13 @@ export default function LeadDetailPage() {
     <main className="lead-detail-page">
       <header className="lead-detail-header">
         <div className="lead-detail-header__left">
-          <button type="button" className="lead-detail-back" onClick={handleBack}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back
-          </button>
           <div>
-            <h1>
-              {lead?.first_name} {lead?.last_name}
-            </h1>
+            <Breadcrumb
+              items={[
+                { label: "Leads", to: "/leads" },
+                { label: lead ? `${lead.first_name} ${lead.last_name}` : `#${id}` }
+              ]}
+            />
             <div className="lead-detail-meta">
               <span
                 className="lead-detail-stage"

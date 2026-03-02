@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumb from "@/components/Breadcrumb";
 import { apiClient } from "@/api/client";
 import { unitsApi, unitTypesApi } from "@/api/units";
 import type { UnitRecord, UnitType } from "@/api/units";
@@ -321,18 +322,18 @@ export default function LeadConvertPage() {
   return (
     <main className="lead-convert-page">
       <header className="lead-convert-header">
-        <button type="button" className="lead-convert-back" onClick={handleBack}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          Back
-        </button>
         <div className="lead-convert-header__title">
-          <h1>Convert Lead to Tenant</h1>
-          <p className="lead-convert-subtitle">
-            {lead?.first_name} {lead?.last_name}
-          </p>
+          <Breadcrumb
+            items={[
+              { label: "Leads", to: "/leads" },
+              {
+                label: lead ? `${lead.first_name} ${lead.last_name}` : `#${id}`,
+                to: id ? `/leads/${id}` : undefined
+              },
+              { label: "Converter" }
+            ]}
+          />
+          <p className="lead-convert-subtitle">Convert Lead to Tenant</p>
         </div>
       </header>
 
